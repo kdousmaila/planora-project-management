@@ -12,7 +12,6 @@ public class Project : BaseEntity
     public Workspace Workspace { get; set; } = null!;
     public ApplicationUser ProjectManager { get; set; } = null!;
     public ICollection<ProjectUser> Users { get; set; } = new List<ProjectUser>();
-    // SUPPRIMER ICollection<ProjectInvitation> — on invite au niveau workspace
     public ICollection<Sprint> Sprints { get; set; } = new List<Sprint>();
     public ICollection<BacklogItem> BacklogItems { get; set; } = new List<BacklogItem>();
     public ICollection<ChatSession> ChatSessions { get; set; } = new List<ChatSession>();

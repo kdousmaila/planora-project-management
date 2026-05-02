@@ -10,7 +10,6 @@
   <!-- ── PAGE HEADER ── -->
   <div class="page-header">
     <div class="header-left">
-
       <div class="project-hero">
         <div class="project-hero-avatar" style="background: linear-gradient(135deg, #4f46e5, #06b6d4);">
           {{ project.name.charAt(0) }}
@@ -28,7 +27,7 @@
         <svg viewBox="0 0 44 44" class="progress-ring">
           <circle cx="22" cy="22" r="18" class="ring-track" />
           <circle cx="22" cy="22" r="18" class="ring-fill" [style.stroke-dasharray]="113"
-            [style.stroke-dashoffset]="113 - (113 * (project.progressPercentage || 0) / 100)">
+                  [style.stroke-dashoffset]="113 - (113 * (project.progressPercentage || 0) / 100)">
           </circle>
         </svg>
         <span class="ring-label">{{ project.progressPercentage || 0 }}%</span>
@@ -141,7 +140,7 @@
             </mat-select>
           </mat-form-field>
           <button class="btn-add-member" type="submit"
-            [disabled]="memberForm.invalid || addingMember || availableWorkspaceMembers.length === 0">
+                  [disabled]="memberForm.invalid || addingMember || availableWorkspaceMembers.length === 0">
             <mat-icon>{{ addingMember ? 'hourglass_empty' : 'add' }}</mat-icon>
             {{ addingMember ? 'Adding…' : 'Add to Project' }}
           </button>

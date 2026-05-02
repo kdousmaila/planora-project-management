@@ -1,4 +1,4 @@
-// dashboard.component.ts - BLUE THEME
+// dashboard.component.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -12,6 +12,7 @@ import { DashboardService } from '../../core/services/dashboard.service';
 import { DashboardData } from '../../core/models';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
 import { AuthService } from '../../core/services/auth.service';
+import { TeamHealthWidgetComponent } from './team-health-widget/team-health-widget.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -25,111 +26,140 @@ import { AuthService } from '../../core/services/auth.service';
     MatIconModule,
     MatButtonModule,
     MatSnackBarModule,
-    LoadingComponent
+    LoadingComponent,
+    TeamHealthWidgetComponent
   ],
   templateUrl: './dashboard.component.html',
   styles: [`
 
-    /* ─── ROOT ─── */
+    /* ── ROOT ── */
     .dash-root {
-      padding: 32px 36px;
+      padding: 36px 40px;
       max-width: 1400px;
       margin: 0 auto;
       min-height: calc(100vh - 64px);
       font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f6f7fb;
     }
 
-    /* ─── HEADER ─── */
+    /* ── HEADER ── */
     .dash-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 32px;
+      margin-bottom: 36px;
     }
 
-    .dash-header-left { display: flex; align-items: center; gap: 16px; }
-
-    .dash-greeting {
+    .dash-header-left {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
     }
 
-    .dash-greeting-icon {
-      font-size: 36px;
-      line-height: 1;
+    .dash-avatar-ring {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #4f46e5, #818cf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);
     }
 
     .dash-title {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 800;
       color: #0f172a;
-      margin: 0 0 2px;
+      margin: 0 0 3px;
       letter-spacing: -0.5px;
     }
 
     .dash-subtitle {
       font-size: 13px;
-      color: #64748b;
+      color: #94a3b8;
       margin: 0;
     }
 
-    .dash-date {
+    .dash-date-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 13px;
       font-weight: 500;
-      color: #94a3b8;
+      color: #475569;
       background: #fff;
-      border: 1px solid #c7d2fe;
-      border-radius: 8px;
-      padding: 6px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 8px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
     }
 
-    /* ─── KPI GRID ─── */
+    .date-icon { font-size: 15px; }
+
+    /* ── KPI GRID ── */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 20px;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
 
     @media (max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px)  { .kpi-grid { grid-template-columns: 1fr; } }
 
     .kpi-card {
-      border-radius: 16px;
-      padding: 22px 24px 18px;
+      border-radius: 20px;
+      padding: 24px;
       color: #fff;
       position: relative;
       overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: fadeUp 0.4s ease both;
     }
 
     .kpi-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 16px 40px -8px rgba(0,0,0,0.2);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 48px -8px rgba(0,0,0,0.22);
     }
 
-    .kpi-card::after {
-      content: '';
-      position: absolute;
-      top: -30px; right: -30px;
-      width: 100px; height: 100px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-    }
+    .kpi-card:nth-child(1) { animation-delay: 0.05s; }
+    .kpi-card:nth-child(2) { animation-delay: 0.10s; }
+    .kpi-card:nth-child(3) { animation-delay: 0.15s; }
+    .kpi-card:nth-child(4) { animation-delay: 0.20s; }
 
-    .kpi-indigo { background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); }
-    .kpi-cyan   { background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); }
-    .kpi-amber  { background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); }
-    .kpi-green  { background: linear-gradient(135deg, #059669 0%, #10b981 100%); }
-    .kpi-red    { background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); }
-    .kpi-orange { background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); }
+    .kpi-indigo { background: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%); box-shadow: 0 10px 32px rgba(79, 70, 229, 0.3); }
+    .kpi-cyan   { background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%); box-shadow: 0 10px 32px rgba(8, 145, 178, 0.3); }
+    .kpi-amber  { background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%); box-shadow: 0 10px 32px rgba(217, 119, 6, 0.3); }
+    .kpi-green  { background: linear-gradient(135deg, #059669 0%, #34d399 100%); box-shadow: 0 10px 32px rgba(5, 150, 105, 0.3); }
 
-    .kpi-top {
+    .kpi-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.2);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
+      justify-content: center;
+      flex-shrink: 0;
+      backdrop-filter: blur(4px);
+    }
+
+    .kpi-icon-wrap mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      color: #fff;
+    }
+
+    .kpi-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .kpi-label {
@@ -137,112 +167,110 @@ import { AuthService } from '../../core/services/auth.service';
       font-weight: 600;
       opacity: 0.85;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.7px;
     }
-
-    .kpi-icon {
-      width: 36px; height: 36px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    .kpi-icon mat-icon { font-size: 20px; width: 20px; height: 20px; color: #fff; }
 
     .kpi-value {
-      font-size: 38px;
+      font-size: 40px;
       font-weight: 800;
       line-height: 1;
-      margin-bottom: 14px;
-      letter-spacing: -1px;
+      letter-spacing: -1.5px;
     }
 
-    .kpi-bar {
-      height: 4px;
-      background: rgba(255,255,255,0.25);
-      border-radius: 4px;
-      overflow: hidden;
+    .kpi-glow {
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      pointer-events: none;
     }
 
-    .kpi-bar-fill {
-      height: 100%;
-      background: rgba(255,255,255,0.7);
-      border-radius: 4px;
-      transition: width 1s ease;
-    }
-
-    /* ─── MID ROW ─── */
+    /* ── MID ROW ── */
     .mid-row {
       display: grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 280px 1fr;
       gap: 20px;
       margin-bottom: 24px;
     }
 
     @media (max-width: 900px) { .mid-row { grid-template-columns: 1fr; } }
 
-    /* ─── CARD BASE ─── */
+    /* ── CARD BASE ── */
     .card {
       background: #fff;
-      border-radius: 16px;
-      padding: 24px;
-      border: 1px solid #c7d2fe;
-      box-shadow: 0 1px 4px rgba(79, 70, 229, 0.04);
+      border-radius: 20px;
+      padding: 26px;
+      border: 1px solid #e8eaf6;
+      box-shadow: 0 2px 12px rgba(79, 70, 229, 0.05);
       transition: box-shadow 0.2s;
+      animation: fadeUp 0.4s ease both;
     }
 
-    .card:hover { box-shadow: 0 6px 24px rgba(79, 70, 229, 0.07); }
+    .card:hover { box-shadow: 0 8px 32px rgba(79, 70, 229, 0.09); }
+
+    .card--progress { animation-delay: 0.25s; }
+    .card--breakdown { animation-delay: 0.30s; }
+    .card--table { animation-delay: 0.35s; }
 
     .card-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
 
     .card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       font-size: 15px;
       font-weight: 700;
       color: #0f172a;
       margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    .card-title::before {
-      content: '';
-      width: 3px; height: 18px;
-      background: linear-gradient(180deg, #4f46e5, #06b6d4);
-      border-radius: 3px;
+    .title-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
 
-    .card-badge {
+    .dot-indigo { background: #4f46e5; }
+    .dot-cyan   { background: #0891b2; }
+    .dot-amber  { background: #d97706; }
+    .dot-green  { background: #059669; }
+
+    .pct-badge {
       background: #ede9fe;
       color: #4f46e5;
       font-size: 13px;
       font-weight: 700;
-      padding: 4px 10px;
+      padding: 4px 12px;
       border-radius: 20px;
+      letter-spacing: -0.2px;
     }
 
-    /* ─── PROGRESS RING ─── */
+    /* ── PROGRESS RING ── */
     .card--progress { text-align: center; }
 
     .progress-circle-wrap {
       position: relative;
-      width: 140px;
-      height: 140px;
-      margin: 0 auto 12px;
+      width: 148px;
+      height: 148px;
+      margin: 0 auto 16px;
     }
 
     .progress-ring {
-      width: 140px;
-      height: 140px;
+      width: 148px;
+      height: 148px;
       transform: rotate(-90deg);
     }
 
-    .ring-bg {
+    .ring-track {
       fill: none;
       stroke: #ede9fe;
       stroke-width: 10;
@@ -250,11 +278,12 @@ import { AuthService } from '../../core/services/auth.service';
 
     .ring-fill {
       fill: none;
+      stroke: url(#ring-gradient);
       stroke: #4f46e5;
       stroke-width: 10;
       stroke-linecap: round;
       stroke-dasharray: 314;
-      transition: stroke-dashoffset 1s ease;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .ring-center {
@@ -267,16 +296,20 @@ import { AuthService } from '../../core/services/auth.service';
     }
 
     .ring-pct {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 800;
       color: #0f172a;
       line-height: 1;
+      letter-spacing: -1px;
     }
 
     .ring-sub {
       font-size: 11px;
       color: #94a3b8;
-      font-weight: 500;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
     }
 
     .progress-desc {
@@ -285,24 +318,28 @@ import { AuthService } from '../../core/services/auth.service';
       margin: 0;
     }
 
-    /* ─── BREAKDOWN ─── */
+    .progress-desc strong {
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    /* ── BREAKDOWN ── */
     .breakdown-list {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 20px;
     }
-
-    .bd-item {}
 
     .bd-header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
+      gap: 10px;
+      margin-bottom: 8px;
     }
 
     .bd-dot {
-      width: 8px; height: 8px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       flex-shrink: 0;
     }
@@ -322,36 +359,35 @@ import { AuthService } from '../../core/services/auth.service';
       font-size: 13px;
       font-weight: 700;
       color: #0f172a;
-      min-width: 28px;
-      text-align: right;
     }
 
     .bd-pct {
       font-size: 12px;
       color: #94a3b8;
-      min-width: 36px;
+      font-weight: 500;
+      min-width: 34px;
       text-align: right;
     }
 
     .bd-track {
-      height: 6px;
-      background: #f5f3ff;
-      border-radius: 6px;
+      height: 7px;
+      background: #f1f5f9;
+      border-radius: 8px;
       overflow: hidden;
     }
 
     .bd-fill {
       height: 100%;
-      border-radius: 6px;
-      transition: width 0.8s ease;
+      border-radius: 8px;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .bd-fill--todo       { background: #4f46e5; }
-    .bd-fill--inprogress { background: #f59e0b; }
-    .bd-fill--done       { background: #10b981; }
+    .bd-fill--todo       { background: linear-gradient(90deg, #4f46e5, #818cf8); }
+    .bd-fill--inprogress { background: linear-gradient(90deg, #d97706, #fbbf24); }
+    .bd-fill--done       { background: linear-gradient(90deg, #059669, #34d399); }
 
-    /* ─── TABLE ─── */
-    .card--table { padding: 24px; }
+    /* ── TABLE ── */
+    .card--table { padding: 26px; }
 
     .view-all-btn {
       display: inline-flex;
@@ -361,44 +397,47 @@ import { AuthService } from '../../core/services/auth.service';
       font-weight: 600;
       color: #4f46e5;
       text-decoration: none;
-      padding: 5px 12px;
-      border-radius: 8px;
+      padding: 6px 14px;
+      border-radius: 10px;
       background: #ede9fe;
-      transition: background 0.15s;
+      transition: background 0.15s, transform 0.15s;
 
-      mat-icon { font-size: 16px; width: 16px; height: 16px; }
-      &:hover { background: #c7d2fe; }
+      mat-icon { font-size: 16px; width: 16px; height: 16px; transition: transform 0.2s; }
+      &:hover { background: #ddd6fe; transform: translateX(2px); }
+      &:hover mat-icon { transform: translateX(3px); }
     }
 
-    .proj-table {
-      width: 100%;
-    }
+    .proj-table { width: 100%; }
 
     ::ng-deep .proj-table .mat-mdc-header-cell {
       font-size: 11px !important;
       font-weight: 700 !important;
       color: #94a3b8 !important;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 1px solid #f5f3ff !important;
+      letter-spacing: 0.6px;
+      border-bottom: 1px solid #f1f5f9 !important;
       padding: 12px 16px !important;
-      background: #fafaff !important;
+      background: #fafbff !important;
     }
 
     ::ng-deep .proj-table .mat-mdc-cell {
-      padding: 14px 16px !important;
-      border-bottom: 1px solid #f5f3ff !important;
+      padding: 16px 16px !important;
+      border-bottom: 1px solid #f8f8fc !important;
       font-size: 14px;
     }
 
+    ::ng-deep .proj-table .mat-mdc-row {
+      transition: background 0.15s;
+    }
+
     ::ng-deep .proj-table .mat-mdc-row:hover .mat-mdc-cell {
-      background: #f5f3ff !important;
+      background: #faf8ff !important;
     }
 
     .proj-link {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       text-decoration: none;
       color: #0f172a;
       font-weight: 600;
@@ -409,142 +448,171 @@ import { AuthService } from '../../core/services/auth.service';
     }
 
     .proj-avatar {
-      width: 30px; height: 30px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #4f46e5, #818cf8);
       color: #fff;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
     }
 
     .num-badge {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 32px;
-      height: 24px;
-      border-radius: 6px;
+      height: 26px;
+      border-radius: 8px;
       background: #f5f3ff;
-      color: #334155;
+      color: #4f46e5;
       font-size: 13px;
       font-weight: 700;
-      padding: 0 8px;
-    }
-
-    .num-badge--green {
-      background: #d1fae5;
-      color: #059669;
+      padding: 0 10px;
+      letter-spacing: -0.2px;
     }
 
     .prog-cell {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .prog-track {
       flex: 1;
-      height: 6px;
-      background: #f5f3ff;
-      border-radius: 6px;
+      height: 7px;
+      background: #f1f5f9;
+      border-radius: 8px;
       overflow: hidden;
-      max-width: 160px;
+      max-width: 140px;
     }
 
     .prog-fill {
       height: 100%;
-      border-radius: 6px;
+      border-radius: 8px;
       transition: width 0.8s ease;
     }
 
-    .prog-fill--low  { background: #6366f1; }
-    .prog-fill--mid  { background: #f59e0b; }
-    .prog-fill--high { background: #10b981; }
+    .prog-low  { background: linear-gradient(90deg, #4f46e5, #818cf8); }
+    .prog-mid  { background: linear-gradient(90deg, #d97706, #fbbf24); }
+    .prog-high { background: linear-gradient(90deg, #059669, #34d399); }
 
     .prog-pct {
       font-size: 12px;
       font-weight: 700;
-      color: #64748b;
+      color: #475569;
       min-width: 36px;
     }
 
     .table-empty {
       text-align: center;
-      padding: 40px 20px;
+      padding: 48px 20px;
       color: #94a3b8;
-
-      mat-icon { font-size: 40px; width: 40px; height: 40px; display: block; margin: 0 auto 12px; }
-      p { font-size: 14px; margin: 0; }
     }
 
+    .empty-icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: #f5f3ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        color: #a5b4fc;
+      }
+    }
+
+    .table-empty p {
+      font-size: 14px;
+      margin: 0;
+      color: #94a3b8;
+    }
+
+    /* ── PAGINATION ── */
     .ws-pagination {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 16px;
-      padding: 16px;
-      border-top: 1px solid #f5f3ff;
+      padding: 18px;
+      border-top: 1px solid #f1f5f9;
+      margin-top: 4px;
     }
 
     .ws-page-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      border: 1px solid #c7d2fe;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1.5px solid #e0e7ff;
       background: white;
       color: #4f46e5;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
+      transition: all 0.15s;
+
+      mat-icon { font-size: 20px; width: 20px; height: 20px; }
     }
 
     .ws-page-btn:hover:not(:disabled) {
       background: #ede9fe;
+      border-color: #c7d2fe;
     }
 
     .ws-page-btn:disabled {
-      opacity: 0.4;
+      opacity: 0.35;
       cursor: not-allowed;
     }
 
     .ws-page-info {
       font-size: 13px;
-      font-weight: 600;
-      color: #64748b;
+      font-weight: 700;
+      color: #475569;
+      min-width: 48px;
+      text-align: center;
     }
 
-    /* ─── PAGE EMPTY ─── */
+    /* ── PAGE EMPTY ── */
     .page-empty {
       text-align: center;
-      padding: 80px 40px;
+      padding: 100px 40px;
       color: #94a3b8;
 
-      mat-icon { font-size: 60px; width: 60px; height: 60px; display: block; margin: 0 auto 16px; opacity: 0.5; }
-      h3 { font-size: 18px; font-weight: 700; color: #334155; margin: 0 0 8px; }
-      p  { font-size: 14px; margin: 0; }
+      mat-icon {
+        font-size: 60px;
+        width: 60px;
+        height: 60px;
+        display: block;
+        margin: 0 auto 16px;
+        opacity: 0.4;
+      }
+
+      h3 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #334155;
+        margin: 0 0 8px;
+      }
+
+      p { font-size: 14px; margin: 0; }
     }
 
-    /* ─── ANIMATIONS ─── */
+    /* ── ANIMATIONS ── */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
+      from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
-    .kpi-card, .card {
-      animation: fadeUp 0.35s ease both;
-    }
-
-    .kpi-card:nth-child(1) { animation-delay: 0.05s; }
-    .kpi-card:nth-child(2) { animation-delay: 0.10s; }
-    .kpi-card:nth-child(3) { animation-delay: 0.15s; }
-    .kpi-card:nth-child(4) { animation-delay: 0.20s; }
-    .card--progress        { animation-delay: 0.25s; }
-    .card--breakdown       { animation-delay: 0.30s; }
-    .card--table           { animation-delay: 0.35s; }
 
   `]
 })

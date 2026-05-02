@@ -413,7 +413,7 @@ export interface BacklogCommit {
   id: string;
   backlogItemId: string;
   hash: string;
-  branchId?: string;
+  branchId?: string; 
   message: string;
   createdById: string;
   createdByName: string;

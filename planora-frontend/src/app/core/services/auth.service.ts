@@ -39,6 +39,11 @@ export class AuthService {
     return localStorage.getItem('refresh_token');
   }
 
+  // ✅ AJOUT — retourne l'ID de l'utilisateur connecté
+  getCurrentUserId(): string | null {
+    return this.currentUser?.userId ?? null;
+  }
+
   hasRole(roles: string[]): boolean {
     const user = this.currentUser;
     if (!user) return false;
@@ -78,7 +83,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.http.post(`${this.apiUrl}/logout`, {}).subscribe({ error: () => {} });
+    this.http.post(`${this.apiUrl}/logout`, {}).subscribe({ error: () => { } });
     this.clearAuthData();
     this.router.navigate(['/auth/login']);
   }

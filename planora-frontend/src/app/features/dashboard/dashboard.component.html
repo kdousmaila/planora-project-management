@@ -3,16 +3,17 @@
   <!-- ── HEADER ── -->
   <div class="dash-header">
     <div class="dash-header-left">
-      <div class="dash-greeting">
-        <span class="dash-greeting-icon">📊</span>
-        <div>
-          <h1 class="dash-title">Dashboard</h1>
-          <p class="dash-subtitle">Welcome back — here's your project overview</p>
-        </div>
+      <div class="dash-avatar-ring">
+        <span>📊</span>
+      </div>
+      <div>
+        <h1 class="dash-title">Dashboard</h1>
+        <p class="dash-subtitle">Welcome back — here's your project overview</p>
       </div>
     </div>
-    <div class="dash-header-right">
-      <div class="dash-date">{{ today | date:'EEEE, d MMMM yyyy' }}</div>
+    <div class="dash-date-chip">
+      <span class="date-icon">📅</span>
+      {{ today | date:'EEEE, d MMMM yyyy' }}
     </div>
   </div>
 
@@ -26,41 +27,47 @@
   <div class="kpi-grid">
 
     <div class="kpi-card kpi-indigo">
-      <div class="kpi-top">
-        <span class="kpi-label">Total Projects</span>
-        <div class="kpi-icon"><mat-icon>folder_open</mat-icon></div>
+      <div class="kpi-icon-wrap">
+        <mat-icon>folder_open</mat-icon>
       </div>
-      <div class="kpi-value">{{ data.totalProjects }}</div>
-      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%"></div></div>
+      <div class="kpi-body">
+        <span class="kpi-label">Total Projects</span>
+        <span class="kpi-value">{{ data.totalProjects }}</span>
+      </div>
+      <div class="kpi-glow"></div>
     </div>
 
     <div class="kpi-card kpi-cyan">
-      <div class="kpi-top">
-        <span class="kpi-label">Active Sprints</span>
-        <div class="kpi-icon"><mat-icon>sprint</mat-icon></div>
+      <div class="kpi-icon-wrap">
+        <mat-icon>sprint</mat-icon>
       </div>
-      <div class="kpi-value">{{ data.activeSprints }}</div>
-      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%"></div></div>
+      <div class="kpi-body">
+        <span class="kpi-label">Active Sprints</span>
+        <span class="kpi-value">{{ data.activeSprints }}</span>
+      </div>
+      <div class="kpi-glow"></div>
     </div>
 
     <div class="kpi-card kpi-amber">
-      <div class="kpi-top">
-        <span class="kpi-label">Total Tasks</span>
-        <div class="kpi-icon"><mat-icon>task_alt</mat-icon></div>
+      <div class="kpi-icon-wrap">
+        <mat-icon>task_alt</mat-icon>
       </div>
-      <div class="kpi-value">{{ data.totalTasks }}</div>
-      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%"></div></div>
+      <div class="kpi-body">
+        <span class="kpi-label">Total Tasks</span>
+        <span class="kpi-value">{{ data.totalTasks }}</span>
+      </div>
+      <div class="kpi-glow"></div>
     </div>
 
     <div class="kpi-card kpi-green">
-      <div class="kpi-top">
+      <div class="kpi-icon-wrap">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="kpi-body">
         <span class="kpi-label">Completed</span>
-        <div class="kpi-icon"><mat-icon>check_circle</mat-icon></div>
+        <span class="kpi-value">{{ data.completedTasks }}</span>
       </div>
-      <div class="kpi-value">{{ data.completedTasks }}</div>
-      <div class="kpi-bar">
-        <div class="kpi-bar-fill" [style.width.%]="data.totalTasks ? (data.completedTasks / data.totalTasks * 100) : 0"></div>
-      </div>
+      <div class="kpi-glow"></div>
     </div>
 
   </div>
@@ -71,12 +78,15 @@
     <!-- Overall Progress -->
     <div class="card card--progress">
       <div class="card-head">
-        <h3 class="card-title">Overall Progress</h3>
-        <span class="card-badge">{{ data.overallProgressPercentage | number:'1.0-0' }}%</span>
+        <h3 class="card-title">
+          <span class="title-dot dot-indigo"></span>
+          Overall Progress
+        </h3>
+        <span class="pct-badge">{{ data.overallProgressPercentage | number:'1.0-0' }}%</span>
       </div>
       <div class="progress-circle-wrap">
         <svg class="progress-ring" viewBox="0 0 120 120">
-          <circle class="ring-bg" cx="60" cy="60" r="50" />
+          <circle class="ring-track" cx="60" cy="60" r="50" />
           <circle class="ring-fill" cx="60" cy="60" r="50"
                   [style.stroke-dashoffset]="314 - (314 * data.overallProgressPercentage / 100)" />
         </svg>
@@ -85,13 +95,18 @@
           <span class="ring-sub">done</span>
         </div>
       </div>
-      <p class="progress-desc">{{ data.completedTasks }} of {{ data.totalTasks }} tasks completed</p>
+      <p class="progress-desc">
+        <strong>{{ data.completedTasks }}</strong> of <strong>{{ data.totalTasks }}</strong> tasks completed
+      </p>
     </div>
 
     <!-- Task Breakdown -->
     <div class="card card--breakdown">
       <div class="card-head">
-        <h3 class="card-title">Task Breakdown</h3>
+        <h3 class="card-title">
+          <span class="title-dot dot-cyan"></span>
+          Task Breakdown
+        </h3>
       </div>
       <div class="breakdown-list">
 
@@ -136,11 +151,16 @@
 
   </div>
 
-  <!-- ── WORKSPACES TABLE ── -->
+  <!-- Team Health Widget -->
+  <app-team-health-widget [projectId]="'all'"></app-team-health-widget>
+
   <!-- ── WORKSPACES TABLE ── -->
   <div class="card card--table">
     <div class="card-head">
-      <h3 class="card-title">Workspaces Overview</h3>
+      <h3 class="card-title">
+        <span class="title-dot dot-amber"></span>
+        Workspaces Overview
+      </h3>
       <a routerLink="/workspaces" class="view-all-btn">
         View all <mat-icon>arrow_forward</mat-icon>
       </a>
@@ -148,7 +168,9 @@
 
     @if (!data.workspacesProgress || data.workspacesProgress.length === 0) {
     <div class="table-empty">
-      <mat-icon>groups</mat-icon>
+      <div class="empty-icon-wrap">
+        <mat-icon>groups</mat-icon>
+      </div>
       <p>No workspaces yet — create one to get started</p>
     </div>
     }
@@ -185,10 +207,11 @@
         <td mat-cell *matCellDef="let w">
           <div class="prog-cell">
             <div class="prog-track">
-              <div class="prog-fill" [style.width.%]="w.progressPercentage"
-                   [class.prog-fill--low]="w.progressPercentage < 30"
-                   [class.prog-fill--mid]="w.progressPercentage >= 30 && w.progressPercentage < 70"
-                   [class.prog-fill--high]="w.progressPercentage >= 70">
+              <div class="prog-fill"
+                   [style.width.%]="w.progressPercentage"
+                   [class.prog-low]="w.progressPercentage < 30"
+                   [class.prog-mid]="w.progressPercentage >= 30 && w.progressPercentage < 70"
+                   [class.prog-high]="w.progressPercentage >= 70">
               </div>
             </div>
             <span class="prog-pct">{{ w.progressPercentage | number:'1.0-0' }}%</span>
@@ -200,20 +223,18 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <!-- Pagination steps -->
     <div class="ws-pagination">
       <button class="ws-page-btn" (click)="wsPage = wsPage - 1" [disabled]="wsPage === 0">
         <mat-icon>chevron_left</mat-icon>
       </button>
-      <span class="ws-page-info">
-        {{ wsPage + 1 }} / {{ wsTotalPages }}
-      </span>
+      <span class="ws-page-info">{{ wsPage + 1 }} / {{ wsTotalPages }}</span>
       <button class="ws-page-btn" (click)="wsPage = wsPage + 1" [disabled]="wsPage >= wsTotalPages - 1">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>
     }
   </div>
+
   }
 
   @if (!loading && !data) {
