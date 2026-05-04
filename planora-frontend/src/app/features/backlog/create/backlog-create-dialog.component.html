@@ -59,6 +59,6 @@
   <button mat-button [mat-dialog-close]="undefined">Annuler</button>
   <button class="save-btn" (click)="save()" [disabled]="form.invalid || saving">
     <mat-icon>{{ saving ? 'hourglass_empty' : (isEditMode ? 'done' : 'add') }}</mat-icon>
-    {{ saving ? 'Enregistrement...' : (isEditMode ? 'Modifier' : '+ Ajouter') }}
+    {{ saving ? 'Enregistrement...' : (isEditMode ? 'Modifier' : ' Ajouter') }}
   </button>
 </mat-dialog-actions>

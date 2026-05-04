@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Planora.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using Planora.Infrastructure.Data;
 namespace Planora.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260502020442_AddWithMeetToMeetingEvent")]
+    partial class AddWithMeetToMeetingEvent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,19 +43,14 @@ namespace Planora.Infrastructure.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VisibleMemberIds")
                         .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("WithMeet")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -587,9 +585,6 @@ namespace Planora.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AttachmentsJson")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("ChatSessionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -600,41 +595,16 @@ namespace Planora.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("EditedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsAssistant")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool>("IsEdited")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("MessageType")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasDefaultValue("text");
-
-                    b.Property<string>("ReplyToMessageId")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
+                        .HasColumnType("bit");
 
                     b.Property<string>("SenderUserId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("StickerUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -646,44 +616,6 @@ namespace Planora.Infrastructure.Migrations
                     b.HasIndex("SenderUserId");
 
                     b.ToTable("ChatMessages");
-                });
-
-            modelBuilder.Entity("Planora.Domain.Entities.ChatMessageReaction", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Emoji")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("MessageId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("MessageId", "UserId", "Emoji")
-                        .IsUnique();
-
-                    b.ToTable("ChatMessageReactions");
                 });
 
             modelBuilder.Entity("Planora.Domain.Entities.ChatSession", b =>
@@ -1367,25 +1299,6 @@ namespace Planora.Infrastructure.Migrations
                     b.Navigation("SenderUser");
                 });
 
-            modelBuilder.Entity("Planora.Domain.Entities.ChatMessageReaction", b =>
-                {
-                    b.HasOne("Planora.Domain.Entities.ChatMessage", "Message")
-                        .WithMany("Reactions")
-                        .HasForeignKey("MessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Planora.Domain.Entities.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Message");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Planora.Domain.Entities.ChatSession", b =>
                 {
                     b.HasOne("Planora.Domain.Entities.ApplicationUser", "CreatedByUser")
@@ -1638,11 +1551,6 @@ namespace Planora.Infrastructure.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("SubTasks");
-                });
-
-            modelBuilder.Entity("Planora.Domain.Entities.ChatMessage", b =>
-                {
-                    b.Navigation("Reactions");
                 });
 
             modelBuilder.Entity("Planora.Domain.Entities.ChatSession", b =>

@@ -10,6 +10,8 @@ using Planora.Hubs;
 using Serilog;
 using System;
 using System.Threading.Tasks;
+using Planora.Services;
+using Planora.Application.Interfaces;  
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -18,11 +20,12 @@ Log.Logger = new LoggerConfiguration()
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
-
+builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true);
 var testKey = builder.Configuration["OpenAI:ApiKey"];
 Console.WriteLine($">>> OpenAI Key loaded: '{testKey}'");
 
+var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+Directory.CreateDirectory(Path.Combine(wwwrootPath, "uploads", "chat"));
 builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
@@ -63,25 +66,27 @@ builder.Services.AddSignalR().AddJsonProtocol(options =>
 });
 
 // ✅ Ensuite IHubClients — après AddSignalR
-builder.Services.AddSingleton<IHubClients>(sp =>
-{
-    var hubContext = sp.GetRequiredService<IHubContext<ChatHub>>();
-    return hubContext.Clients;
-});
+//builder.Services.AddSingleton<IHubClients>(sp =>
+//{
+   // var hubContext = sp.GetRequiredService<IHubContext<ChatHub>>();
+    //return hubContext.Clients;
+//});
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddScoped<IChatNotifier, SignalRChatNotifier>();
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
     ?? ["http://localhost:4200", "http://localhost:5000"];
-
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngularApp", policy =>
-        policy.WithOrigins(allowedOrigins)
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials());
+              .AllowCredentials();
+    });
 });
 
 static async Task SeedAdminUser(IServiceProvider services)
@@ -120,10 +125,19 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Planora API v1"));
 
-app.UseHttpsRedirection();
-app.UseCors("AllowAngularApp");
+// ⚠️ StaticFiles avant tout le reste
+app.UseStaticFiles();
+
+// ⚠️ CORS doit être avant Authentication, Authorization et MapControllers
+app.UseCors("AllowFrontend");  // ← nom identique à AddPolicy()
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+// ⚠️ Retirer app.UseHttpsRedirection() en développement
+// (cause des problèmes quand le frontend est en http)
+// app.UseHttpsRedirection();
+
 app.MapControllers();
 app.MapHub<ChatHub>("/hubs/chat");
 

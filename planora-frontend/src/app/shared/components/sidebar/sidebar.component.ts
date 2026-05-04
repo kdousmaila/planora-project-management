@@ -45,25 +45,31 @@ export class SidebarComponent implements OnInit {
       this.userInitials = this.userName.charAt(0).toUpperCase();
     }
 
+    // Check immédiat au chargement
+    this.checkUrl(this.router.url);
+
+    // Check à chaque navigation
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
-      const url = this.router.url;
-      this.showProjectNav = url.includes('/projects/') &&
-        !url.includes('/projects/list') &&
-        !url.match(/\/projects\/?$/);
-
-      if (this.showProjectNav) {
-        const projectId = this.extractProjectId(url);
-        if (projectId) {
-          this.loadProject(projectId);
-        }
-      } else {
-        this.currentProject = null;
-      }
+      this.checkUrl(this.router.url); // ← cette ligne manquait !
     });
   }
+  // ← AJOUTE cette méthode
+  private checkUrl(url: string): void {
+    this.showProjectNav = url.includes('/projects/') &&
+      !url.includes('/projects/list') &&
+      !url.match(/\/projects\/?$/);
 
+    if (this.showProjectNav) {
+      const projectId = this.extractProjectId(url);
+      if (projectId) {
+        this.loadProject(projectId);
+      }
+    } else {
+      this.currentProject = null;
+    }
+  }
   private extractProjectId(url: string): string | null {
     const match = url.match(/\/projects\/([^\/]+)/);
     const projectId = match ? match[1] : null;

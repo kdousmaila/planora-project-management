@@ -1,0 +1,899 @@
+// ═══════════════════════════════════════════════
+//  Meeting Calendar — Design System
+//  Palette : deep indigo + slate + emerald accents
+// ═══════════════════════════════════════════════
+
+$c-bg: #f0f2f8;
+$c-surface: #ffffff;
+$c-border: #e2e6f0;
+$c-primary: #4f46e5; // indigo-600
+$c-primary-lt: #eef2ff; // indigo-50
+$c-primary-md: #c7d2fe; // indigo-200
+$c-text-1: #0f172a;
+$c-text-2: #475569;
+$c-text-3: #94a3b8;
+$c-live: #10b981; // emerald
+$c-warn: #f59e0b;
+$c-danger: #ef4444;
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 18px;
+$shadow-sm: 0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
+$shadow-md: 0 4px 16px rgba(15,23,42,.08), 0 1px 4px rgba(15,23,42,.05);
+$shadow-lg: 0 12px 40px rgba(15,23,42,.12), 0 4px 12px rgba(15,23,42,.07);
+
+// ── Root ──────────────────────────────────────
+.cal-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: $c-bg;
+  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  position: relative;
+}
+
+// ── Top bar ───────────────────────────────────
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 28px;
+  background: $c-surface;
+  border-bottom: 1px solid $c-border;
+  box-shadow: $shadow-sm;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.topbar-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: $radius-md;
+  background: $c-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 14px rgba(79,70,229,.35);
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.topbar-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $c-text-1;
+  letter-spacing: -.3px;
+}
+
+.topbar-sub {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: $c-text-3;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+// ── Pinned trigger ────────────────────────────
+.pinned-trigger-wrap {
+  position: relative;
+}
+
+.btn-pinned {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: $radius-sm;
+  border: 1.5px solid $c-border;
+  background: $c-surface;
+  color: $c-text-2;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .18s;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: $c-warn;
+  }
+
+  &:hover {
+    background: $c-primary-lt;
+    border-color: $c-primary-md;
+    color: $c-primary;
+  }
+
+  &.active {
+    background: $c-primary-lt;
+    border-color: $c-primary;
+    color: $c-primary;
+  }
+
+  .badge {
+    background: $c-warn;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 99px;
+    line-height: 1.5;
+  }
+}
+
+// ── Pinned dropdown ───────────────────────────
+.pinned-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 360px;
+  background: #ffffff;
+  border: 1px solid #e2e6f0;
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(15,23,42,.18), 0 4px 12px rgba(15,23,42,.10);
+  z-index: 9999;
+  overflow: hidden;
+  animation: dropIn .18s ease;
+  // ← neutralise TOUT héritage Material
+  color: #0f172a;
+  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+
+  * {
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+
+  @keyframes dropIn {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+.pinned-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  border-bottom: 1px solid #e2e6f0;
+  background: #f8faff;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #f59e0b;
+  }
+
+  span {
+    flex: 1;
+    color: #0f172a;
+  }
+}
+
+.pinned-dropdown-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+  }
+
+  &:hover {
+    background: #e2e6f0;
+
+    mat-icon {
+      color: #0f172a;
+    }
+  }
+}
+
+.pinned-empty {
+  padding: 28px 20px;
+  text-align: center;
+  background: #ffffff;
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    opacity: .4;
+    display: block;
+    margin: 0 auto 8px;
+    color: #94a3b8;
+  }
+
+  p {
+    font-size: 13px;
+    margin: 0;
+    color: #94a3b8;
+  }
+}
+
+.pinned-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #ffffff;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c7d2fe;
+    border-radius: 99px;
+  }
+}
+
+.pinned-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f8faff;
+  border: 1px solid #e2e6f0;
+  transition: background .15s;
+
+  &:hover {
+    background: #eef2ff;
+  }
+}
+
+.pinned-item-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pinned-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.pinned-item-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.pinned-item-sender {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.pinned-item-date {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.pinned-item-text {
+  font-size: 12px;
+  color: #334155;
+  margin: 0;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pinned-item-note {
+  font-size: 11px;
+  color: #6b7280;
+  font-style: italic;
+  margin: 3px 0 0;
+}
+
+.pinned-item-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: #94a3b8;
+  }
+
+  &:hover {
+    background: #fee2e2;
+
+    mat-icon {
+      color: #ef4444;
+    }
+  }
+}
+
+.pinned-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .15s;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #ffffff;
+  }
+
+  &:hover {
+    opacity: .9;
+  }
+}
+
+// ── New meeting button ─────────────────────────
+.btn-new {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, $c-primary, #6366f1);
+  color: white;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(79,70,229,.3);
+  transition: all .2s;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(79,70,229,.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ── Body ──────────────────────────────────────
+.cal-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 28px 24px;
+  gap: 14px;
+  min-height: 0;
+}
+
+// ── Month navigation ──────────────────────────
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.month-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-sm;
+  border: 1.5px solid $c-border;
+  background: $c-surface;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: $c-text-2;
+  transition: all .15s;
+  box-shadow: $shadow-sm;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover:not(:disabled) {
+    background: $c-primary-lt;
+    border-color: $c-primary;
+    color: $c-primary;
+  }
+
+  &:disabled {
+    opacity: .3;
+    cursor: not-allowed;
+  }
+}
+
+.month-label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.month-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: $c-text-1;
+  letter-spacing: -.4px;
+}
+
+.month-year {
+  font-size: 14px;
+  color: $c-text-3;
+  font-weight: 500;
+}
+
+.month-stats {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 99px;
+
+  mat-icon {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+  }
+
+  &.upcoming {
+    background: $c-primary-lt;
+    color: $c-primary;
+    border: 1px solid $c-primary-md;
+  }
+}
+
+// ── Weekdays ──────────────────────────────────
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: $c-text-3;
+  padding: 6px 0;
+}
+
+// ── Calendar grid ─────────────────────────────
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  flex: 1;
+  min-height: 0;
+}
+
+.cal-cell {
+  background: $c-surface;
+  border: 1.5px solid $c-border;
+  border-radius: $radius-md;
+  padding: 8px;
+  cursor: pointer;
+  transition: all .18s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 80px;
+  max-height: 130px; // ← ajouter cette ligne
+  box-shadow: $shadow-sm;
+  position: relative;
+  overflow: hidden; // ← était déjà là, garder
+
+  &:hover:not(.empty):not(.past) {
+    border-color: $c-primary;
+    background: $c-primary-lt;
+    box-shadow: 0 4px 14px rgba(79,70,229,.12);
+    transform: translateY(-1px);
+
+    .cell-add-hint {
+      opacity: 1;
+    }
+  }
+
+  &.empty {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    cursor: default;
+  }
+
+  &.today {
+    border-color: $c-primary;
+    background: $c-primary-lt;
+    box-shadow: 0 0 0 2px rgba(79,70,229,.15);
+
+    .day-num {
+      background: $c-primary;
+      color: white;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-weight: 700;
+    }
+  }
+
+  &.has-meeting {
+    border-color: $c-primary-md;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, $c-primary, #818cf8);
+      border-radius: $radius-md $radius-md 0 0;
+    }
+  }
+
+  &.past {
+    opacity: .45;
+    cursor: not-allowed;
+    background: #f8fafc;
+  }
+}
+
+.cell-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.day-num {
+  font-size: 13px;
+  font-weight: 600;
+  color: $c-text-1;
+}
+
+.cell-count {
+  font-size: 10px;
+  font-weight: 700;
+  background: $c-primary;
+  color: white;
+  padding: 1px 5px;
+  border-radius: 99px;
+}
+
+.cell-meetings {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  overflow-y: auto; // ← scroll interne
+  min-height: 0; // ← indispensable pour que flex + overflow fonctionne
+  // scrollbar discrète
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $c-primary-md;
+    border-radius: 99px;
+  }
+}
+
+// ── Meeting pill ──────────────────────────────
+.meeting-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, $c-primary-lt, #e0e7ff);
+  border: 1px solid $c-primary-md;
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: $c-primary;
+  cursor: default;
+  transition: all .15s;
+
+  &:hover {
+    background: $c-primary-md;
+  }
+
+  &.expired {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #94a3b8;
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    border-color: #6ee7b7;
+    color: #065f46;
+    animation: pulse-live 2s infinite;
+  }
+
+  @keyframes pulse-live {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(16,185,129,.3);
+    }
+
+    50% {
+      box-shadow: 0 0 0 4px rgba(16,185,129,.0);
+    }
+  }
+}
+
+.pill-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pill-icon {
+  font-size: 11px !important;
+  width: 11px !important;
+  height: 11px !important;
+  flex-shrink: 0;
+}
+
+.pill-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pill-join {
+  background: $c-live;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 1px;
+  flex-shrink: 0;
+  transition: background .15s;
+
+  mat-icon {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    background: #059669;
+  }
+}
+
+// ── Add hint ──────────────────────────────────
+.cell-add-hint {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  opacity: 0;
+  transition: opacity .18s;
+  color: $c-primary;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// ── Jitsi ─────────────────────────────────────
+.jitsi-overlay {
+  position: fixed;
+  inset: 0;
+  background: #0d0d14;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.jitsi-bar {
+  height: 52px;
+  background: #13131f;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  flex-shrink: 0;
+}
+
+.jitsi-bar-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.jitsi-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $c-live;
+  box-shadow: 0 0 8px $c-live;
+  animation: blink 1.4s infinite;
+
+  @keyframes blink {
+    0%, 100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: .3;
+    }
+  }
+}
+
+.jitsi-title {
+  color: rgba(255,255,255,.9);
+}
+
+.jitsi-close {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: rgba(239,68,68,.15);
+  border: 1px solid rgba(239,68,68,.3);
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: rgba(239,68,68,.3);
+    color: white;
+  }
+}
+
+#jitsi-container {
+  flex: 1;
+  min-height: 0;
+}
+.meeting-calendar-dialog {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+  }
+
+  .mdc-dialog__surface {
+    padding: 0 !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+  }
+
+  .mat-mdc-dialog-content,
+  .mat-mdc-dialog-actions,
+  .mat-mdc-dialog-title {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+// ── Dialog override ───────────────────────────
+.meeting-calendar-dialog .mat-mdc-dialog-container {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+// ── Scrollbar ─────────────────────────────────
+.pinned-list::-webkit-scrollbar,
+.members-grid::-webkit-scrollbar,
+.pins-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.pinned-list::-webkit-scrollbar-track,
+.members-grid::-webkit-scrollbar-track,
+.pins-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pinned-list::-webkit-scrollbar-thumb,
+.members-grid::-webkit-scrollbar-thumb,
+.pins-list::-webkit-scrollbar-thumb {
+  background: $c-primary-md;
+  border-radius: 99px;
+}

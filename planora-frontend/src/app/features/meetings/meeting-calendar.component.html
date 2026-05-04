@@ -1,0 +1,184 @@
+<div class="cal-root">
+
+
+
+  <!-- ══════════════════ TOP BAR ══════════════════ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-icon">
+        <mat-icon>event</mat-icon>
+      </div>
+      <div>
+        <h1 class="topbar-title">Calendrier des réunions</h1>
+        <p class="topbar-sub">{{ meetings.length }} réunion{{ meetings.length !== 1 ? 's' : '' }} planifiée{{ meetings.length !== 1 ? 's' : '' }}</p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <!-- Bouton messages épinglés -->
+      <div class="pinned-trigger-wrap">
+        <button class="btn-pinned"
+                [class.active]="showPinned"
+                (click)="togglePinned()">
+          <mat-icon>push_pin</mat-icon>
+          <span>Épinglés</span>
+          @if (pinnedMessages.length > 0) {
+          <span class="badge">{{ pinnedMessages.length }}</span>
+          }
+        </button>
+
+        <!-- Dropdown épinglés -->
+        @if (showPinned) {
+        <div class="pinned-dropdown">
+          <div class="pinned-dropdown-header">
+            <mat-icon>push_pin</mat-icon>
+            <span>Messages épinglés</span>
+            <button class="pinned-dropdown-close" (click)="closePinned()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+
+          @if (pinnedMessages.length === 0) {
+          <div class="pinned-empty">
+            <mat-icon>push_pin</mat-icon>
+            <p>Aucun message épinglé pour ce projet</p>
+          </div>
+          }
+
+          <div class="pinned-list">
+            @for (pin of pinnedMessages; track pin.id) {
+            <div class="pinned-item">
+              <div class="pinned-item-avatar">{{ (pin.senderName || '?')[0].toUpperCase() }}</div>
+              <div class="pinned-item-body">
+                <div class="pinned-item-meta">
+                  <span class="pinned-item-sender">{{ pin.senderName || 'Inconnu' }}</span>
+                  <span class="pinned-item-date">{{ pin.pinnedAt | date:'dd/MM HH:mm' }}</span>
+                </div>
+                <p class="pinned-item-text">{{ pin.content || '(pas de contenu)' }}</p>
+                @if (pin.note) {
+                <p class="pinned-item-note">📝 {{ pin.note }}</p>
+                }
+              </div>
+              <button class="pinned-item-delete" (click)="unpinMessage(pin); $event.stopPropagation()" matTooltip="Désépingler">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            }
+          </div>
+
+          <button class="pinned-cta" (click)="openCreateMeeting(); closePinned()">
+            <mat-icon>add_circle</mat-icon>
+            Planifier une réunion
+          </button>
+        </div>
+        }
+      </div>
+
+      <!-- Bouton nouvelle réunion -->
+      <button class="btn-new" (click)="openCreateMeeting()">
+        <mat-icon>add</mat-icon>
+        Nouvelle réunion
+      </button>
+    </div>
+  </header>
+
+  <!-- ══════════════════ BODY ══════════════════ -->
+  <div class="cal-body">
+
+    <!-- Navigation mois -->
+    <div class="month-nav">
+      <button class="month-btn"
+              (click)="prevMonth()"
+              [disabled]="currentYear === today.getFullYear() && currentMonth === today.getMonth()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <div class="month-label">
+        <span class="month-name">{{ monthNames[currentMonth] }}</span>
+        <span class="month-year">{{ currentYear }}</span>
+      </div>
+      <button class="month-btn" (click)="nextMonth()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+
+      <div class="month-stats">
+        @for (m of meetings; track m.id) {
+        @if (!isMeetExpired(m.scheduledAt)) {
+        <span class="stat-chip upcoming">
+          <mat-icon>event_available</mat-icon>
+          {{ m.title.length > 20 ? m.title.slice(0,20)+'…' : m.title }}
+        </span>
+        }
+        }
+      </div>
+    </div>
+
+    <!-- Jours de la semaine -->
+    <div class="weekdays">
+      @for (d of ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim']; track d) {
+      <div class="weekday">{{ d }}</div>
+      }
+    </div>
+
+    <!-- Grille calendrier -->
+    <div class="cal-grid">
+      @for (day of calendarDays; track $index) {
+      @if (day === null) {
+      <div class="cal-cell empty"></div>
+      } @else {
+      <div class="cal-cell"
+           [class.today]="isToday(day)"
+           [class.has-meeting]="getMeetingsForDay(day).length > 0"
+           [class.past]="isPast(day)"
+           (click)="!isPast(day) ? openCreateMeeting(day) : null">
+
+        <div class="cell-head">
+          <span class="day-num">{{ day.getDate() }}</span>
+          @if (getMeetingsForDay(day).length > 1) {
+          <span class="cell-count">{{ getMeetingsForDay(day).length }}</span>
+          }
+        </div>
+
+        <div class="cell-meetings">
+          @for (meeting of getMeetingsForDay(day); track meeting.id) {
+          <div class="meeting-pill"
+               [class.expired]="isMeetExpired(meeting.scheduledAt)"
+               [class.active]="isMeetActive(meeting.scheduledAt)"
+               (click)="$event.stopPropagation()"
+               [matTooltip]="meeting.title + ' — ' + (meeting.scheduledAt | date:'HH:mm')">
+
+            <div class="pill-left">
+              <mat-icon class="pill-icon">
+                {{
+ isMeetExpired(meeting.scheduledAt) ? 'event_busy' :
+                         isMeetActive(meeting.scheduledAt) ? 'videocam' : 'schedule'
+                }}
+              </mat-icon>
+              <span class="pill-title">
+                {{ meeting.title.length > 13 ? meeting.title.slice(0, 13) + '…' : meeting.title }}
+              </span>
+            </div>
+
+            @if (!isMeetExpired(meeting.scheduledAt) && meeting.withMeet && isMeetActive(meeting.scheduledAt)) {
+            <button class="pill-join"
+                    (click)="joinMeeting(meeting); $event.stopPropagation()"
+                    matTooltip="Rejoindre la réunion">
+              <mat-icon>play_arrow</mat-icon>
+            </button>
+            }
+          </div>
+          }
+        </div>
+
+        @if (!isPast(day)) {
+        <div class="cell-add-hint">
+          <mat-icon>add</mat-icon>
+        </div>
+        }
+      </div>
+      }
+      }
+    </div>
+
+  </div><!-- /cal-body -->
+
+</div>

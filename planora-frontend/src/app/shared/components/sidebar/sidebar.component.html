@@ -122,6 +122,16 @@
         @if (!collapsed) { <span>Historique</span> }
       </a>
 
+      <!-- ← AJOUTE ICI -->
+      <a [routerLink]="['/projects', currentProject.id, 'calendar']"
+         routerLinkActive="active"
+         class="project-nav-item"
+         [matTooltip]="collapsed ? 'Calendrier' : ''"
+         matTooltipPosition="right">
+        <mat-icon>calendar_month</mat-icon>
+        @if (!collapsed) { <span>Calendrier</span> }
+      </a>
+
     </div>
   </div>
   }

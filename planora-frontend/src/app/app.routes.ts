@@ -107,7 +107,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/users/list/users-list.component').then(m => m.UsersListComponent),
         canActivate: [roleGuard],
         data: { roles: ['Admin'] }
-      }
+      },
+      {
+        path: 'projects/:projectId/calendar',
+        loadComponent: () => import('./features/meetings/meeting-calendar.component').then(m => m.MeetingCalendarComponent)
+      },
     ]
   },
 

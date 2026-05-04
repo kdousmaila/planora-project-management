@@ -204,6 +204,17 @@ export class SprintBoardComponent implements OnInit {
         if (response.success) {
           this.sprints = response.data.filter(s => s.status !== SprintStatus.Closed);
 
+          // ✅ Si plus aucun sprint disponible → réinitialiser complètement l'état
+          if (this.sprints.length === 0) {
+            this.selectedSprintId = null;
+            this.selectedSprint = null;
+            this.todoItems = [];
+            this.inProgressItems = [];
+            this.doneItems = [];
+            this.loading = false;
+            return;
+          }
+
           if (this.selectedSprintId) {
             const sprintExists = this.sprints.some(s => s.id === this.selectedSprintId);
             if (sprintExists) {
@@ -211,15 +222,14 @@ export class SprintBoardComponent implements OnInit {
               this.loading = false;
               return;
             }
+            // ✅ Le sprint sélectionné n'existe plus (vient d'être fermé) → sélectionner le premier
+            this.selectedSprintId = null;
+            this.selectedSprint = null;
           }
 
-          // Sélectionner le premier sprint (peu importe son statut)
-          if (this.sprints.length > 0) {
-            this.selectedSprintId = this.sprints[0].id;
-            this.loadSprintItems();
-          } else {
-            this.loading = false;
-          }
+          // Sélectionner le premier sprint disponible
+          this.selectedSprintId = this.sprints[0].id;
+          this.loadSprintItems();
         } else {
           this.loading = false;
         }
@@ -229,8 +239,7 @@ export class SprintBoardComponent implements OnInit {
         this.snackBar.open('Erreur de chargement des sprints', 'Fermer', { duration: 3000 });
       }
     });
-  }
-  loadSprintItems(): void {
+  }  loadSprintItems(): void {
     if (!this.selectedSprintId) {
       return;
     }

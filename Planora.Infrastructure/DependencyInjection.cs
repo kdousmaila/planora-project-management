@@ -83,7 +83,7 @@ public static class DependencyInjection
         services.AddScoped<ISprintService, SprintService>();
         services.AddScoped<IBacklogService, BacklogService>();
         services.AddScoped<IDashboardService, DashboardService>();
-
+        services.AddScoped<IMeetingService, MeetingService>();
         // Chatbot
         services.AddHttpClient<IChatbotService, ChatbotService>();
 

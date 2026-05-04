@@ -1,5 +1,11 @@
 <!-- chat-bubble.component.html -->
-<div class="chat-bubble-wrapper">
+<div class="chat-bubble-wrapper" (mousedown)="closeAllPickers($event)">
+
+  <!-- ══ HIDDEN FILE INPUTS ══ -->
+  <input #fileInput type="file" hidden multiple (change)="onFileSelected($event, 'file')"
+         accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" />
+  <input #imageInput type="file" hidden multiple (change)="onFileSelected($event, 'image')"
+         accept="image/*" />
 
   <!-- ══ TOAST NOTIFICATIONS ══ -->
   <div class="toast-stack">
@@ -22,21 +28,37 @@
 
   <!-- ══ CHAT WINDOW ══ -->
   @if (isOpen) {
-  <div class="chat-window">
+  <div class="chat-window" (dragover)="onDragOver($event)" (dragleave)="onDragLeave()" (drop)="onDrop($event)">
 
-    <!-- Header -->
+    <!-- Drag overlay -->
+    @if (isDraggingOver) {
+    <div class="drag-overlay">
+      <mat-icon>cloud_upload</mat-icon>
+      <span>Déposer pour envoyer</span>
+    </div>
+    }
+
+    <!-- ── Header ── -->
     <div class="chat-header">
       <div class="chat-header-left">
         <div class="header-avatar">
           <mat-icon>forum</mat-icon>
         </div>
         <div class="header-text">
+          @if (selectedSession) {
+          <span class="header-title">{{ selectedSession.title }}</span>
+          <span class="header-sub">{{ sessions.length }} conversation{{ sessions.length !== 1 ? 's' : '' }}</span>
+          } @else {
           <span class="header-title">Inbox du projet</span>
           <span class="header-sub">{{ sessions.length }} conversation{{ sessions.length !== 1 ? 's' : '' }}</span>
+          }
         </div>
       </div>
       <div class="chat-header-actions">
-        <button class="header-btn" (click)="showNewSessionForm = !showNewSessionForm"
+        <button class="header-btn" (click)="toggleSearch(); $event.stopPropagation()" matTooltip="Rechercher">
+          <mat-icon>search</mat-icon>
+        </button>
+        <button class="header-btn" (click)="showNewSessionForm = !showNewSessionForm; $event.stopPropagation()"
                 matTooltip="Nouvelle conversation">
           <mat-icon>add</mat-icon>
         </button>
@@ -46,9 +68,24 @@
       </div>
     </div>
 
-    <!-- New session form -->
+    <!-- ── Search Bar ── -->
+    @if (showSearch) {
+    <div class="search-bar" (click)="$event.stopPropagation()">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input class="search-input" type="text" [(ngModel)]="searchQuery"
+             (input)="onSearchChange()" placeholder="Rechercher dans la conversation..." autofocus />
+      @if (searchQuery) {
+      <span class="search-count">{{ searchResults.length }} résultat{{ searchResults.length !== 1 ? 's' : '' }}</span>
+      <button class="search-nav" (click)="searchPrev()"><mat-icon>keyboard_arrow_up</mat-icon></button>
+      <button class="search-nav" (click)="searchNext()"><mat-icon>keyboard_arrow_down</mat-icon></button>
+      }
+      <button class="search-nav" (click)="toggleSearch()"><mat-icon>close</mat-icon></button>
+    </div>
+    }
+
+    <!-- ── New Session Form ── -->
     @if (showNewSessionForm) {
-    <div class="new-session-form">
+    <div class="new-session-form" (click)="$event.stopPropagation()">
       <form [formGroup]="sessionForm" (ngSubmit)="createSession()">
         <input class="session-input" formControlName="title"
                placeholder="Titre de la conversation..." />
@@ -59,7 +96,7 @@
     </div>
     }
 
-    <!-- Sessions tabs avec bouton suppression -->
+    <!-- ── Sessions Tabs ── -->
     @if (sessions.length > 0) {
     <div class="sessions-tabs">
       @for (session of sessions; track session.id) {
@@ -67,9 +104,7 @@
         <button class="session-tab" (click)="selectSession(session)" [matTooltip]="session.title">
           {{ session.title.length > 12 ? session.title.slice(0, 12) + '…' : session.title }}
         </button>
-        <button class="session-delete-btn"
-                (click)="deleteSession(session, $event)"
-                matTooltip="Supprimer cette conversation">
+        <button class="session-delete-btn" (click)="deleteSession(session, $event)" matTooltip="Supprimer">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -77,61 +112,396 @@
     </div>
     }
 
-    <!-- Messages -->
+    <!-- ── Messages Area ── -->
     <div class="messages-area" #messagesContainer>
+
       @if (sessions.length === 0) {
       <div class="empty-chat">
-        <mat-icon>chat_bubble_outline</mat-icon>
+        <div class="empty-icon"><mat-icon>chat_bubble_outline</mat-icon></div>
         <span>Aucune conversation — créez-en une !</span>
       </div>
       }
+
       @if (selectedSession && messages.length === 0) {
       <div class="empty-chat">
-        <mat-icon>chat_bubble_outline</mat-icon>
+        <div class="empty-icon"><mat-icon>chat_bubble_outline</mat-icon></div>
         <span>Aucun message pour l'instant</span>
-      </div>
-      }
-      @for (msg of messages; track msg.id) {
-      <div class="msg-row"
-           [class.mine]="isMine(msg)"
-           [class.assistant]="msg.isAssistant"
-           [class.command]="isChatCommand(msg) && !msg.isAssistant">
-        @if (!isMine(msg)) {
-        <div class="msg-sender">{{ msg.isAssistant ? '🤖 Planora AI' : msg.senderName }}</div>
-        }
-        <div class="msg-bubble">{{ msg.content }}</div>
+        <p class="empty-hint">Envoyez un message ou utilisez <code>@chat</code> pour l'IA</p>
       </div>
       }
 
-      <!-- AI typing indicator -->
-      @if (isAiTyping) {
-      <div class="msg-row assistant">
-        <div class="msg-sender">🤖 Planora AI</div>
-        <div class="msg-bubble typing-bubble">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      @for (msg of messages; track msg.id; let i = $index) {
+
+      @if (shouldShowTimestamp(i)) {
+      <div class="date-separator">
+        <span>{{ formatDate(msg.createdAt) }}</span>
+      </div>
+      }
+
+      <div class="msg-row"
+           [id]="'msg-' + msg.id"
+           [class.mine]="isMine(msg)"
+           [class.assistant]="msg.isAssistant"
+           [class.command]="isChatCommand(msg) && !msg.isAssistant"
+           [class.deleted]="msg.isDeleted"
+           (mouseenter)="hoveredMessageId = msg.id; showReactionsFor = null"
+           (mouseleave)="hoveredMessageId = null">
+
+        @if (!isMine(msg) && shouldShowAvatar(i)) {
+        <div class="msg-avatar" [style.background]="getSenderColor(msg.senderName || 'AI')">
+          {{ msg.isAssistant ? '🤖' : getInitials(msg.senderName || '?') }}
+        </div>
+        } @else if (!isMine(msg)) {
+        <div class="msg-avatar-placeholder"></div>
+        }
+
+        <div class="msg-main">
+
+          @if (!isMine(msg) && shouldShowAvatar(i)) {
+          <div class="msg-sender-name">
+            {{ msg.isAssistant ? 'Planora AI' : msg.senderName }}
+          </div>
+          }
+
+          @if (msg.replyTo && !msg.isDeleted) {
+          <div class="reply-preview" (click)="scrollToMessage(msg.replyTo.id)">
+            <span class="reply-author">{{ msg.replyTo.senderName }}</span>
+            <span class="reply-text">{{ msg.replyTo.content | slice:0:60 }}...</span>
+          </div>
+          }
+
+          <div class="msg-bubble-wrap">
+            @if (!msg.isDeleted) {
+
+            @if (msg.messageType === 'sticker' && msg.stickerUrl) {
+            <div class="msg-sticker">
+              <img [src]="msg.stickerUrl" [alt]="msg.content" />
+            </div>
+            }
+
+            @if (msg.messageType !== 'sticker' || !msg.stickerUrl) {
+            <div class="msg-bubble"
+                 [class.ai-bubble]="msg.isAssistant"
+                 [class.command-bubble]="isChatCommand(msg) && !msg.isAssistant">
+              {{ msg.content }}
+              @if (msg.isEdited) {
+              <span class="edited-badge">modifié</span>
+              }
+            </div>
+            }
+
+            @if (msg.attachments?.length) {
+            <div class="msg-attachments">
+              @for (att of msg.attachments; track att.url) {
+              @if (isImage(att)) {
+              <div class="att-image-wrap">
+                <img class="att-image" [src]="att.url" [alt]="att.name"
+                     (click)="$event.stopPropagation()" />
+              </div>
+              } @else {
+              <div class="att-file">
+                <div class="att-file-icon">
+                  <mat-icon>insert_drive_file</mat-icon>
+                </div>
+                <div class="att-file-info">
+                  <span class="att-file-name">{{ att.name }}</span>
+                  @if (att.size) {
+                  <span class="att-file-size">{{ formatFileSize(att.size) }}</span>
+                  }
+                </div>
+                <a [href]="att.url" download class="att-download" (click)="$event.stopPropagation()">
+                  <mat-icon>download</mat-icon>
+                </a>
+              </div>
+              }
+              }
+            </div>
+            }
+
+            <!-- Audio player pour les messages vocaux -->
+            @if (msg.messageType === 'audio' && msg.attachments?.length) {
+            <div class="msg-audio">
+              <mat-icon class="audio-icon">mic</mat-icon>
+              <audio controls [src]="msg.attachments![0].url" class="audio-player"></audio>
+            </div>
+            }
+
+            <div class="msg-meta">
+              <span class="msg-time">{{ formatTime(msg.createdAt) }}</span>
+            </div>
+
+            @if (hoveredMessageId === msg.id) {
+            <div class="msg-actions" [class.mine-actions]="isMine(msg)" (click)="$event.stopPropagation()">
+              <div class="quick-reactions">
+                @for (emoji of quickReactions; track emoji) {
+                <button class="reaction-btn" (click)="toggleReaction(msg, emoji)">{{ emoji }}</button>
+                }
+              </div>
+              <div class="action-divider"></div>
+              <button class="action-btn" (click)="setReply(msg)" matTooltip="Répondre">
+                <mat-icon>reply</mat-icon>
+              </button>
+              @if (isMine(msg) && !msg.isAssistant) {
+              <button class="action-btn" (click)="startEdit(msg)" matTooltip="Modifier">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button class="action-btn danger" (click)="deleteMessage(msg)" matTooltip="Supprimer">
+                <mat-icon>delete</mat-icon>
+              </button>
+              }
+              @if (canPin && !msg.isAssistant) {
+              <button class="action-btn" [class.is-pinned]="isPinned(msg)"
+                      (click)="openSchedulePopup(msg)" matTooltip="Planifier">
+                <mat-icon>push_pin</mat-icon>
+              </button>
+              }
+            </div>
+            }
+
+            } @else {
+            <div class="msg-bubble deleted-bubble">
+              <mat-icon style="font-size:14px;vertical-align:middle;">block</mat-icon>
+              Ce message a été supprimé
+            </div>
+            }
+          </div>
+
+          @if (msg.reactions?.length) {
+          <div class="reactions-display">
+            @for (group of getReactionGroups(msg); track group.emoji) {
+            <button class="reaction-pill" [class.mine]="group.mine"
+                    (click)="toggleReaction(msg, $any(group.emoji))">
+              {{ group.emoji }} {{ group.count }}
+            </button>
+            }
+          </div>
+          }
+
         </div>
       </div>
       }
+
+      @if (isAiTyping) {
+      <div class="msg-row assistant">
+        <div class="msg-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2)">🤖</div>
+        <div class="msg-main">
+          <div class="msg-sender-name">Planora AI</div>
+          <div class="msg-bubble typing-bubble">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          </div>
+        </div>
+      </div>
+      }
+
+    </div><!-- ← ferme .messages-area -->
+    <!-- ── Upload Progress ── -->
+    @if (uploadingFiles.length > 0) {
+    <div class="upload-progress-bar">
+      @for (up of uploadingFiles; track up.fileName) {
+      <div class="upload-item">
+        <span class="upload-name">{{ up.fileName }}</span>
+        <div class="upload-track">
+          <div class="upload-fill" [style.width.%]="up.progress"></div>
+        </div>
+        <span class="upload-pct">{{ up.progress }}%</span>
+      </div>
+      }
     </div>
+    }
 
-    <!-- Hint -->
-    <div class="chat-hint">Tapez <code>@chat</code> pour invoquer l'IA</div>
+    <!-- ── Pending Attachments Preview ── -->
+    @if (pendingAttachments.length > 0) {
+    <div class="pending-attachments">
+      @for (att of pendingAttachments; track att.url) {
+      <div class="pending-att">
+        @if (isImage(att)) {
+        <img class="pending-thumb" [src]="att.thumbnail || att.url" [alt]="att.name" />
+        } @else {
+        <div class="pending-file-icon"><mat-icon>insert_drive_file</mat-icon></div>
+        }
+        <span class="pending-name">{{ att.name }}</span>
+        <button class="pending-remove" (click)="removePendingAttachment(att)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      }
+    </div>
+    }
 
-    <!-- Composer -->
-    <div class="chat-input-area">
-      <textarea class="chat-input" [formControl]="messageForm.controls.content"
-                placeholder="Écrire un message..."
+    <!-- ── Reply Banner ── -->
+    @if (replyingTo) {
+    <div class="reply-banner" (click)="$event.stopPropagation()">
+      <div class="reply-banner-line"></div>
+      <div class="reply-banner-content">
+        <span class="reply-banner-author">{{ replyingTo.senderName }}</span>
+        <span class="reply-banner-text">{{ replyingTo.content | slice:0:80 }}</span>
+      </div>
+      <button class="reply-cancel" (click)="cancelReply()"><mat-icon>close</mat-icon></button>
+    </div>
+    }
+
+    <!-- ── Edit Banner ── -->
+    @if (editingMessage) {
+    <div class="edit-banner" (click)="$event.stopPropagation()">
+      <mat-icon class="edit-icon">edit</mat-icon>
+      <span>Modification du message</span>
+      <button class="reply-cancel" (click)="cancelEdit()"><mat-icon>close</mat-icon></button>
+    </div>
+    }
+
+    <!-- ── Hint ── -->
+    @if (!replyingTo && !editingMessage && !isRecording) {
+    <div class="chat-hint">
+      Tapez <code>@chat</code> pour invoquer l'IA · <kbd>Shift+Enter</kbd> pour saut de ligne
+    </div>
+    }
+
+    <!-- ── Composer ── -->
+    <div class="chat-composer" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
+
+      <!-- Backdrop pour fermer les pickers -->
+      @if (showEmojiPicker || showStickerPicker || showAttachMenu) {
+      <div class="picker-backdrop"
+           (mousedown)="closeAllPickers(); $event.stopPropagation()"
+           (click)="closeAllPickers(); $event.stopPropagation()">
+      </div>
+      }
+
+      <!-- Emoji Picker -->
+      @if (showEmojiPicker) {
+      <div class="emoji-picker"
+           (mousedown)="$event.stopPropagation()"
+           (click)="$event.stopPropagation()">
+        <div class="emoji-grid">
+          @for (e of ['😀','😂','😍','🥰','😎','🤔','😅','🙏','👍','❤️','🔥','🎉','💯','✅','⚡','🚀','💡','🎯','📌','✨']; track e) {
+          <button class="emoji-btn"
+                  (mousedown)="$event.stopPropagation()"
+                  (click)="insertEmoji(e); $event.stopPropagation()">
+            {{ e }}
+          </button>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Sticker Picker -->
+      @if (showStickerPicker) {
+      <div class="sticker-picker"
+           (mousedown)="$event.stopPropagation()"
+           (click)="$event.stopPropagation()">
+        @for (pack of stickerPacks; track pack.name) {
+        <div class="sticker-pack-name">{{ pack.name }}</div>
+        <div class="sticker-grid">
+          @for (sticker of pack.stickers; track sticker.id) {
+          <button class="sticker-btn"
+                  (mousedown)="$event.stopPropagation()"
+                  (click)="sendSticker(sticker); $event.stopPropagation()"
+                  [matTooltip]="sticker.label">
+            <img [src]="sticker.url" [alt]="sticker.label" />
+          </button>
+          }
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Attach Menu -->
+      @if (showAttachMenu) {
+      <div class="attach-menu"
+           (mousedown)="$event.stopPropagation()"
+           (click)="$event.stopPropagation()">
+        <button class="attach-option"
+                (mousedown)="$event.stopPropagation()"
+                (click)="triggerImageInput(); $event.stopPropagation()">
+          <mat-icon>image</mat-icon>
+          <span>Image / Photo</span>
+        </button>
+        <button class="attach-option"
+                (mousedown)="$event.stopPropagation()"
+                (click)="triggerFileInput(); $event.stopPropagation()">
+          <mat-icon>attach_file</mat-icon>
+          <span>Fichier</span>
+        </button>
+      </div>
+      }
+
+      <!-- ══ MODE NORMAL ══ -->
+      @if (!isRecording) {
+
+      <div class="composer-toolbar">
+        <button class="tool-btn"
+                (mousedown)="$event.stopPropagation()"
+                (click)="showAttachMenu = !showAttachMenu; showEmojiPicker = false; showStickerPicker = false; $event.stopPropagation()"
+                matTooltip="Joindre un fichier">
+          <mat-icon>add_circle_outline</mat-icon>
+        </button>
+        <button class="tool-btn"
+                (mousedown)="$event.stopPropagation()"
+                (click)="showEmojiPicker = !showEmojiPicker; showStickerPicker = false; showAttachMenu = false; $event.stopPropagation()"
+                matTooltip="Emoji">
+          <mat-icon>sentiment_satisfied</mat-icon>
+        </button>
+        <button class="tool-btn"
+                (mousedown)="$event.stopPropagation()"
+                (click)="showStickerPicker = !showStickerPicker; showEmojiPicker = false; showAttachMenu = false; $event.stopPropagation()"
+                matTooltip="Sticker">
+          <mat-icon>emoji_emotions</mat-icon>
+        </button>
+      </div>
+      <textarea #chatInputEl class="chat-input"
+                [formControl]="messageForm.controls.content"
+                [placeholder]="editingMessage ? 'Modifier le message...' : 'Écrire un message...'"
                 rows="1"
-                (keydown)="onKeydown($event)"
-                [disabled]="!selectedSession"></textarea>
-      <button class="send-btn" (click)="sendMessage()"
-              [disabled]="messageForm.invalid || !selectedSession || sendingMessage">
-        <mat-icon>{{ sendingMessage ? 'hourglass_empty' : 'send' }}</mat-icon>
-      </button>
-    </div>
-  </div>
-  }
+                (mousedown)="$event.stopPropagation()"
+                (click)="$event.stopPropagation()"
+                (keydown)="onKeydown($event)">
+</textarea>
 
+      @if (canSend) {
+      <button class="send-btn active"
+              (mousedown)="$event.stopPropagation()"
+              (click)="sendMessage(); $event.stopPropagation()">
+        <mat-icon>{{ sendingMessage ? 'hourglass_empty' : (editingMessage ? 'check' : 'send') }}</mat-icon>
+      </button>
+      } @else {
+      <button class="send-btn mic-btn"
+              (mousedown)="$event.stopPropagation()"
+              (click)="startRecording(); $event.stopPropagation()"
+              matTooltip="Enregistrer un message vocal">
+        <mat-icon>mic</mat-icon>
+      </button>
+      }
+
+      }<!-- ← fin MODE NORMAL -->
+      <!-- ══ MODE ENREGISTREMENT ══ -->
+      @if (isRecording) {
+
+      <button class="rec-btn cancel"
+              (mousedown)="$event.stopPropagation()"
+              (click)="cancelRecording(); $event.stopPropagation()"
+              matTooltip="Annuler">
+        <mat-icon>delete</mat-icon>
+      </button>
+
+      <div class="recording-bar">
+        <span class="rec-dot"></span>
+        <span class="rec-time">{{ formatRecordingTime() }}</span>
+        <span class="rec-label">Enregistrement en cours...</span>
+      </div>
+
+      <button class="rec-btn send"
+              (mousedown)="$event.stopPropagation()"
+              (click)="stopRecording(); $event.stopPropagation()"
+              matTooltip="Envoyer">
+        <mat-icon>send</mat-icon>
+      </button>
+
+      }<!-- ← fin MODE ENREGISTREMENT -->
+
+    </div><!-- ← ferme .chat-composer -->
+
+  </div><!-- ← ferme .chat-window -->
+  }<!-- ← ferme @if (isOpen) -->
   <!-- ══ FAB ══ -->
   <button class="chat-fab" (click)="toggleChat()" matTooltip="Inbox projet">
     <mat-icon>{{ isOpen ? 'close' : 'forum' }}</mat-icon>
@@ -140,4 +510,90 @@
     }
   </button>
 
-</div>
+  <!-- ══ SCHEDULE POPUP ══ -->
+  @if (showSchedulePopup && scheduleTargetMsg) {
+  <div class="schedule-overlay" (click)="closeSchedulePopup()">
+    <div class="schedule-popup" (click)="$event.stopPropagation()">
+
+      <div class="popup-header">
+        <mat-icon>push_pin</mat-icon>
+        <span>Planifier ce message</span>
+        <button class="popup-close" (click)="closeSchedulePopup()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="popup-msg-preview">
+        <mat-icon>chat</mat-icon>
+        <span>{{ scheduleTargetMsg.content.length > 60 ? scheduleTargetMsg.content.slice(0, 60) + '…' : scheduleTargetMsg.content }}</span>
+      </div>
+
+      @if (!scheduleMode) {
+      <div class="mode-choice">
+        <p class="mode-hint">Que voulez-vous faire avec ce message ?</p>
+        <div class="mode-options">
+          <div class="mode-card" (click)="scheduleMode = 'task'">
+            <mat-icon>event_note</mat-icon>
+            <span class="mode-title">Tâche</span>
+            <span class="mode-sub">Ajouter au calendrier sans réunion</span>
+          </div>
+          <div class="mode-card" (click)="scheduleMode = 'meet'">
+            <mat-icon>videocam</mat-icon>
+            <span class="mode-title">Réunion Meet</span>
+            <span class="mode-sub">Créer une réunion avec lien Jitsi</span>
+          </div>
+        </div>
+      </div>
+      }
+
+      @if (scheduleMode) {
+      <div class="popup-body">
+        <button class="btn-back" (click)="scheduleMode = null">
+          <mat-icon>arrow_back</mat-icon> Retour
+        </button>
+        <label class="popup-label">Titre</label>
+        <input class="popup-input" type="text" [(ngModel)]="scheduleTitle" placeholder="Ex: Daily standup..." />
+        <label class="popup-label">Date</label>
+        <input class="popup-input" type="date" [(ngModel)]="scheduleDate" [min]="todayStr" />
+        <label class="popup-label">Heure</label>
+        <input class="popup-input" type="time" [(ngModel)]="scheduleTime" />
+        <label class="popup-label">Participants</label>
+        <div class="visibility-toggle">
+          <button type="button" [class.active]="scheduleMeetVisibility === 'all'"
+                  (click)="scheduleMeetVisibility = 'all'">
+            <mat-icon>groups</mat-icon> Tout le groupe
+          </button>
+          <button type="button" [class.active]="scheduleMeetVisibility === 'specific'"
+                  (click)="scheduleMeetVisibility = 'specific'">
+            <mat-icon>person_search</mat-icon> Membres spécifiques
+          </button>
+        </div>
+        @if (scheduleMeetVisibility === 'specific') {
+        <div class="members-list">
+          @if (projectMembers.length === 0) {
+          <p class="empty-hint">Aucun membre trouvé.</p>
+          }
+          @for (member of projectMembers; track member.userId) {
+          <div class="member-item" [class.selected]="scheduleMeetMemberIds.has(member.userId)"
+               (click)="toggleScheduleMember(member.userId)">
+            <mat-icon>{{ scheduleMeetMemberIds.has(member.userId) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+            <div class="member-av">{{ member.fullName[0] }}</div>
+            <span>{{ member.fullName }}</span>
+          </div>
+          }
+        </div>
+        }
+      </div>
+      <div class="popup-actions">
+        <button class="btn-cancel" (click)="closeSchedulePopup()">Annuler</button>
+        <button class="btn-confirm" [disabled]="!scheduleDate || !scheduleTime || !scheduleTitle"
+                (click)="confirmSchedule()">
+          <mat-icon>{{ scheduleMode === 'meet' ? 'videocam' : 'event_note' }}</mat-icon>
+          {{ scheduleMode === 'meet' ? 'Créer la réunion' : 'Ajouter la tâche' }}
+        </button>
+      </div>
+      }
+
+    </div><!-- ← ferme .schedule-popup -->
+  </div><!-- ← ferme .schedule-overlay -->
+  }<!-- ← ferme @if (showSchedulePopup) -->
+
+</div><!-- ← ferme .chat-bubble-wrapper -->

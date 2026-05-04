@@ -24,6 +24,7 @@ import { CreateSprintDialogComponent } from './create-sprint-dialog.component';
 import { ComplexityDialogComponent } from './complexity-dialog.component';
 import { TaskDetailPanelComponent } from './task-detail-panel/task-detail-panel.component';
 import { ChatBubbleComponent } from './chat-bubble/chat-bubble.component';
+import { MeetingCalendarComponent } from '../../meetings/meeting-calendar.component';
 
 @Component({
   selector: 'app-backlog-view',
@@ -40,7 +41,6 @@ import { ChatBubbleComponent } from './chat-bubble/chat-bubble.component';
     LoadingComponent,
     TaskDetailPanelComponent,
     ChatBubbleComponent
-
   ],
   templateUrl: './backlog-view.component.html',
   styleUrls: ['./backlog-view.component.scss']
@@ -120,7 +120,6 @@ export class BacklogViewComponent implements OnInit {
               });
             },
             error: () => {
-              // fallback sans enrichissement
               this.backlogItems = response.data
                 .filter((item: BacklogItem) => !item.sprintId)
                 .sort((a: BacklogItem, b: BacklogItem) =>
@@ -161,6 +160,16 @@ export class BacklogViewComponent implements OnInit {
       if (list) this.sprintItemsMap.set(s.id, list.filter(i => i.id !== taskId));
     });
     this.sprintItemsMap = new Map(this.sprintItemsMap);
+  }
+
+  // ===== MEETING CALENDAR =====
+  openMeetingCalendar(): void {
+    this.dialog.open(MeetingCalendarComponent, {
+      width: '1000px',
+      maxWidth: '95vw',
+      panelClass: 'meeting-calendar-dialog',
+      data: { projectId: this.projectId }
+    });
   }
 
   // ===== SECTION TOGGLE =====

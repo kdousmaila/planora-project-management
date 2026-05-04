@@ -186,7 +186,7 @@
           <button class="btn-create-sprint" (click)="createNewSprint()">Créer un sprint</button>
         </div>
       </div>
-
+    
       @if (isSectionOpen('backlog')) {
       <div class="ticket-list" cdkDropList id="backlog-list" [cdkDropListData]="backlogItems"
            [cdkDropListConnectedTo]="getSprintListIds()" (cdkDropListDropped)="onDrop($event, 'backlog-list')">

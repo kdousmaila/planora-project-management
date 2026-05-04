@@ -92,8 +92,34 @@ export interface ChatMessage {
   isAssistant: boolean;
   content: string;
   createdAt: string;
+  // ── Nouveaux champs ──
+  isDeleted?: boolean;
+  isEdited?: boolean;
+  editedAt?: string;
+  messageType?: string;        // 'text' | 'sticker' | 'file' | 'image' | 'audio'
+  stickerUrl?: string;
+  attachments?: MessageAttachment[];
+  replyTo?: ReplyPreview;
+  reactions?: MessageReaction[];
 }
-
+export interface ReplyPreview {
+  id: string;
+  content: string;
+  senderName: string;
+}
+export interface MessageReaction {
+  emoji: string;
+  userId: string;
+  userName: string;
+}
+export interface MessageAttachment {
+  type: string;               // 'image' | 'file' | 'audio'
+  url: string;
+  name: string;
+  size?: number;
+  mimeType?: string;
+  thumbnail?: string;
+}
 export interface CreateChatSessionRequest {
   title: string;
 }
@@ -434,3 +460,29 @@ export const TICKET_LINK_TYPES = [
   { value: 3, label: 'duplique' },
   { value: 4, label: 'est dupliqué par' },
 ];
+export interface PinnedMessage {
+  id: string;
+  chatMessageId: string;
+  content: string;
+  senderName: string;
+  createdAt: string;
+  note?: string;
+  pinnedAt: string;
+}
+
+export interface MeetingEvent {
+  id: string;
+  title: string;
+  scheduledAt: string;
+  pinnedMessages: PinnedMessage[];
+  withMeet: boolean;
+  visibleMemberIds: string[];
+}
+
+export interface CreateMeetingRequest {
+  title: string;
+  scheduledAt: string;
+  pinnedMessageIds: string[];
+  withMeet: boolean;
+  visibleMemberIds: string[];
+}
