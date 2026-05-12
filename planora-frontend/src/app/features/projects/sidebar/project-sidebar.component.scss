@@ -7,7 +7,24 @@
 :host {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
+.project-nav-item--health {
+  mat-icon {
+    color: #e11d48;
+  }
 
+  &.active {
+    background: #fff1f2;
+    color: #e11d48;
+
+    mat-icon {
+      color: #e11d48;
+    }
+  }
+
+  &:hover:not(.active) {
+    background: #fff1f2;
+  }
+}
 .sidebar {
   width: 260px;
   height: 100vh;

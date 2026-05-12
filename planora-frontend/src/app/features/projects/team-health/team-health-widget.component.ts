@@ -9,14 +9,11 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <!-- Membres normaux : widget invisible -->
     @if (isMember) { }
 
-    <!-- PM et Admin : widget visible -->
     @if (!isMember) {
     <div class="card card--health">
 
-      <!-- ── En-tête ── -->
       <div class="card-head">
         <h3 class="card-title">Santé de l'équipe</h3>
         <div class="head-right">
@@ -24,7 +21,7 @@ import { AuthService } from '../../../core/services/auth.service';
           @if (isAdmin) {
             <span class="badge-scope badge-admin">Tous les workspaces</span>
           } @else {
-            <span class="badge-scope badge-pm">Mes workspaces</span>
+            <span class="badge-scope badge-pm">Ce projet</span>
           }
           <span class="badge-period">7 derniers jours</span>
           <button class="refresh-btn" (click)="loadAnalysis()" [disabled]="loading">
@@ -33,7 +30,6 @@ import { AuthService } from '../../../core/services/auth.service';
         </div>
       </div>
 
-      <!-- ── Chargement ── -->
       @if (loading) {
         <div class="health-loading">
           <div class="pulse-ring"></div>
@@ -41,7 +37,6 @@ import { AuthService } from '../../../core/services/auth.service';
         </div>
       }
 
-      <!-- ── Erreur ── -->
       @if (error && !loading) {
         <div class="health-error">
           <mat-icon>error_outline</mat-icon>
@@ -50,7 +45,6 @@ import { AuthService } from '../../../core/services/auth.service';
         </div>
       }
 
-      <!-- ── Pas de données ── -->
       @if (!loading && !error && !data) {
         <div class="health-empty">
           <mat-icon>chat_bubble_outline</mat-icon>
@@ -58,10 +52,8 @@ import { AuthService } from '../../../core/services/auth.service';
         </div>
       }
 
-      <!-- ── Résultat ── -->
       @if (!loading && !error && data) {
 
-        <!-- Score global -->
         <div class="score-row">
           <div class="score-circle" [class]="'score-' + data.globalMoodColor">
             <span class="score-num">{{ data.globalScore }}</span>
@@ -76,7 +68,6 @@ import { AuthService } from '../../../core/services/auth.service';
           </div>
         </div>
 
-        <!-- Distribution -->
         <div class="distribution">
           <div class="dist-bar-wrap">
             <div class="dist-segment seg-positif"
@@ -104,7 +95,6 @@ import { AuthService } from '../../../core/services/auth.service';
           </div>
         </div>
 
-        <!-- Alertes -->
         @if (data.alerts.length > 0) {
           <div class="alerts-section">
             <div class="section-label">Alertes détectées</div>
@@ -120,7 +110,6 @@ import { AuthService } from '../../../core/services/auth.service';
           </div>
         }
 
-        <!-- Membres -->
         @if (data.membersSummary.length > 0) {
           <div class="members-section">
             <div class="section-label">Par membre</div>
@@ -139,7 +128,6 @@ import { AuthService } from '../../../core/services/auth.service';
           </div>
         }
 
-        <!-- Footer -->
         <div class="health-footer">
           Analysé le {{ data.analyzedAt | date:'dd/MM à HH:mm' }}
         </div>
@@ -164,11 +152,9 @@ import { AuthService } from '../../../core/services/auth.service';
     .head-right { display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
     .badge-ia { font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;background:#ede9fe;color:#4f46e5; }
     .badge-period { font-size:11px;color:#94a3b8;font-weight:500; }
-
     .badge-scope { font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px; }
     .badge-admin { background:#fef3c7;color:#d97706; }
     .badge-pm    { background:#e0f2fe;color:#0369a1; }
-
     .refresh-btn { width:30px;height:30px;border:1px solid #c7d2fe;border-radius:8px;background:#fff;color:#4f46e5;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s; }
     .refresh-btn:hover { background:#ede9fe; }
     .refresh-btn:disabled { opacity:.5;cursor:not-allowed; }
@@ -247,10 +233,20 @@ export class TeamHealthWidgetComponent implements OnInit {
   currentUserId: string | null = null;
 
   ngOnInit(): void {
-    this.isAdmin = this.authService.hasRole(['Admin']);
-    this.isPM = this.authService.hasRole(['ProjectManager']);
-    this.isMember = !this.isAdmin && !this.isPM;
-    this.currentUserId = this.authService.getCurrentUserId();
+    // ✅ FIX — lire directement localStorage
+    try {
+      const raw = localStorage.getItem('user_data');
+      if (raw) {
+        const stored = JSON.parse(raw);
+        const roles: string[] = Array.isArray(stored.roles) ? stored.roles : [];
+        this.isAdmin = roles.includes('Admin');
+        this.isPM = roles.includes('ProjectManager');
+        this.isMember = !this.isAdmin && !this.isPM;
+        this.currentUserId = stored.userId ?? null;
+      }
+    } catch {
+      this.isMember = true;
+    }
 
     if (!this.isMember) {
       this.loadAnalysis();
@@ -261,8 +257,8 @@ export class TeamHealthWidgetComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    // Admin → 'all' | PM → son userId | Membre → jamais appelé
-    const scopeId = this.isAdmin ? 'all' : (this.currentUserId ?? 'all');
+    // Admin → 'all' | PM → projectId exact du projet
+    const scopeId = this.isAdmin ? 'all' : this.projectId;
 
     this.teamHealthService.analyzeTeamHealthLive(scopeId).subscribe({
       next: (result) => {

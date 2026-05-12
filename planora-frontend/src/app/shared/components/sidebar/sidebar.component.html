@@ -131,7 +131,16 @@
         <mat-icon>calendar_month</mat-icon>
         @if (!collapsed) { <span>Calendrier</span> }
       </a>
-
+      @if (canSeeHealth) {
+      <a [routerLink]="['/projects', currentProject.id, 'team-health']"
+         routerLinkActive="active"
+         class="project-nav-item project-nav-item--health"
+         [matTooltip]="collapsed ? 'Santé équipe' : ''"
+         matTooltipPosition="right">
+        <mat-icon>favorite</mat-icon>
+        @if (!collapsed) { <span>Santé équipe</span> }
+      </a>
+      }
     </div>
   </div>
   }

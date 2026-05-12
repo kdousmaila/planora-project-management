@@ -26,7 +26,9 @@ public class DashboardService : IDashboardService
 
         var visibleProjectIds = await _dbContext.Projects
             .Where(p => !p.IsDeleted)
-            .Where(p => p.Workspace.OwnerId == userId || p.ProjectManagerId == userId || p.Users.Any(u => u.UserId == userId))
+            .Where(p => p.Workspace.OwnerId == userId
+                     || p.ProjectManagerId == userId
+                     || p.Users.Any(u => u.UserId == userId))
             .Select(p => p.Id)
             .ToListAsync();
 
@@ -46,9 +48,18 @@ public class DashboardService : IDashboardService
             .Where(s => visibleProjectIds.Contains(s.ProjectId))
             .ToListAsync();
 
-        // ── Workspaces ──
+        var workspaceIds = await _dbContext.Workspaces
+            .Where(w => !w.IsDeleted)
+            .Where(w =>
+                w.OwnerId == userId ||
+                w.Projects.Any(p => !p.IsDeleted &&
+                    (p.ProjectManagerId == userId || p.Users.Any(u => u.UserId == userId)))
+            )
+            .Select(w => w.Id)
+            .ToListAsync();
+
         var workspaces = await _dbContext.Workspaces
-            .Where(w => !w.IsDeleted && w.OwnerId == userId)
+            .Where(w => workspaceIds.Contains(w.Id))
             .Include(w => w.Projects)
             .ToListAsync();
 
@@ -61,7 +72,8 @@ public class DashboardService : IDashboardService
             InProgressTasks = backlogItems.Count(b => b.Status == (int)Domain.Enums.TaskStatus.InProgress),
             ToDoTasks = backlogItems.Count(b => b.Status == (int)Domain.Enums.TaskStatus.ToDo),
             OverallProgressPercentage = backlogItems.Count > 0
-                ? Math.Round((double)backlogItems.Count(b => b.Status == (int)Domain.Enums.TaskStatus.Done) / backlogItems.Count * 100, 2)
+                ? Math.Round((double)backlogItems.Count(b => b.Status == (int)Domain.Enums.TaskStatus.Done)
+                    / backlogItems.Count * 100, 2)
                 : 0,
             ProjectsProgress = projects.Select(p =>
             {
@@ -74,7 +86,8 @@ public class DashboardService : IDashboardService
                     TotalTasks = projectTasks.Count,
                     CompletedTasks = projectTasks.Count(t => t.Status == (int)Domain.Enums.TaskStatus.Done),
                     ProgressPercentage = projectTasks.Count > 0
-                        ? Math.Round((double)projectTasks.Count(t => t.Status == (int)Domain.Enums.TaskStatus.Done) / projectTasks.Count * 100, 2)
+                        ? Math.Round((double)projectTasks.Count(t => t.Status == (int)Domain.Enums.TaskStatus.Done)
+                            / projectTasks.Count * 100, 2)
                         : 0
                 };
             }).ToList(),
@@ -91,7 +104,8 @@ public class DashboardService : IDashboardService
                     TotalTasks = workspaceTasks.Count,
                     CompletedTasks = workspaceTasks.Count(t => t.Status == (int)Domain.Enums.TaskStatus.Done),
                     ProgressPercentage = workspaceTasks.Count > 0
-                        ? Math.Round((double)workspaceTasks.Count(t => t.Status == (int)Domain.Enums.TaskStatus.Done) / workspaceTasks.Count * 100, 2)
+                        ? Math.Round((double)workspaceTasks.Count(t => t.Status == (int)Domain.Enums.TaskStatus.Done)
+                            / workspaceTasks.Count * 100, 2)
                         : 0
                 };
             }).ToList()

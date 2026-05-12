@@ -1,8 +1,3 @@
-"""
-Lance ce script UNE SEULE FOIS pour créer le modèle sur ton PC.
-python train_model.py
-"""
-
 import pandas as pd
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -10,89 +5,51 @@ from sklearn.linear_model import LogisticRegression
 import joblib
 
 data = [
-    ('Super travail toute l equipe !', 'Positif'),
-    ('Excellent boulot sur cette fonctionnalite', 'Positif'),
-    ('Merci pour votre aide precieuse', 'Positif'),
-    ('On a termine le sprint avec succes', 'Positif'),
-    ('La demo s est tres bien passee', 'Positif'),
-    ('Bravo a toute l equipe pour cet effort', 'Positif'),
-    ('Le client est tres satisfait', 'Positif'),
-    ('On avance bien sur le projet', 'Positif'),
-    ('Tres bonne collaboration cette semaine', 'Positif'),
-    ('J adore travailler avec cette equipe', 'Positif'),
-    ('Objectif atteint felicitations', 'Positif'),
-    ('La nouvelle fonctionnalite marche parfaitement', 'Positif'),
-    ('Super sprint cette semaine bien joue', 'Positif'),
-    ('Tout fonctionne comme prevu', 'Positif'),
-    ('Bonne ambiance dans l equipe', 'Positif'),
+    ('Great work everyone', 'Positive'), ('Excellent job on the feature', 'Positive'),
+    ('We finished the sprint successfully', 'Positive'), ('The demo went really well', 'Positive'),
+    ('Good progress on the project', 'Positive'), ('We delivered on time', 'Positive'),
+    ('Super travail toute l equipe', 'Positive'), ('On a termine le sprint avec succes', 'Positive'),
+    ('Bravo a toute l equipe', 'Positive'), ('Le client est tres satisfait', 'Positive'),
+    ('Tout fonctionne comme prevu', 'Positive'), ('Bonne ambiance dans l equipe', 'Positive'),
 
-    ('La reunion est a 14h', 'Neutre'),
-    ('J ai mis a jour la tache dans le backlog', 'Neutre'),
-    ('La documentation est disponible sur le drive', 'Neutre'),
-    ('Le deploiement est prevu pour vendredi', 'Neutre'),
-    ('Reunion de sprint demain matin', 'Neutre'),
-    ('Je vais commencer la tache cet apres-midi', 'Neutre'),
-    ('Le serveur a ete redemarre', 'Neutre'),
-    ('J ai cree une nouvelle branche git', 'Neutre'),
-    ('La version 2.0 sera livree lundi', 'Neutre'),
-    ('Je travaille sur le module de connexion', 'Neutre'),
-    ('Les tests unitaires sont en cours', 'Neutre'),
-    ('J ai assigne la tache a Mohamed', 'Neutre'),
-    ('Le rapport est pret pour la revue', 'Neutre'),
-    ('On fait une pause de 10 minutes', 'Neutre'),
-    ('J ai lu les nouvelles specifications', 'Neutre'),
+    ('The meeting is at 2pm', 'Neutral'), ('I updated the task in the backlog', 'Neutral'),
+    ('Deployment is scheduled for Friday', 'Neutral'), ('The server was restarted', 'Neutral'),
+    ('I created a new git branch', 'Neutral'), ('Build is complete', 'Neutral'),
+    ('La reunion est a 14h', 'Neutral'), ('Le deploiement est prevu pour vendredi', 'Neutral'),
+    ('Le serveur a ete redemarre', 'Neutral'), ('Les tests unitaires sont en cours', 'Neutral'),
+    ('Je travaille sur le module de connexion', 'Neutral'), ('J ai assigne la tache', 'Neutral'),
 
-    ('Je suis bloque depuis hier je ne sais plus quoi faire', 'Stresse'),
-    ('J ai trop de taches pour cette semaine', 'Stresse'),
-    ('Le delai est tres serre je vais pas y arriver', 'Stresse'),
-    ('Je travaille jusqu a minuit depuis 3 jours', 'Stresse'),
-    ('Je n arrive pas a resoudre ce probleme', 'Stresse'),
-    ('La pression est trop forte en ce moment', 'Stresse'),
-    ('J ai peur de ne pas finir a temps', 'Stresse'),
-    ('Ce bug me prend trop de temps', 'Stresse'),
-    ('Je suis epuise par ce sprint', 'Stresse'),
-    ('Trop de reunions cette semaine impossible de coder', 'Stresse'),
-    ('Je ne comprends pas les nouvelles exigences', 'Stresse'),
-    ('J ai besoin d aide je suis perdu', 'Stresse'),
-    ('Le projet devient ingerable', 'Stresse'),
-    ('Je n ai pas dormi a cause de ce bug', 'Stresse'),
-    ('Je suis deborde aidez moi', 'Stresse'),
+    ('I have been stuck since yesterday', 'Stressed'), ('I have too many tasks this week', 'Stressed'),
+    ('The deadline is tight I won t make it', 'Stressed'), ('I cannot solve this problem', 'Stressed'),
+    ('The pressure is too high right now', 'Stressed'), ('I need help I am lost', 'Stressed'),
+    ('I am exhausted from this sprint', 'Stressed'), ('Too many meetings impossible to code', 'Stressed'),
+    ('Je suis bloque depuis hier', 'Stressed'), ('J ai trop de taches pour cette semaine', 'Stressed'),
+    ('Le delai est tres serre je vais pas y arriver', 'Stressed'), ('La pression est trop forte', 'Stressed'),
+    ('J ai peur de ne pas finir a temps', 'Stressed'), ('Je suis epuise par ce sprint', 'Stressed'),
+    ('J ai besoin d aide je suis perdu', 'Stressed'), ('Je suis deborde aidez moi', 'Stressed'),
 
-    ('Ce bug est bloquant depuis 3 jours personne ne repond', 'Frustre'),
-    ('Ca fait 2 fois qu on reporte cette tache c est ridicule', 'Frustre'),
-    ('Personne ne respecte les delais dans cette equipe', 'Frustre'),
-    ('On refait toujours les memes erreurs', 'Frustre'),
-    ('Les requirements changent tout le temps c est impossible', 'Frustre'),
-    ('Je suis le seul a travailler ici', 'Frustre'),
-    ('Encore une reunion inutile', 'Frustre'),
-    ('Personne ne lit mes messages', 'Frustre'),
-    ('Cette architecture est un desastre', 'Frustre'),
-    ('On perd du temps sur des choses inutiles', 'Frustre'),
-    ('Je repete la meme chose depuis une semaine', 'Frustre'),
-    ('Le client change d avis encore une fois', 'Frustre'),
-    ('Ce n est pas normal de travailler dans ces conditions', 'Frustre'),
-    ('Tout le monde s en fiche de la qualite du code', 'Frustre'),
-    ('J en ai marre de corriger les bugs des autres', 'Frustre'),
+    ('This bug blocks since 3 days nobody responds', 'Frustrated'), ('We always make the same mistakes', 'Frustrated'),
+    ('Requirements keep changing it is impossible', 'Frustrated'), ('I am the only one working here', 'Frustrated'),
+    ('Another useless meeting', 'Frustrated'), ('Nobody reads my messages', 'Frustrated'),
+    ('Nobody respects deadlines in this team', 'Frustrated'), ('I am tired of fixing other people bugs', 'Frustrated'),
+    ('Ce bug est bloquant depuis 3 jours personne ne repond', 'Frustrated'),
+    ('Personne ne respecte les delais dans cette equipe', 'Frustrated'),
+    ('Encore une reunion inutile', 'Frustrated'), ('Personne ne lit mes messages', 'Frustrated'),
+    ('Je suis le seul a travailler ici', 'Frustrated'), ('J en ai marre de corriger les bugs des autres', 'Frustrated'),
+    ('Les requirements changent tout le temps', 'Frustrated'), ('On refait toujours les memes erreurs', 'Frustrated'),
 ]
 
-df = pd.DataFrame(data, columns=['message', 'sentiment'])
+df = pd.DataFrame(data, columns=['text', 'label'])
 
 model = Pipeline([
-    ('tfidf', TfidfVectorizer(ngram_range=(1, 2), max_features=5000)),
-    ('clf',   LogisticRegression(max_iter=1000))
+    ('tfidf', TfidfVectorizer(ngram_range=(1, 2), max_features=5000, strip_accents='unicode')),
+    ('clf', LogisticRegression(max_iter=1000, C=1.0, class_weight='balanced'))
 ])
 
-model.fit(df['message'], df['sentiment'])
-
+model.fit(df['text'], df['label'])
 joblib.dump(model, 'planora_sentiment_model.pkl')
-print('✅ Modèle entraîné et sauvegardé : planora_sentiment_model.pkl')
+print('✅ planora_sentiment_model.pkl créé avec succès !')
 
-
-tests = [
-    'Super boulot cette semaine !',
-    'Je suis bloque sur ce bug',
-    'Encore une reunion inutile',
-    'La reunion est a 14h',
-]
+tests = ['Great sprint this week!', 'Je suis bloque sur ce bug', 'Encore une reunion inutile', 'La reunion est a 14h']
 for t in tests:
     print(f'  {t!r:45} → {model.predict([t])[0]}')

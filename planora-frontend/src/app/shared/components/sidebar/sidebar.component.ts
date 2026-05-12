@@ -36,14 +36,21 @@ export class SidebarComponent implements OnInit {
   userEmail = '';
   userInitials = '';
   backlogCount = 0;
+  canSeeHealth = false; // ✅ AJOUT
 
   ngOnInit(): void {
-    const user = this.authService.currentUser;
-    if (user) {
-      this.userName = user.fullName || 'Utilisateur';
-      this.userEmail = user.email || '';
-      this.userInitials = this.userName.charAt(0).toUpperCase();
-    }
+    // ✅ Lire les rôles depuis localStorage
+    try {
+      const raw = localStorage.getItem('user_data');
+      if (raw) {
+        const stored = JSON.parse(raw);
+        const roles: string[] = Array.isArray(stored.roles) ? stored.roles : [];
+        this.canSeeHealth = roles.includes('Admin') || roles.includes('ProjectManager');
+        this.userName = stored.fullName || 'Utilisateur';
+        this.userEmail = stored.email || '';
+        this.userInitials = this.userName.charAt(0).toUpperCase();
+      }
+    } catch { }
 
     // Check immédiat au chargement
     this.checkUrl(this.router.url);
@@ -76,7 +83,6 @@ export class SidebarComponent implements OnInit {
     if (!projectId || projectId === 'null' || projectId === 'undefined') {
       return null;
     }
-
     return projectId;
   }
 
@@ -100,6 +106,7 @@ export class SidebarComponent implements OnInit {
   goToAllTasks(): void {
     this.router.navigate(['/tasks/all']);
   }
+
   logout(): void {
     this.authService.logout();
   }

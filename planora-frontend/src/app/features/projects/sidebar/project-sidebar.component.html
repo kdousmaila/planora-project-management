@@ -1,7 +1,5 @@
-<!-- project-sidebar.component.html - RED THEME -->
 <div class="sidebar" [class.collapsed]="false">
 
-  <!-- ── LOGO ── -->
   <div class="sidebar-header">
     <a routerLink="/dashboard" class="logo">
       <div class="logo-icon">
@@ -11,7 +9,6 @@
     </a>
   </div>
 
-  <!-- ── MAIN NAV ── -->
   <div class="sidebar-section-label">Navigation</div>
 
   <nav class="sidebar-nav">
@@ -27,16 +24,21 @@
       <mat-icon>groups</mat-icon>
       <span>Workspaces</span>
     </a>
+    @if (isAdmin) {
+    <a routerLink="/users" routerLinkActive="active" class="nav-item">
+      <mat-icon>people</mat-icon>
+      <span>Users</span>
+    </a>
+    }
   </nav>
 
-  <!-- ── PROJECT NAV ── -->
   @if (currentProject) {
   <div class="sidebar-divider"></div>
   <div class="sidebar-section-label">Projet actif</div>
 
   <div class="project-section">
     <div class="project-header">
-      <div class="project-avatar" [style.background]="'#dc2626'">
+      <div class="project-avatar" [style.background]="'#4f46e5'">
         {{ currentProject.name?.charAt(0) || 'P' }}
       </div>
       <div class="project-meta">
@@ -52,37 +54,58 @@
         <mat-icon>inbox</mat-icon>
         <span>Backlog</span>
       </a>
-      <a [routerLink]="['/projects', currentProject.id, 'inbox']" routerLinkActive="active" class="project-nav-item">
+
+      <a [routerLink]="['/projects', currentProject.id, 'inbox']"
+         routerLinkActive="active"
+         class="project-nav-item">
         <mat-icon>forum</mat-icon>
         <span>Inbox Chat</span>
       </a>
-      <a [routerLink]="['/projects', currentProject.id, 'board']" routerLinkActive="active" class="project-nav-item">
+
+      <a [routerLink]="['/projects', currentProject.id, 'board']"
+         routerLinkActive="active"
+         class="project-nav-item">
         <mat-icon>view_kanban</mat-icon>
         <span>Tableau Kanban</span>
       </a>
-      <a [routerLink]="['/projects', currentProject.id, 'tasks']" routerLinkActive="active" class="project-nav-item">
+
+      <a [routerLink]="['/projects', currentProject.id, 'tasks']"
+         routerLinkActive="active"
+         class="project-nav-item">
         <mat-icon>task_alt</mat-icon>
         <span>Tâches</span>
       </a>
-      <a [routerLink]="['/projects', currentProject.id, 'history']" routerLinkActive="active" class="project-nav-item">
+
+      <a [routerLink]="['/projects', currentProject.id, 'history']"
+         routerLinkActive="active"
+         class="project-nav-item">
         <mat-icon>history</mat-icon>
         <span>Historique</span>
       </a>
+
       <a [routerLink]="['/projects', currentProject.id, 'calendar']"
          routerLinkActive="active"
-         class="project-nav-item"
-         [matTooltip]="collapsed ? 'Calendrier' : ''"
-         matTooltipPosition="right">
+         class="project-nav-item">
         <mat-icon>calendar_month</mat-icon>
-        @if (!collapsed) { <span>Calendrier</span> }
+        <span>Calendrier</span>
       </a>
+
+      <!-- ✅ Santé équipe — visible Admin et PM uniquement -->
+      @if (canSeeHealth) {
+      <a [routerLink]="['/projects', currentProject.id, 'team-health']"
+         routerLinkActive="active"
+         class="project-nav-item project-nav-item--health">
+        <mat-icon>favorite</mat-icon>
+        <span>Santé équipe</span>
+      </a>
+      }
+
     </div>
   </div>
   }
 
   <div class="sidebar-spacer"></div>
 
-  <!-- ── FOOTER ── -->
   <div class="sidebar-footer">
     <div class="user-info">
       <div class="user-avatar">{{ userInitials }}</div>

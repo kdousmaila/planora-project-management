@@ -74,13 +74,11 @@ def analyze_team_health_live():
                        ISNULL(u.FirstName + ' ' + u.LastName, 'Unknown')
                 FROM ChatMessages cm
                 INNER JOIN ChatSessions cs ON cm.ChatSessionId = cs.Id
-                INNER JOIN Projects     p  ON cs.ProjectId     = p.Id
-                INNER JOIN Workspaces   w  ON p.WorkspaceId    = w.Id
                 LEFT  JOIN AspNetUsers  u  ON cm.SenderUserId  = u.Id
-                WHERE w.ProjectManagerId = ?
-                  AND cm.IsAssistant     = 0
-                  AND cm.CreatedAt      >= ?
-                  AND cm.Content        IS NOT NULL
+                WHERE cs.ProjectId  = ?
+                  AND cm.IsAssistant = 0
+                  AND cm.CreatedAt  >= ?
+                  AND cm.Content    IS NOT NULL
                   AND LEN(LTRIM(RTRIM(cm.Content))) > 5
                 ORDER BY cm.CreatedAt DESC
             """, scope_id, since)

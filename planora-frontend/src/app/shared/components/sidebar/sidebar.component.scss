@@ -544,7 +544,24 @@
 ::-webkit-scrollbar {
   width: 4px;
 }
+.project-nav-item--health {
+  mat-icon {
+    color: #e11d48;
+  }
 
+  &.active {
+    background: #fff1f2;
+    color: #e11d48;
+
+    mat-icon {
+      color: #e11d48;
+    }
+  }
+
+  &:hover:not(.active) {
+    background: #fff1f2;
+  }
+}
 ::-webkit-scrollbar-track {
   background: transparent;
 }
