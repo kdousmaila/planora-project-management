@@ -20,247 +20,246 @@ interface DialogData {
   template: `
     <div class="dlg-wrap" [class.loaded]="isLoaded">
 
-      <div class="dlg-banner">
-        <div class="banner-orb orb-1"></div>
-        <div class="banner-orb orb-2"></div>
-        <div class="banner-orb orb-3"></div>
-        <div class="banner-content">
-          <div class="dlg-header-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-              <path d="M8 2v3M16 2v3M3 8h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-              <circle cx="12" cy="14" r="2" fill="white" opacity=".7"/>
-            </svg>
-          </div>
-          <div class="banner-text">
-            <h2 class="dlg-title">Planifier une réunion</h2>
-            <p class="dlg-sub">Configurez votre session en quelques secondes</p>
-          </div>
-          <button class="dlg-close" (click)="cancel()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
+  <div class="dlg-banner">
+    <div class="banner-orb orb-1"></div>
+    <div class="banner-orb orb-2"></div>
+    <div class="banner-orb orb-3"></div>
+    <div class="banner-content">
+      <div class="dlg-header-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M8 2v3M16 2v3M3 8h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="12" cy="14" r="2" fill="white" opacity=".7"/>
+        </svg>
       </div>
-
-      <div class="steps-bar">
-        <div class="step" [class.active]="currentStep >= 1" [class.done]="currentStep > 1">
-          <div class="step-dot"><span>1</span></div>
-          <span class="step-label">Informations</span>
-        </div>
-        <div class="step-line" [class.active]="currentStep > 1"></div>
-        <div class="step" [class.active]="currentStep >= 2" [class.done]="currentStep > 2">
-          <div class="step-dot"><span>2</span></div>
-          <span class="step-label">Participants</span>
-        </div>
-        <div class="step-line" [class.active]="currentStep > 2"></div>
-        <div class="step" [class.active]="currentStep >= 3">
-          <div class="step-dot"><span>3</span></div>
-          <span class="step-label">Messages</span>
-        </div>
+      <div class="banner-text">
+        <h2 class="dlg-title">Schedule a meeting</h2>
+        <p class="dlg-sub">Configure your session in seconds</p>
       </div>
+      <button class="dlg-close" (click)="cancel()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
 
-      <div class="dlg-body">
-        <form [formGroup]="form">
+  <div class="steps-bar">
+    <div class="step" [class.active]="currentStep >= 1" [class.done]="currentStep > 1">
+      <div class="step-dot"><span>1</span></div>
+      <span class="step-label">Details</span>
+    </div>
+    <div class="step-line" [class.active]="currentStep > 1"></div>
+    <div class="step" [class.active]="currentStep >= 2" [class.done]="currentStep > 2">
+      <div class="step-dot"><span>2</span></div>
+      <span class="step-label">Participants</span>
+    </div>
+    <div class="step-line" [class.active]="currentStep > 2"></div>
+    <div class="step" [class.active]="currentStep >= 3">
+      <div class="step-dot"><span>3</span></div>
+      <span class="step-label">Messages</span>
+    </div>
+  </div>
 
-          <!-- STEP 1 -->
-          <div class="step-panel" [class.visible]="currentStep === 1">
-            <div class="field-group">
-              <label class="field-label">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                Titre de la réunion
-              </label>
-              <div class="input-wrap">
-                <input class="field-input" formControlName="title"
-                       placeholder="Ex : Daily standup, Sprint review…"
-                       (focus)="onFocus('title')" (blur)="onBlur('title')" />
-                <div class="input-bar" [class.active]="focused['title']"></div>
-              </div>
-            </div>
+  <div class="dlg-body">
+    <form [formGroup]="form">
 
-            <div class="field-group">
-              <label class="field-label">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                Date &amp; heure
-              </label>
-              <div class="input-wrap">
-                <input class="field-input" type="datetime-local"
-                       formControlName="scheduledAt" [min]="minDateTime"
-                       (focus)="onFocus('date')" (blur)="onBlur('date')" />
-                <div class="input-bar" [class.active]="focused['date']"></div>
-              </div>
-              @if (form.get('scheduledAt')?.errors?.['pastDate']) {
-              <div class="field-error">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>
-                Impossible de planifier dans le passé
-              </div>
-              }
-            </div>
+      <!-- STEP 1 -->
+      <div class="step-panel" [class.visible]="currentStep === 1">
+        <div class="field-group">
+          <label class="field-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Meeting title
+          </label>
+          <div class="input-wrap">
+            <input class="field-input" formControlName="title"
+                   placeholder="Ex: Daily standup, Sprint review…"
+                   (focus)="onFocus('title')" (blur)="onBlur('title')" />
+            <div class="input-bar" [class.active]="focused['title']"></div>
+          </div>
+        </div>
 
-            <div class="field-group">
-              <label class="field-label">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polygon points="23 7 16 12 23 17 23 7" stroke="currentColor" stroke-width="2"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" stroke-width="2"/></svg>
-                Mode de réunion
-              </label>
-              <div class="mode-grid">
-                <div class="mode-card" [class.active]="form.get('withMeet')?.value === true"
-                     (click)="form.get('withMeet')?.setValue(true)">
-                  <div class="mode-icon meet">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polygon points="23 7 16 12 23 17 23 7" stroke="currentColor" stroke-width="2"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" stroke-width="2"/></svg>
-                  </div>
-                  <div>
-                    <div class="mode-name">Avec Meet</div>
-                    <div class="mode-desc">Lien Jitsi généré auto</div>
-                  </div>
-                  <div class="mode-check">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-                  </div>
-                </div>
-                <div class="mode-card" [class.active]="form.get('withMeet')?.value === false"
-                     (click)="form.get('withMeet')?.setValue(false)">
-                  <div class="mode-icon task">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                  </div>
-                  <div>
-                    <div class="mode-name">Sans Meet</div>
-                    <div class="mode-desc">Calendrier uniquement</div>
-                  </div>
-                  <div class="mode-check">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div class="field-group">
+          <label class="field-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Date & time
+          </label>
+          <div class="input-wrap">
+            <input class="field-input" type="datetime-local"
+                   formControlName="scheduledAt" [min]="minDateTime"
+                   (focus)="onFocus('date')" (blur)="onBlur('date')" />
+            <div class="input-bar" [class.active]="focused['date']"></div>
           </div>
 
-          <!-- STEP 2 -->
-          <div class="step-panel" [class.visible]="currentStep === 2">
-            <div class="field-group">
-              <label class="field-label">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                Qui peut voir cette réunion ?
-              </label>
-              <div class="visibility-cards">
-                <div class="vis-card" [class.active]="form.get('visibleToAll')?.value"
-                     (click)="form.get('visibleToAll')?.setValue(true)">
-                  <div class="vis-icon">🌐</div>
-                  <div>
-                    <div class="vis-title">Tout le groupe</div>
-                    <div class="vis-sub">Visible par tous les membres</div>
-                  </div>
-                  @if (form.get('visibleToAll')?.value) {
-                  <div class="vis-check">✓</div>
-                  }
-                </div>
-                <div class="vis-card" [class.active]="!form.get('visibleToAll')?.value"
-                     (click)="form.get('visibleToAll')?.setValue(false)">
-                  <div class="vis-icon">🎯</div>
-                  <div>
-                    <div class="vis-title">Sélection manuelle</div>
-                    <div class="vis-sub">Choisir des membres précis</div>
-                  </div>
-                  @if (!form.get('visibleToAll')?.value) {
-                  <div class="vis-check">✓</div>
-                  }
-                </div>
-              </div>
-            </div>
-
-            @if (!form.get('visibleToAll')?.value) {
-            <div class="field-group">
-              <label class="field-label">
-                Membres ({{ selectedMemberIds.size }} sélectionné{{ selectedMemberIds.size !== 1 ? 's' : '' }})
-              </label>
-              <div class="members-list">
-                @if (data.projectMembers.length === 0) {
-                  <p class="empty-hint">Aucun membre dans ce projet.</p>
-                }
-                @for (member of data.projectMembers; track member.userId) {
-                <div class="member-row" [class.selected]="selectedMemberIds.has(member.userId)"
-                     (click)="toggleMember(member.userId)">
-                  <div class="member-av" [style.background]="getMemberColor(member.fullName)">
-                    {{ member.fullName[0].toUpperCase() }}
-                  </div>
-                  <span class="member-name">{{ member.fullName }}</span>
-                  <div class="member-check" [class.visible]="selectedMemberIds.has(member.userId)">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
-                  </div>
-                </div>
-                }
-              </div>
-            </div>
-            }
+          @if (form.get('scheduledAt')?.errors?.['pastDate']) {
+          <div class="field-error">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>
+            Cannot schedule in the past
           </div>
-
-          <!-- STEP 3 -->
-          <div class="step-panel" [class.visible]="currentStep === 3">
-            <div class="field-group">
-              <label class="field-label">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-                Messages à traiter
-                <span class="count-pill">{{ selectedIds.size }} / {{ data.pinnedMessages.length }}</span>
-              </label>
-
-              @if (data.pinnedMessages.length === 0) {
-              <div class="empty-pins">
-                <div class="empty-pins-icon">📌</div>
-                <p>Aucun message épinglé</p>
-                <span>Épinglez des messages depuis le chat pour les retrouver ici</span>
-              </div>
-              }
-
-              <div class="pins-list">
-                @for (msg of data.pinnedMessages; track msg.id) {
-                <div class="pin-row" [class.selected]="isSelected(msg.id)"
-                     (click)="toggleMessage(msg.id)">
-                  <div class="pin-checkbox" [class.checked]="isSelected(msg.id)">
-                    @if (isSelected(msg.id)) {
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>
-                    }
-                  </div>
-                  <div class="pin-av">{{ (msg.senderName || '?')[0].toUpperCase() }}</div>
-                  <div class="pin-info">
-                    <span class="pin-sender">{{ msg.senderName }}</span>
-                    <span class="pin-text">{{ msg.content }}</span>
-                  </div>
-                </div>
-                }
-              </div>
-            </div>
-          </div>
-
-        </form>
-      </div>
-
-      <div class="dlg-footer">
-        <button class="btn-back" (click)="prevStep()" [class.hidden]="currentStep === 1">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Retour
-        </button>
-        <button class="btn-cancel" (click)="cancel()">Annuler</button>
-        @if (currentStep < 3) {
-        <button class="btn-next" (click)="nextStep()" [disabled]="!canProceed()">
-          Continuer
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
-        } @else {
-        <button class="btn-create" [disabled]="form.invalid || saving" (click)="submit()">
-          @if (saving) {
-            <div class="spinner"></div> Création…
-          } @else {
-            @if (form.get('withMeet')?.value) {
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polygon points="23 7 16 12 23 17 23 7" stroke="white" stroke-width="2"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="white" stroke-width="2"/></svg>
-              Créer avec Meet
-            } @else {
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="white" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
-              Ajouter au calendrier
-            }
           }
-        </button>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polygon points="23 7 16 12 23 17 23 7" stroke="currentColor" stroke-width="2"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+            Meeting mode
+          </label>
+          <div class="mode-grid">
+
+            <div class="mode-card" [class.active]="form.get('withMeet')?.value === true"
+                 (click)="form.get('withMeet')?.setValue(true)">
+              <div class="mode-icon meet">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polygon points="23 7 16 12 23 17 23 7" stroke="currentColor" stroke-width="2"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+              </div>
+              <div>
+                <div class="mode-name">With Meet</div>
+                <div class="mode-desc">Auto-generated Jitsi link</div>
+              </div>
+              <div class="mode-check">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+
+            <div class="mode-card" [class.active]="form.get('withMeet')?.value === false"
+                 (click)="form.get('withMeet')?.setValue(false)">
+              <div class="mode-icon task">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div class="mode-name">Without Meet</div>
+                <div class="mode-desc">Calendar only</div>
+              </div>
+              <div class="mode-check">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-panel" [class.visible]="currentStep === 2">
+        <div class="field-group">
+          <label class="field-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Who can see this meeting?
+          </label>
+
+          <div class="visibility-cards">
+            <div class="vis-card" [class.active]="form.get('visibleToAll')?.value"
+                 (click)="form.get('visibleToAll')?.setValue(true)">
+              <div class="vis-icon">🌐</div>
+              <div>
+                <div class="vis-title">Entire group</div>
+                <div class="vis-sub">Visible to all members</div>
+              </div>
+              @if (form.get('visibleToAll')?.value) { <div class="vis-check">✓</div> }
+            </div>
+
+            <div class="vis-card" [class.active]="!form.get('visibleToAll')?.value"
+                 (click)="form.get('visibleToAll')?.setValue(false)">
+              <div class="vis-icon">🎯</div>
+              <div>
+                <div class="vis-title">Manual selection</div>
+                <div class="vis-sub">Choose specific members</div>
+              </div>
+              @if (!form.get('visibleToAll')?.value) { <div class="vis-check">✓</div> }
+            </div>
+          </div>
+        </div>
+
+        @if (!form.get('visibleToAll')?.value) {
+        <div class="field-group">
+          <label class="field-label">
+            Members ({{ selectedMemberIds.size }} selected{{ selectedMemberIds.size !== 1 ? 's' : '' }})
+          </label>
+
+          <div class="members-list">
+            @if (data.projectMembers.length === 0) {
+              <p class="empty-hint">No members in this project.</p>
+            }
+
+            @for (member of data.projectMembers; track member.userId) {
+            <div class="member-row" [class.selected]="selectedMemberIds.has(member.userId)"
+                 (click)="toggleMember(member.userId)">
+              <div class="member-av" [style.background]="getMemberColor(member.fullName)">
+                {{ member.fullName[0].toUpperCase() }}
+              </div>
+              <span class="member-name">{{ member.fullName }}</span>
+              <div class="member-check" [class.visible]="selectedMemberIds.has(member.userId)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
         }
       </div>
 
-    </div>
+      <!-- STEP 3 -->
+      <div class="step-panel" [class.visible]="currentStep === 3">
+        <div class="field-group">
+          <label class="field-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            Messages to process
+            <span class="count-pill">{{ selectedIds.size }} / {{ data.pinnedMessages.length }}</span>
+          </label>
+
+          @if (data.pinnedMessages.length === 0) {
+          <div class="empty-pins">
+            <div class="empty-pins-icon">📌</div>
+            <p>No pinned messages</p>
+            <span>Pin messages from chat to find them here</span>
+          </div>
+          }
+
+          <div class="pins-list">
+            @for (msg of data.pinnedMessages; track msg.id) {
+            <div class="pin-row" [class.selected]="isSelected(msg.id)"
+                 (click)="toggleMessage(msg.id)">
+              <div class="pin-checkbox" [class.checked]="isSelected(msg.id)">
+                @if (isSelected(msg.id)) {
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>
+                }
+              </div>
+              <div class="pin-av">{{ (msg.senderName || '?')[0].toUpperCase() }}</div>
+              <div class="pin-info">
+                <span class="pin-sender">{{ msg.senderName }}</span>
+                <span class="pin-text">{{ msg.content }}</span>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <div class="dlg-footer">
+    <button class="btn-back" (click)="prevStep()" [class.hidden]="currentStep === 1">Back</button>
+    <button class="btn-cancel" (click)="cancel()">Cancel</button>
+
+    @if (currentStep < 3) {
+    <button class="btn-next" (click)="nextStep()" [disabled]="!canProceed()">
+      Continue
+    </button>
+    } @else {
+    <button class="btn-create" [disabled]="form.invalid || saving" (click)="submit()">
+      @if (saving) {
+        <div class="spinner"></div> Creating…
+      } @else {
+        @if (form.get('withMeet')?.value) {
+          Create with Meet
+        } @else {
+          Add to calendar
+        }
+      }
+    </button>
+    }
+  </div>
+
+</div>
   `,
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap');

@@ -24,6 +24,7 @@ export interface TaskCardData {
   styleUrls: ['./task-card.component.scss']
 })
 export class TaskCardComponent {
+
   @Input() task!: TaskCardData;
   @Input() showStatus = true;
   @Input() showSprint = false;
@@ -34,19 +35,28 @@ export class TaskCardComponent {
   @Output() onDelete = new EventEmitter<TaskCardData>();
 
   getPriorityLabel(priority: number): string {
-    return ['Faible', 'Moyenne', 'Haute', 'Critique'][priority] ?? '';
+    return ['Low', 'Medium', 'High', 'Critical'][priority] ?? '';
   }
 
   getPriorityClass(priority: number): string {
-    return ['priority-low', 'priority-medium', 'priority-high', 'priority-critical'][priority] ?? '';
+    return [
+      'priority-low',
+      'priority-medium',
+      'priority-high',
+      'priority-critical'
+    ][priority] ?? '';
   }
 
   getStatusLabel(status: number): string {
-    return ['À faire', 'En cours', 'Terminé'][status] ?? '';
+    return ['To Do', 'In Progress', 'Done'][status] ?? '';
   }
 
   getStatusClass(status: number): string {
-    return ['status-todo', 'status-inprogress', 'status-done'][status] ?? '';
+    return [
+      'status-todo',
+      'status-inprogress',
+      'status-done'
+    ][status] ?? '';
   }
 
   onCardClick(): void {
@@ -62,4 +72,5 @@ export class TaskCardComponent {
     event.stopPropagation();
     this.onDelete.emit(this.task);
   }
+
 }

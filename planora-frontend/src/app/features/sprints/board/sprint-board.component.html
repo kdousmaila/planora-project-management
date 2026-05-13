@@ -6,19 +6,19 @@
         <mat-icon>view_kanban</mat-icon>
       </div>
       <div>
-        <h1>Tableau Kanban</h1>
-        <p class="subtitle">Suivez l'avancement des tickets du sprint</p>
+        <h1>Kanban Board</h1>
+        <p class="subtitle">Track the progress of sprint tickets</p>
       </div>
     </div>
     <div class="header-actions">
       <button class="create-btn" (click)="createItem()">
         <mat-icon>add</mat-icon>
-        Créer un ticket
+        Create Ticket
       </button>
       <button class="complete-sprint-btn" (click)="completeSprint()" [disabled]="isCompleteButtonDisabled()"
-        matTooltip="{{ getCompleteButtonTooltip() }}">
+              matTooltip="{{ getCompleteButtonTooltip() }}">
         <mat-icon>check_circle</mat-icon>
-        Terminer le sprint
+        Complete Sprint
       </button>
     </div>
   </div>
@@ -50,16 +50,18 @@
     <div class="sprint-name">{{ selectedSprint.name }}</div>
     <div class="sprint-points-summary">
       <span class="points-chip total">Total: {{ getSelectedSprintTotalPoints() }} pts</span>
-      <span class="points-chip">A faire: {{ getSelectedSprintPointsByStatus(STATUS_TODO) }} pts</span>
-      <span class="points-chip">En cours: {{ getSelectedSprintPointsByStatus(STATUS_IN_PROGRESS) }} pts</span>
-      <span class="points-chip done">Termine: {{ getSelectedSprintPointsByStatus(STATUS_DONE) }} pts</span>
+      <span class="points-chip">To Do: {{ getSelectedSprintPointsByStatus(STATUS_TODO) }} pts</span>
+      <span class="points-chip">In Progress: {{ getSelectedSprintPointsByStatus(STATUS_IN_PROGRESS) }} pts</span>
+      <span class="points-chip done">Done: {{ getSelectedSprintPointsByStatus(STATUS_DONE) }} pts</span>
     </div>
+
     @if (selectedSprint.goal) {
     <div class="sprint-goal">
       <mat-icon>flag</mat-icon>
       {{ selectedSprint.goal }}
     </div>
     }
+
     <div class="sprint-dates">
       <mat-icon>event</mat-icon>
       {{ selectedSprint.startDate | date:'dd MMM' }} - {{ selectedSprint.endDate | date:'dd MMM yyyy' }}
@@ -67,169 +69,213 @@
   </div>
 
   <div class="kanban-board">
-    <!-- Colonne À faire -->
+
+    <!-- To Do Column -->
     <div class="kanban-column">
       <div class="column-header">
         <div class="column-title">
           <span class="column-dot todo"></span>
-          <h3>À faire</h3>
+          <h3>To Do</h3>
           <span class="count">{{ todoItems.length }}</span>
         </div>
       </div>
+
       <div class="task-list" cdkDropList id="todoList" [cdkDropListData]="todoItems"
-        [cdkDropListConnectedTo]="['inprogressList', 'doneList']" (cdkDropListDropped)="onDrop($event, STATUS_TODO)">
+           [cdkDropListConnectedTo]="['inprogressList', 'doneList']"
+           (cdkDropListDropped)="onDrop($event, STATUS_TODO)">
+
         @for (item of todoItems; track item.id) {
         <div class="task-item" cdkDrag>
           <div class="task-card">
+
             <div class="task-card-header">
               <div class="task-id">#{{ item.id.slice(-6) }}</div>
+
               <div class="task-actions">
-                <button mat-icon-button (click)="editItem(item)" matTooltip="Modifier">
+                <button mat-icon-button (click)="editItem(item)" matTooltip="Edit">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button (click)="deleteItem(item)" matTooltip="Supprimer">
+
+                <button mat-icon-button (click)="deleteItem(item)" matTooltip="Delete">
                   <mat-icon>delete_outline</mat-icon>
                 </button>
               </div>
             </div>
+
             <div class="task-title">{{ item.title }}</div>
+
             @if (item.description) {
             <div class="task-description">
               {{ item.description | slice:0:80 }}{{ item.description.length > 80 ? '...' : '' }}
             </div>
             }
+
             <div class="task-footer">
               <div class="task-badges">
                 <span class="priority-badge" [ngClass]="getPriorityClass(item.priority)">
                   {{ getPriorityLabel(item.priority) }}
                 </span>
+
                 <span class="points-badge">{{ getItemStoryPoints(item) }} pts</span>
               </div>
             </div>
+
           </div>
         </div>
         }
+
         @if (todoItems.length === 0) {
         <div class="empty-column">
           <mat-icon>inbox</mat-icon>
-          <p>Aucun ticket</p>
+          <p>No tickets</p>
         </div>
         }
+
       </div>
     </div>
 
-    <!-- Colonne En cours -->
+    <!-- In Progress Column -->
     <div class="kanban-column">
       <div class="column-header">
         <div class="column-title">
           <span class="column-dot inprogress"></span>
-          <h3>En cours</h3>
+          <h3>In Progress</h3>
           <span class="count">{{ inProgressItems.length }}</span>
         </div>
       </div>
+
       <div class="task-list" cdkDropList id="inprogressList" [cdkDropListData]="inProgressItems"
-        [cdkDropListConnectedTo]="['todoList', 'doneList']" (cdkDropListDropped)="onDrop($event, STATUS_IN_PROGRESS)">
+           [cdkDropListConnectedTo]="['todoList', 'doneList']"
+           (cdkDropListDropped)="onDrop($event, STATUS_IN_PROGRESS)">
+
         @for (item of inProgressItems; track item.id) {
         <div class="task-item" cdkDrag>
           <div class="task-card">
+
             <div class="task-card-header">
               <div class="task-id">#{{ item.id.slice(-6) }}</div>
+
               <div class="task-actions">
-                <button mat-icon-button (click)="editItem(item)" matTooltip="Modifier">
+                <button mat-icon-button (click)="editItem(item)" matTooltip="Edit">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button (click)="deleteItem(item)" matTooltip="Supprimer">
+
+                <button mat-icon-button (click)="deleteItem(item)" matTooltip="Delete">
                   <mat-icon>delete_outline</mat-icon>
                 </button>
               </div>
             </div>
+
             <div class="task-title">{{ item.title }}</div>
+
             @if (item.description) {
             <div class="task-description">
               {{ item.description | slice:0:80 }}{{ item.description.length > 80 ? '...' : '' }}
             </div>
             }
+
             <div class="task-footer">
               <div class="task-badges">
                 <span class="priority-badge" [ngClass]="getPriorityClass(item.priority)">
                   {{ getPriorityLabel(item.priority) }}
                 </span>
+
                 <span class="points-badge">{{ getItemStoryPoints(item) }} pts</span>
               </div>
             </div>
+
           </div>
         </div>
         }
+
         @if (inProgressItems.length === 0) {
         <div class="empty-column">
           <mat-icon>play_circle</mat-icon>
-          <p>Aucun ticket en cours</p>
+          <p>No tickets in progress</p>
         </div>
         }
+
       </div>
     </div>
 
-    <!-- Colonne Terminé -->
+    <!-- Done Column -->
     <div class="kanban-column">
       <div class="column-header">
         <div class="column-title">
           <span class="column-dot done"></span>
-          <h3>Terminé</h3>
+          <h3>Done</h3>
           <span class="count">{{ doneItems.length }}</span>
         </div>
       </div>
+
       <div class="task-list" cdkDropList id="doneList" [cdkDropListData]="doneItems"
-        [cdkDropListConnectedTo]="['todoList', 'inprogressList']" (cdkDropListDropped)="onDrop($event, STATUS_DONE)">
+           [cdkDropListConnectedTo]="['todoList', 'inprogressList']"
+           (cdkDropListDropped)="onDrop($event, STATUS_DONE)">
+
         @for (item of doneItems; track item.id) {
         <div class="task-item" cdkDrag>
           <div class="task-card">
+
             <div class="task-card-header">
               <div class="task-id">#{{ item.id.slice(-6) }}</div>
+
               <div class="task-actions">
-                <button mat-icon-button (click)="editItem(item)" matTooltip="Modifier">
+                <button mat-icon-button (click)="editItem(item)" matTooltip="Edit">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button (click)="deleteItem(item)" matTooltip="Supprimer">
+
+                <button mat-icon-button (click)="deleteItem(item)" matTooltip="Delete">
                   <mat-icon>delete_outline</mat-icon>
                 </button>
               </div>
             </div>
+
             <div class="task-title">{{ item.title }}</div>
+
             @if (item.description) {
             <div class="task-description">
               {{ item.description | slice:0:80 }}{{ item.description.length > 80 ? '...' : '' }}
             </div>
             }
+
             <div class="task-footer">
               <div class="task-badges">
                 <span class="priority-badge" [ngClass]="getPriorityClass(item.priority)">
                   {{ getPriorityLabel(item.priority) }}
                 </span>
+
                 <span class="points-badge">{{ getItemStoryPoints(item) }} pts</span>
               </div>
             </div>
+
           </div>
         </div>
         }
+
         @if (doneItems.length === 0) {
         <div class="empty-column">
           <mat-icon>check_circle</mat-icon>
-          <p>Aucun ticket terminé</p>
+          <p>No completed tickets</p>
         </div>
         }
+
       </div>
     </div>
+
   </div>
   }
 
   @if (!loading && sprints.length === 0) {
   <div class="no-sprint">
     <mat-icon>sprint</mat-icon>
-    <h3>Aucun sprint</h3>
-    <p>Créez un sprint pour commencer à organiser vos tickets</p>
-    <button mat-raised-button color="primary" (click)="router.navigate(['/projects', projectId, 'sprints'])">
+    <h3>No Sprint</h3>
+    <p>Create a sprint to start organizing your tickets</p>
+
+    <button mat-raised-button color="primary"
+            (click)="router.navigate(['/projects', projectId, 'sprints'])">
+
       <mat-icon>add</mat-icon>
-      Créer un sprint
+      Create Sprint
     </button>
   </div>
   }

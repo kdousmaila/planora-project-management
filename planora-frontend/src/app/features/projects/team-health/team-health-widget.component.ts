@@ -15,15 +15,15 @@ import { AuthService } from '../../../core/services/auth.service';
     <div class="card card--health">
 
       <div class="card-head">
-        <h3 class="card-title">Santé de l'équipe</h3>
+        <h3 class="card-title">Team Health</h3>
         <div class="head-right">
-          <span class="badge-ia">🧠 IA</span>
+          <span class="badge-ia">🧠 AI</span>
           @if (isAdmin) {
-            <span class="badge-scope badge-admin">Tous les workspaces</span>
+            <span class="badge-scope badge-admin">All workspaces</span>
           } @else {
-            <span class="badge-scope badge-pm">Ce projet</span>
+            <span class="badge-scope badge-pm">This project</span>
           }
-          <span class="badge-period">7 derniers jours</span>
+          <span class="badge-period">Last 7 days</span>
           <button class="refresh-btn" (click)="loadAnalysis()" [disabled]="loading">
             <mat-icon [class.spin]="loading">refresh</mat-icon>
           </button>
@@ -33,7 +33,7 @@ import { AuthService } from '../../../core/services/auth.service';
       @if (loading) {
         <div class="health-loading">
           <div class="pulse-ring"></div>
-          <span>Analyse en cours…</span>
+          <span>Analyzing…</span>
         </div>
       }
 
@@ -41,14 +41,14 @@ import { AuthService } from '../../../core/services/auth.service';
         <div class="health-error">
           <mat-icon>error_outline</mat-icon>
           <span>{{ error }}</span>
-          <button (click)="loadAnalysis()">Réessayer</button>
+          <button (click)="loadAnalysis()">Retry</button>
         </div>
       }
 
       @if (!loading && !error && !data) {
         <div class="health-empty">
           <mat-icon>chat_bubble_outline</mat-icon>
-          <p>Aucun message cette semaine</p>
+          <p>No messages this week</p>
         </div>
       }
 
@@ -64,7 +64,7 @@ import { AuthService } from '../../../core/services/auth.service';
               <span class="mood-icon">{{ data.globalMoodIcon }}</span>
               <span class="mood-label">{{ data.globalMood }}</span>
             </div>
-            <div class="score-meta">{{ data.totalMessages }} messages analysés</div>
+            <div class="score-meta">{{ data.totalMessages }} messages analyzed</div>
           </div>
         </div>
 
@@ -72,32 +72,32 @@ import { AuthService } from '../../../core/services/auth.service';
           <div class="dist-bar-wrap">
             <div class="dist-segment seg-positif"
                  [style.width.%]="data.percentages['Positif']"
-                 [title]="'Positif : ' + data.percentages['Positif'] + '%'">
+                 [title]="'Positive: ' + data.percentages['Positif'] + '%'">
             </div>
             <div class="dist-segment seg-neutre"
                  [style.width.%]="data.percentages['Neutre']"
-                 [title]="'Neutre : ' + data.percentages['Neutre'] + '%'">
+                 [title]="'Neutral: ' + data.percentages['Neutre'] + '%'">
             </div>
             <div class="dist-segment seg-stresse"
                  [style.width.%]="data.percentages['Stresse']"
-                 [title]="'Stressé : ' + data.percentages['Stresse'] + '%'">
+                 [title]="'Stressed: ' + data.percentages['Stresse'] + '%'">
             </div>
             <div class="dist-segment seg-frustre"
                  [style.width.%]="data.percentages['Frustre']"
-                 [title]="'Frustré : ' + data.percentages['Frustre'] + '%'">
+                 [title]="'Frustrated: ' + data.percentages['Frustre'] + '%'">
             </div>
           </div>
           <div class="dist-legend">
-            <span class="leg-item"><span class="leg-dot dot-pos"></span>Positif {{ data.distribution['Positif'] }}</span>
-            <span class="leg-item"><span class="leg-dot dot-neu"></span>Neutre {{ data.distribution['Neutre'] }}</span>
-            <span class="leg-item"><span class="leg-dot dot-str"></span>Stressé {{ data.distribution['Stresse'] }}</span>
-            <span class="leg-item"><span class="leg-dot dot-fru"></span>Frustré {{ data.distribution['Frustre'] }}</span>
+            <span class="leg-item"><span class="leg-dot dot-pos"></span>Positive {{ data.distribution['Positif'] }}</span>
+            <span class="leg-item"><span class="leg-dot dot-neu"></span>Neutral {{ data.distribution['Neutre'] }}</span>
+            <span class="leg-item"><span class="leg-dot dot-str"></span>Stressed {{ data.distribution['Stresse'] }}</span>
+            <span class="leg-item"><span class="leg-dot dot-fru"></span>Frustrated {{ data.distribution['Frustre'] }}</span>
           </div>
         </div>
 
         @if (data.alerts.length > 0) {
           <div class="alerts-section">
-            <div class="section-label">Alertes détectées</div>
+            <div class="section-label">Detected Alerts</div>
             @for (alert of data.alerts; track alert.message) {
               <div class="alert-item" [class]="'alert-' + alert.level">
                 <span class="alert-icon">{{ alert.icon }}</span>
@@ -112,7 +112,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
         @if (data.membersSummary.length > 0) {
           <div class="members-section">
-            <div class="section-label">Par membre</div>
+            <div class="section-label">By Member</div>
             @for (member of data.membersSummary; track member.authorId) {
               <div class="member-row">
                 <div class="member-avatar">{{ member.authorName.charAt(0).toUpperCase() }}</div>
@@ -129,7 +129,7 @@ import { AuthService } from '../../../core/services/auth.service';
         }
 
         <div class="health-footer">
-          Analysé le {{ data.analyzedAt | date:'dd/MM à HH:mm' }}
+          Analyzed on {{ data.analyzedAt | date:'MM/dd HH:mm' }}
         </div>
       }
 
@@ -138,12 +138,28 @@ import { AuthService } from '../../../core/services/auth.service';
   `,
   styles: [`
     .card--health {
-      background: #fff; border-radius: 16px; padding: 24px;
-      border: 1px solid #c7d2fe; box-shadow: 0 1px 4px rgba(79,70,229,.04);
-      transition: box-shadow .2s; animation: fadeUp .35s ease both; animation-delay: .4s;
-      margin-bottom: 24px;
-    }
-    .card--health:hover { box-shadow: 0 6px 24px rgba(79,70,229,.07); }
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1.5px solid #ede9fe;
+  box-shadow: 0 2px 16px rgba(79,70,229,.06);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp .35s ease both;
+  animation-delay: .4s;
+}
+.card--health::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4f46e5, #818cf8);
+}
+.card--health:hover {
+  box-shadow: 0 8px 32px rgba(79,70,229,.10);
+  border-color: #c7d2fe;
+}
     @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
     .card-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:20px; }
@@ -233,7 +249,6 @@ export class TeamHealthWidgetComponent implements OnInit {
   currentUserId: string | null = null;
 
   ngOnInit(): void {
-    // ✅ FIX — lire directement localStorage
     try {
       const raw = localStorage.getItem('user_data');
       if (raw) {
@@ -257,7 +272,6 @@ export class TeamHealthWidgetComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    // Admin → 'all' | PM → projectId exact du projet
     const scopeId = this.isAdmin ? 'all' : this.projectId;
 
     this.teamHealthService.analyzeTeamHealthLive(scopeId).subscribe({
@@ -266,7 +280,7 @@ export class TeamHealthWidgetComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.error = 'Serveur Flask inaccessible. Lance app.py sur le port 8000.';
+        this.error = 'Flask server unreachable. Start app.py on port 8000.';
         this.loading = false;
       }
     });

@@ -10,39 +10,39 @@ import { ReactiveFormsModule, FormControl } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, ReactiveFormsModule],
   template: `
-    <h2 mat-dialog-title>Complexité</h2>
-    <mat-dialog-content>
-      <p class="hint">Quelle est la complexité de cette tâche ?</p>
-      <div class="complexity-grid">
-        <button class="complexity-btn xs" [class.selected]="complexityControl.value === 0" (click)="complexityControl.setValue(0)">
-          <span class="label">XS</span>
-          <span class="desc">Très facile</span>
-        </button>
-        <button class="complexity-btn s" [class.selected]="complexityControl.value === 1" (click)="complexityControl.setValue(1)">
-          <span class="label">S</span>
-          <span class="desc">Facile</span>
-        </button>
-        <button class="complexity-btn m" [class.selected]="complexityControl.value === 2" (click)="complexityControl.setValue(2)">
-          <span class="label">M</span>
-          <span class="desc">Moyenne</span>
-        </button>
-        <button class="complexity-btn l" [class.selected]="complexityControl.value === 3" (click)="complexityControl.setValue(3)">
-          <span class="label">L</span>
-          <span class="desc">Difficile</span>
-        </button>
-        <button class="complexity-btn xl" [class.selected]="complexityControl.value === 4" (click)="complexityControl.setValue(4)">
-          <span class="label">XL</span>
-          <span class="desc">Très difficile</span>
-        </button>
-      </div>
-      <div class="selected-label" *ngIf="complexityControl.value !== null">
-        Complexité actuelle : <strong>{{ getLabel(complexityControl.value) }}</strong>
-      </div>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button [mat-dialog-close]="undefined">Annuler</button>
-      <button mat-button class="save-btn" (click)="save()" [disabled]="complexityControl.value === null">Enregistrer</button>
-    </mat-dialog-actions>
+   <h2 mat-dialog-title>Complexity</h2>
+<mat-dialog-content>
+  <p class="hint">What is the complexity of this task?</p>
+  <div class="complexity-grid">
+    <button class="complexity-btn xs" [class.selected]="complexityControl.value === 0" (click)="complexityControl.setValue(0)">
+      <span class="label">XS</span>
+      <span class="desc">Very easy</span>
+    </button>
+    <button class="complexity-btn s" [class.selected]="complexityControl.value === 1" (click)="complexityControl.setValue(1)">
+      <span class="label">S</span>
+      <span class="desc">Easy</span>
+    </button>
+    <button class="complexity-btn m" [class.selected]="complexityControl.value === 2" (click)="complexityControl.setValue(2)">
+      <span class="label">M</span>
+      <span class="desc">Medium</span>
+    </button>
+    <button class="complexity-btn l" [class.selected]="complexityControl.value === 3" (click)="complexityControl.setValue(3)">
+      <span class="label">L</span>
+      <span class="desc">Hard</span>
+    </button>
+    <button class="complexity-btn xl" [class.selected]="complexityControl.value === 4" (click)="complexityControl.setValue(4)">
+      <span class="label">XL</span>
+      <span class="desc">Very hard</span>
+    </button>
+  </div>
+  <div class="selected-label" *ngIf="complexityControl.value !== null">
+    Current complexity: <strong>{{ getLabel(complexityControl.value) }}</strong>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="undefined">Cancel</button>
+  <button mat-button class="save-btn" (click)="save()" [disabled]="complexityControl.value === null">Save</button>
+</mat-dialog-actions>
   `,
   styles: [`
     h2 { font-size: 16px; font-weight: 600; margin: 0; padding: 20px 20px 0; }
@@ -75,7 +75,7 @@ export class ComplexityDialogComponent {
   }
 
   getLabel(value: number): string {
-    const labels = ['Très facile', 'Facile', 'Moyenne', 'Difficile', 'Très difficile'];
+    const labels = ['Very easy', 'Easy', 'Medium', 'Hard', 'Very hard'];
     return labels[value] ?? 'Moyenne';
   }
 

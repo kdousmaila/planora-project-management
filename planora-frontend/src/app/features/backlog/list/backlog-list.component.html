@@ -3,7 +3,7 @@
   <div class="page-header">
     <div class="header-left">
       <button mat-button [routerLink]="['/projects', projectId]" class="back-btn">
-        <mat-icon>arrow_back</mat-icon> Retour au projet
+        <mat-icon>arrow_back</mat-icon> Back to project
       </button>
       <div class="title-row">
         <div class="title-icon">
@@ -11,12 +11,12 @@
         </div>
         <div>
           <h1>Backlog</h1>
-          <p class="subtitle">{{ items.length }} éléments · {{ sprints.length }} sprints disponibles</p>
+          <p class="subtitle">{{ items.length }} items · {{ sprints.length }} sprints available</p>
         </div>
       </div>
     </div>
     <button class="add-btn" (click)="openCreate()">
-      <mat-icon>add</mat-icon> Ajouter un élément
+      <mat-icon>add</mat-icon> Add item
     </button>
   </div>
 
@@ -30,12 +30,12 @@
   <div class="stats-bar">
     <div class="stat-pill" style="--c: #8b5cf6; --bg: #ede9fe">
       <mat-icon>list_alt</mat-icon>
-      <span>{{ backlogItems.length }} en backlog</span>
+      <span>{{ backlogItems.length }} in backlog</span>
     </div>
     @for (sprint of sprints; track sprint.id) {
     <div class="stat-pill" style="--c: #059669; --bg: #d1fae5">
       <mat-icon>sprint</mat-icon>
-      <span>{{ getSprintItems(sprint.id).length }} dans {{ sprint.name }}</span>
+      <span>{{ getSprintItems(sprint.id).length }} in {{ sprint.name }}</span>
     </div>
     }
   </div>
@@ -56,11 +56,11 @@
       </div>
 
       <div class="drop-zone" cdkDropList id="backlog" [cdkDropListData]="backlogItems"
-        [cdkDropListConnectedTo]="getSprintIds()" (cdkDropListDropped)="onDrop($event, null)">
+           [cdkDropListConnectedTo]="getSprintIds()" (cdkDropListDropped)="onDrop($event, null)">
         @if (backlogItems.length === 0) {
         <div class="empty-drop">
           <mat-icon>drag_indicator</mat-icon>
-          <span>Glisse des tâches ici</span>
+          <span>Drag tasks here</span>
         </div>
         }
 
@@ -81,11 +81,11 @@
                 {{ getPriorityLabel(item.priority) }}
               </span>
               <div class="card-actions">
-                <button mat-icon-button class="action-btn" (click)="cyclePriority(item)" matTooltip="Changer priorité">
+                <button mat-icon-button class="action-btn" (click)="cyclePriority(item)" matTooltip="Change priority">
                   <mat-icon>swap_vert</mat-icon>
                 </button>
                 @if (canManage) {
-                <button mat-icon-button class="action-btn danger" (click)="deleteItem(item)" matTooltip="Supprimer">
+                <button mat-icon-button class="action-btn danger" (click)="deleteItem(item)" matTooltip="Delete">
                   <mat-icon>delete_outline</mat-icon>
                 </button>
                 }
@@ -119,17 +119,17 @@
 
       @if (sprintItemsMap.get(sprint.id) as sprintItems) {
       <div class="drop-zone" cdkDropList [id]="sprint.id" [cdkDropListData]="sprintItems"
-        [cdkDropListConnectedTo]="getAllListIds(sprint.id)" (cdkDropListDropped)="onDrop($event, sprint.id)">
+           [cdkDropListConnectedTo]="getAllListIds(sprint.id)" (cdkDropListDropped)="onDrop($event, sprint.id)">
         @if (sprintItems.length === 0) {
         <div class="empty-drop">
           <mat-icon>drag_indicator</mat-icon>
-          <span>Glisse des éléments du backlog ici</span>
+          <span>Drag backlog items here</span>
         </div>
         }
 
         @for (item of sprintItems; track item.id) {
         <div class="kanban-card sprint-card" cdkDrag [cdkDragData]="item"
-          [style]="'--sprint-color:' + getSprintColor(i)">
+             [style]="'--sprint-color:' + getSprintColor(i)">
           <div class="sprint-accent-bar" [style]="'background:' + getSprintColor(i)"></div>
           <div class="drag-handle" cdkDragHandle>
             <mat-icon>drag_indicator</mat-icon>
@@ -147,7 +147,7 @@
               </span>
               <div class="card-actions">
                 <button mat-icon-button class="action-btn danger" (click)="removeFromSprint(item)"
-                  matTooltip="Retirer du sprint">
+                        matTooltip="Remove from sprint">
                   <mat-icon>undo</mat-icon>
                 </button>
               </div>
@@ -161,12 +161,12 @@
     </div>
     }
 
-    <!-- Empty state si pas de sprints -->
+    <!-- Empty state if no sprints -->
     @if (sprints.length === 0) {
     <div class="no-sprints">
       <mat-icon>sprint</mat-icon>
-      <p>Aucun sprint disponible</p>
-      <small>Crée un sprint pour pouvoir déplacer des éléments</small>
+      <p>No sprints available</p>
+      <small>Create a sprint to start moving items</small>
     </div>
     }
   </div>

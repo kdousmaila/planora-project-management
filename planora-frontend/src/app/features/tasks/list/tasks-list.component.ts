@@ -63,7 +63,7 @@ export class TasksListComponent implements OnInit {
     this.loading = true;
 
     if (this.projectId) {
-      // ✅ Utiliser le nouvel endpoint getAllBacklogItemsForProject
+      // ✅ Use the new endpoint getAllBacklogItemsForProject
       this.backlogService.getAllBacklogItemsForProject(this.projectId, this.currentPage, this.pageSize).subscribe({
         next: (response: any) => {
           this.loading = false;
@@ -74,7 +74,7 @@ export class TasksListComponent implements OnInit {
         },
         error: (error: any) => {
           this.loading = false;
-          this.snackBar.open('Erreur de chargement des tickets', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Error loading tickets', 'Close', { duration: 3000 });
         }
       });
     } else {
@@ -114,9 +114,9 @@ export class TasksListComponent implements OnInit {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        title: 'Supprimer le ticket',
-        message: `Êtes-vous sûr de vouloir supprimer "${itemData.title}" ?`,
-        confirmLabel: 'Supprimer',
+        title: 'Delete ticket',
+        message: `Are you sure you want to delete "${itemData.title}"?`,
+        confirmLabel: 'Delete',
         danger: true
       }
     });
@@ -125,17 +125,17 @@ export class TasksListComponent implements OnInit {
       this.backlogService.deleteBacklogItem(itemData.id).subscribe({
         next: (response: any) => {
           if (response.success) {
-            this.snackBar.open('Ticket supprimé', 'Fermer', { duration: 3000 });
+            this.snackBar.open('Ticket deleted', 'Close', { duration: 3000 });
             this.loadBacklogItems();
           }
         },
-        error: () => this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 })
+        error: () => this.snackBar.open('Error while deleting', 'Close', { duration: 3000 })
       });
     });
   }
 
   getStatusLabel(status: TaskStatus): string {
-    return ['À faire', 'En cours', 'Terminé'][status] ?? status.toString();
+    return ['To Do', 'In Progress', 'Done'][status] ?? status.toString();
   }
 
   getStatusClass(status: TaskStatus): string {
@@ -143,7 +143,7 @@ export class TasksListComponent implements OnInit {
   }
 
   getPriorityLabel(priority: TaskPriority): string {
-    return ['Faible', 'Moyenne', 'Haute', 'Critique'][priority] ?? priority.toString();
+    return ['Low', 'Medium', 'High', 'Critical'][priority] ?? priority.toString();
   }
 
   getPriorityClass(priority: TaskPriority): string {

@@ -14,28 +14,28 @@ const STORY_POINTS = [1, 2, 3, 5, 8, 13, 21];
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, ReactiveFormsModule],
   template: `
-    <h2 mat-dialog-title>Estimation — Story Points</h2>
-    <mat-dialog-content>
-      <p class="hint">Combien de points représente cet effort ?</p>
-      <div class="points-grid">
-        <button *ngFor="let pt of points" class="pt-btn" [class.selected]="pointControl.value === pt" (click)="pointControl.setValue(pt)">
-          {{ pt }}
-        </button>
-        <button class="pt-btn question" [class.selected]="pointControl.value === -1" (click)="pointControl.setValue(-1)" matTooltip="Non estimé">
-          ?
-        </button>
-      </div>
-      <div class="selected-label" *ngIf="pointControl.value !== null">
-        <ng-container *ngIf="pointControl.value === -1">Non estimé</ng-container>
-        <ng-container *ngIf="pointControl.value !== -1">
-          <span class="pt-display">{{ pointControl.value }}</span> point{{ pointControl.value > 1 ? 's' : '' }} — {{ getEffortLabel(pointControl.value) }}
-        </ng-container>
-      </div>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button [mat-dialog-close]="undefined">Annuler</button>
-      <button mat-button class="save-btn" (click)="save()" [disabled]="pointControl.value === null">Enregistrer</button>
-    </mat-dialog-actions>
+   <h2 mat-dialog-title>Estimation — Story Points</h2>
+<mat-dialog-content>
+  <p class="hint">How many points does this effort represent?</p>
+  <div class="points-grid">
+    <button *ngFor="let pt of points" class="pt-btn" [class.selected]="pointControl.value === pt" (click)="pointControl.setValue(pt)">
+      {{ pt }}
+    </button>
+    <button class="pt-btn question" [class.selected]="pointControl.value === -1" (click)="pointControl.setValue(-1)" matTooltip="Not estimated">
+      ?
+    </button>
+  </div>
+  <div class="selected-label" *ngIf="pointControl.value !== null">
+    <ng-container *ngIf="pointControl.value === -1">Not estimated</ng-container>
+    <ng-container *ngIf="pointControl.value !== -1">
+      <span class="pt-display">{{ pointControl.value }}</span> point{{ pointControl.value > 1 ? 's' : '' }} — {{ getEffortLabel(pointControl.value) }}
+    </ng-container>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="undefined">Cancel</button>
+  <button mat-button class="save-btn" (click)="save()" [disabled]="pointControl.value === null">Save</button>
+</mat-dialog-actions>
   `,
   styles: [`
     h2 { font-size: 16px; font-weight: 600; margin: 0; padding: 20px 20px 0; }
@@ -65,12 +65,12 @@ export class StoryPointsDialogComponent {
   }
 
   getEffortLabel(pt: number): string {
-    if (pt <= 2) return 'Très rapide';
-    if (pt <= 3) return 'Rapide';
-    if (pt <= 5) return 'Modéré';
-    if (pt <= 8) return 'Complexe';
-    if (pt <= 13) return 'Difficile';
-    return 'Très difficile';
+    if (pt <= 2) return 'Very quick';
+    if (pt <= 3) return 'Quick';
+    if (pt <= 5) return 'Moderate';
+    if (pt <= 8) return 'Complex';
+    if (pt <= 13) return 'Hard';
+    return 'Very hard';
   }
 
   save(): void {

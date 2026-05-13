@@ -76,71 +76,73 @@ export class SprintBoardComponent implements OnInit {
 
   forceRefresh(): void {
     this.loadSprintItems();
-    this.snackBar.open('Rafraîchissement forcé', 'Fermer', { duration: 2000 });
+    this.snackBar.open('Forced refresh', 'Close', { duration: 2000 });
   }
 
   completeSprint(): void {
     if (!this.selectedSprintId) return;
 
-    // Vérifier si le sprint est déjà actif ou en planning
     const currentSprint = this.sprints.find(s => s.id === this.selectedSprintId);
 
     if (currentSprint?.status === SprintStatus.Planning) {
-      // Pour un sprint en planning, on peut soit le démarrer, soit le supprimer
+
       const confirmDialog = this.dialog.open(ConfirmDialogComponent, {
         width: '400px',
         data: {
-          title: 'Sprint non démarré',
-          message: `Ce sprint n'est pas encore démarré. Voulez-vous le démarrer ou le supprimer ?`,
-          confirmLabel: 'Démarrer',
-          cancelLabel: 'Supprimer',
+          title: 'Sprint not started',
+          message: `This sprint has not been started yet. Do you want to start it or delete it?`,
+          confirmLabel: 'Start',
+          cancelLabel: 'Delete',
           danger: false
         }
       });
 
       confirmDialog.afterClosed().subscribe((confirmed: boolean) => {
         if (confirmed) {
-          // Démarrer le sprint
           this.sprintService.startSprint(this.selectedSprintId!).subscribe({
             next: () => {
               this.loadSprints();
-              this.snackBar.open('Sprint démarré !', 'Fermer', { duration: 3000 });
+              this.snackBar.open('Sprint started!', 'Close', { duration: 3000 });
             },
             error: () => {
-              this.snackBar.open('Erreur lors du démarrage', 'Fermer', { duration: 3000 });
+              this.snackBar.open('Error while starting', 'Close', { duration: 3000 });
             }
           });
         } else {
-          // Supprimer le sprint
           this.sprintService.deleteSprint(this.selectedSprintId!).subscribe({
             next: () => {
               this.loadSprints();
-              this.snackBar.open('Sprint supprimé', 'Fermer', { duration: 3000 });
+              this.snackBar.open('Sprint deleted', 'Close', { duration: 3000 });
             },
             error: () => {
-              this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
+              this.snackBar.open('Error while deleting', 'Close', { duration: 3000 });
             }
           });
         }
       });
+
       return;
     }
 
-    // Comportement normal pour un sprint actif
-    const allTasksDone = this.doneItems.length ===
+    const allTasksDone =
+      this.doneItems.length ===
       (this.todoItems.length + this.inProgressItems.length + this.doneItems.length);
 
     if (!allTasksDone) {
-      this.snackBar.open('Toutes les tâches doivent être terminées avant de fermer le sprint', 'Fermer', { duration: 3000 });
+      this.snackBar.open(
+        'All tasks must be completed before closing the sprint',
+        'Close',
+        { duration: 3000 }
+      );
       return;
     }
 
     const confirmDialog = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        title: 'Terminer le sprint',
-        message: `Êtes-vous sûr de vouloir terminer le sprint "${this.selectedSprint?.name}" ?`,
-        confirmLabel: 'Terminer',
+        title: 'Complete sprint',
+        message: `Are you sure you want to complete sprint "${this.selectedSprint?.name}" ?`,
+        confirmLabel: 'Complete',
         danger: false
       }
     });
@@ -151,12 +153,12 @@ export class SprintBoardComponent implements OnInit {
       this.sprintService.closeSprint(this.selectedSprintId!).subscribe({
         next: (response: ApiResponse<Sprint>) => {
           if (response.success) {
-            this.snackBar.open('✓ Sprint terminé !', 'Fermer', { duration: 3000 });
+            this.snackBar.open('✓ Sprint completed!', 'Close', { duration: 3000 });
             this.loadSprints();
           }
         },
         error: () => {
-          this.snackBar.open('Erreur lors de la fermeture', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Error while closing', 'Close', { duration: 3000 });
         }
       });
     });
@@ -169,26 +171,29 @@ export class SprintBoardComponent implements OnInit {
           const itemsToFix = response.data.filter((item: BacklogItem) =>
             item.sprintId === this.selectedSprintId &&
             (item.status === undefined || item.status === null ||
-              (item.status !== TaskStatus.Todo && item.status !== TaskStatus.InProgress && item.status !== TaskStatus.Done))
+              (item.status !== TaskStatus.Todo &&
+                item.status !== TaskStatus.InProgress &&
+                item.status !== TaskStatus.Done))
           );
 
           if (itemsToFix.length === 0) {
-            this.snackBar.open('Aucun ticket à corriger', 'Fermer', { duration: 2000 });
+            this.snackBar.open('No tickets to fix', 'Close', { duration: 2000 });
             return;
           }
 
           let fixedCount = 0;
+
           itemsToFix.forEach((item: BacklogItem) => {
             this.backlogService.updateBacklogItemStatus(item.id, TaskStatus.Todo).subscribe({
               next: () => {
                 fixedCount++;
                 if (fixedCount === itemsToFix.length) {
-                  this.snackBar.open(`${fixedCount} tickets corrigés !`, 'Fermer', { duration: 3000 });
+                  this.snackBar.open(`${fixedCount} tickets fixed!`, 'Close', { duration: 3000 });
                   this.loadSprintItems();
                 }
               },
               error: (err) => {
-                console.error(`Erreur correction ${item.title}:`, err);
+                console.error(`Error fixing ${item.title}:`, err);
               }
             });
           });
@@ -199,12 +204,12 @@ export class SprintBoardComponent implements OnInit {
 
   loadSprints(): void {
     this.loading = true;
+
     this.sprintService.getSprintsByProject(this.projectId).subscribe({
       next: (response: ApiResponse<Sprint[]>) => {
         if (response.success) {
           this.sprints = response.data.filter(s => s.status !== SprintStatus.Closed);
 
-          // ✅ Si plus aucun sprint disponible → réinitialiser complètement l'état
           if (this.sprints.length === 0) {
             this.selectedSprintId = null;
             this.selectedSprint = null;
@@ -222,27 +227,25 @@ export class SprintBoardComponent implements OnInit {
               this.loading = false;
               return;
             }
-            // ✅ Le sprint sélectionné n'existe plus (vient d'être fermé) → sélectionner le premier
             this.selectedSprintId = null;
             this.selectedSprint = null;
           }
 
-          // Sélectionner le premier sprint disponible
           this.selectedSprintId = this.sprints[0].id;
           this.loadSprintItems();
-        } else {
-          this.loading = false;
         }
+
+        this.loading = false;
       },
       error: () => {
         this.loading = false;
-        this.snackBar.open('Erreur de chargement des sprints', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Error loading sprints', 'Close', { duration: 3000 });
       }
     });
-  }  loadSprintItems(): void {
-    if (!this.selectedSprintId) {
-      return;
-    }
+  }
+
+  loadSprintItems(): void {
+    if (!this.selectedSprintId) return;
 
     this.selectedSprint = this.sprints.find(s => s.id === this.selectedSprintId) || null;
     this.loading = true;
@@ -250,28 +253,36 @@ export class SprintBoardComponent implements OnInit {
     this.backlogService.getBacklogByProject(this.projectId).subscribe({
       next: (response: ApiResponse<BacklogItem[]>) => {
         if (response.success) {
-          const itemsInSprint = response.data.filter((item: BacklogItem) => item.sprintId === this.selectedSprintId);
+          const itemsInSprint = response.data.filter(
+            (item: BacklogItem) => item.sprintId === this.selectedSprintId
+          );
 
           itemsInSprint.forEach((item: BacklogItem) => {
-            if (item.status === undefined || item.status === null ||
-              (item.status !== TaskStatus.Todo && item.status !== TaskStatus.InProgress && item.status !== TaskStatus.Done)) {
+            if (
+              item.status === undefined ||
+              item.status === null ||
+              (item.status !== TaskStatus.Todo &&
+                item.status !== TaskStatus.InProgress &&
+                item.status !== TaskStatus.Done)
+            ) {
               item.status = TaskStatus.Todo;
             }
           });
 
-          this.todoItems = itemsInSprint.filter((item: BacklogItem) => item.status === TaskStatus.Todo);
-          this.inProgressItems = itemsInSprint.filter((item: BacklogItem) => item.status === TaskStatus.InProgress);
-          this.doneItems = itemsInSprint.filter((item: BacklogItem) => item.status === TaskStatus.Done);
+          this.todoItems = itemsInSprint.filter(i => i.status === TaskStatus.Todo);
+          this.inProgressItems = itemsInSprint.filter(i => i.status === TaskStatus.InProgress);
+          this.doneItems = itemsInSprint.filter(i => i.status === TaskStatus.Done);
 
           this.todoItems = [...this.todoItems];
           this.inProgressItems = [...this.inProgressItems];
           this.doneItems = [...this.doneItems];
         }
+
         this.loading = false;
       },
       error: () => {
         this.loading = false;
-        this.snackBar.open('Erreur de chargement des tickets', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Error loading tickets', 'Close', { duration: 3000 });
       }
     });
   }
@@ -282,9 +293,7 @@ export class SprintBoardComponent implements OnInit {
   }
 
   onDrop(event: CdkDragDrop<BacklogItem[]>, newStatus: TaskStatus): void {
-    if (event.previousContainer === event.container) {
-      return;
-    }
+    if (event.previousContainer === event.container) return;
 
     const item = event.previousContainer.data[event.previousIndex];
 
@@ -300,16 +309,15 @@ export class SprintBoardComponent implements OnInit {
     this.backlogService.updateBacklogItemStatus(item.id, newStatus).subscribe({
       next: (response) => {
         if (response.success) {
-          this.snackBar.open('Ticket déplacé avec succès', 'Fermer', { duration: 2000 });
+          this.snackBar.open('Ticket moved successfully', 'Close', { duration: 2000 });
         } else {
-          // Restaurer en cas d'erreur
           this.loadSprintItems();
-          this.snackBar.open('Erreur lors du déplacement', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Error while moving', 'Close', { duration: 3000 });
         }
       },
       error: () => {
         this.loadSprintItems();
-        this.snackBar.open('Erreur lors du déplacement', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Error while moving', 'Close', { duration: 3000 });
       }
     });
   }
@@ -317,11 +325,9 @@ export class SprintBoardComponent implements OnInit {
   createItem(): void {
     const ref = this.dialog.open(BacklogCreateDialogComponent, {
       width: '550px',
-      data: {
-        projectId: this.projectId,
-        sprintId: this.selectedSprintId
-      }
+      data: { projectId: this.projectId, sprintId: this.selectedSprintId }
     });
+
     ref.afterClosed().subscribe((result: boolean | undefined) => {
       if (result) this.loadSprintItems();
     });
@@ -330,11 +336,7 @@ export class SprintBoardComponent implements OnInit {
   editItem(item: BacklogItem): void {
     const ref = this.dialog.open(BacklogCreateDialogComponent, {
       width: '550px',
-      data: {
-        projectId: this.projectId,
-        sprintId: this.selectedSprintId,
-        item
-      }
+      data: { projectId: this.projectId, sprintId: this.selectedSprintId, item }
     });
 
     ref.afterClosed().subscribe((result: boolean | undefined) => {
@@ -346,9 +348,9 @@ export class SprintBoardComponent implements OnInit {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        title: 'Supprimer le ticket',
-        message: `Êtes-vous sûr de vouloir supprimer "${item.title}" ?`,
-        confirmLabel: 'Supprimer',
+        title: 'Delete ticket',
+        message: `Are you sure you want to delete "${item.title}" ?`,
+        confirmLabel: 'Delete',
         danger: true
       }
     });
@@ -359,19 +361,19 @@ export class SprintBoardComponent implements OnInit {
       this.backlogService.deleteBacklogItem(item.id).subscribe({
         next: (response) => {
           if (response.success) {
-            this.snackBar.open('Ticket supprimé', 'Fermer', { duration: 3000 });
+            this.snackBar.open('Ticket deleted', 'Close', { duration: 3000 });
             this.loadSprintItems();
           }
         },
         error: () => {
-          this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Error while deleting', 'Close', { duration: 3000 });
         }
       });
     });
   }
 
   getPriorityLabel(priority: TaskPriority): string {
-    const labels = ['Faible', 'Moyenne', 'Haute', 'Critique'];
+    const labels = ['Low', 'Medium', 'High', 'Critical'];
     return labels[priority] ?? '';
   }
 
@@ -381,12 +383,12 @@ export class SprintBoardComponent implements OnInit {
   }
 
   getStatusLabel(status: TaskStatus): string {
-    const labels = ['À faire', 'En cours', 'Terminé'];
+    const labels = ['To Do', 'In Progress', 'Done'];
     return labels[status] ?? '';
   }
 
   getSprintStatusLabel(status: SprintStatus): string {
-    const labels = ['Planning', 'Actif', 'Fermé'];
+    const labels = ['Planning', 'Active', 'Closed'];
     return labels[status] ?? '';
   }
 
@@ -405,11 +407,12 @@ export class SprintBoardComponent implements OnInit {
   }
 
   getSelectedSprintPointsByStatus(status: TaskStatus): number {
-    const source = status === TaskStatus.Todo
-      ? this.todoItems
-      : status === TaskStatus.InProgress
-        ? this.inProgressItems
-        : this.doneItems;
+    const source =
+      status === TaskStatus.Todo
+        ? this.todoItems
+        : status === TaskStatus.InProgress
+          ? this.inProgressItems
+          : this.doneItems;
 
     return source.reduce((sum, item) => sum + this.getItemStoryPoints(item), 0);
   }
@@ -417,18 +420,13 @@ export class SprintBoardComponent implements OnInit {
   isCompleteButtonDisabled(): boolean {
     if (!this.selectedSprint) return true;
 
-    // Sprint en Planning → désactiver
-    if (this.selectedSprint.status === SprintStatus.Planning) {
-      return true;
-    }
+    if (this.selectedSprint.status === SprintStatus.Planning) return true;
 
-    // Sprint Actif → désactiver si des tâches non terminées
     if (this.selectedSprint.status === SprintStatus.Active) {
-      const hasUnfinishedTasks = (this.todoItems.length + this.inProgressItems.length) > 0;
-      return hasUnfinishedTasks;
+      const hasUnfinished = (this.todoItems.length + this.inProgressItems.length) > 0;
+      return hasUnfinished;
     }
 
-    // Sprint déjà fermé → désactiver
     return true;
   }
 
@@ -436,19 +434,20 @@ export class SprintBoardComponent implements OnInit {
     if (!this.selectedSprint) return '';
 
     if (this.selectedSprint.status === SprintStatus.Planning) {
-      return '📋 Ce sprint n\'est pas encore démarré. Allez dans le Backlog pour le démarrer.';
+      return '📋 This sprint has not started yet. Go to the Backlog to start it.';
     }
 
     if (this.selectedSprint.status === SprintStatus.Active) {
       const unfinishedCount = this.todoItems.length + this.inProgressItems.length;
       if (unfinishedCount > 0) {
-        return `⚠️ ${unfinishedCount} tâche(s) non terminée(s). Déplacez toutes les tâches vers "Terminé" avant de fermer le sprint.`;
+        return `⚠️ ${unfinishedCount} unfinished task(s). Move all tasks to "Done" before closing the sprint.`;
       }
-      return '✅ Terminer ce sprint';
+      return '✅ Complete this sprint';
     }
 
     return '';
   }
+
   goToHistory(): void {
     this.router.navigate(['/projects', this.projectId, 'history']);
   }

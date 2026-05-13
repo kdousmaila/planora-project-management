@@ -132,10 +132,10 @@ export class TaskDetailPanelComponent implements OnChanges {
   readonly fibPoints = [1, 2, 3, 5, 8, 13, 21];
 
   readonly priorities = [
-    { value: 0, label: 'Faible', icon: 'arrow_downward' },
-    { value: 1, label: 'Moyenne', icon: 'arrow_upward' },
-    { value: 2, label: 'Haute', icon: 'priority_high' },
-    { value: 3, label: 'Critique', icon: 'error_outline' },
+    { value: 0, label: 'Low', icon: 'arrow_downward' },
+    { value: 1, label: 'Medium', icon: 'arrow_upward' },
+    { value: 2, label: 'High', icon: 'priority_high' },
+    { value: 3, label: 'Critical', icon: 'error_outline' },
   ];
 
   get currentUserId(): string { return this.authService.currentUser?.userId ?? ''; }
@@ -152,7 +152,7 @@ export class TaskDetailPanelComponent implements OnChanges {
   }
 
   get currentUserName(): string {
-    return this.authService.currentUser?.fullName ?? 'Vous';
+    return this.authService.currentUser?.fullName ?? 'You';
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -254,8 +254,8 @@ export class TaskDetailPanelComponent implements OnChanges {
       this.activity.push({
         id: '0',
         type: 'created',
-        message: 'a créé cette tâche',
-        authorName: this.task.assignedToName ?? 'Système',
+        message: 'created this task',
+        authorName: this.task.assignedToName ?? 'System',
         createdAt: new Date(this.task.createdAt ?? Date.now())
       });
     }
@@ -318,11 +318,11 @@ export class TaskDetailPanelComponent implements OnChanges {
         this.savingBranch = false;
         if (r.success) {
           this.devBranches = [{ ...r.data, commits: [] }, ...this.devBranches];
-          this.snackBar.open('Branche créée', 'Fermer', { duration: 2000 });
+          this.snackBar.open('Branch created', 'Close', { duration: 2000 });
           this.closeDevModal();
         }
       },
-      error: () => { this.savingBranch = false; this.snackBar.open('Erreur', 'Fermer', { duration: 3000 }); }
+      error: () => { this.savingBranch = false; this.snackBar.open('Error', 'Close', { duration: 3000 }); }
     });
   }
 
@@ -338,21 +338,21 @@ export class TaskDetailPanelComponent implements OnChanges {
         if (r.success) {
           const branch = this.devBranches.find(b => b.id === this.selectedBranch?.id);
           if (branch) branch.commits = [r.data, ...(branch.commits || [])];
-          this.snackBar.open('Commit ajouté', 'Fermer', { duration: 2000 });
+          this.snackBar.open('Commit added', 'Close', { duration: 2000 });
           this.closeDevModal();
         }
       },
-      error: () => { this.savingCommit = false; this.snackBar.open('Erreur', 'Fermer', { duration: 3000 }); }
+      error: () => { this.savingCommit = false; this.snackBar.open('Error', 'Close', { duration: 3000 }); }
     });
   }
 
   deleteBranch(branch: BacklogBranch): void {
-    if (!this.task || !confirm(`Supprimer la branche "${branch.branchName}" ?`)) return;
+    if (!this.task || !confirm(`Delete branch "${branch.branchName}"?`)) return;
     this.extrasService.deleteBranch(this.task.id, branch.id).subscribe({
       next: (r: any) => {
         if (r.success) {
           this.devBranches = this.devBranches.filter(b => b.id !== branch.id);
-          this.snackBar.open('Branche supprimée', 'Fermer', { duration: 2000 });
+          this.snackBar.open('Branch deleted', 'Close', { duration: 2000 });
         }
       }
     });
@@ -364,7 +364,7 @@ export class TaskDetailPanelComponent implements OnChanges {
       next: (r: any) => {
         if (r.success) {
           branch.commits = branch.commits.filter((c: BacklogCommit) => c.id !== commit.id);
-          this.snackBar.open('Commit supprimé', 'Fermer', { duration: 2000 });
+          this.snackBar.open('Commit deleted', 'Close', { duration: 2000 });
         }
       }
     });
@@ -383,8 +383,8 @@ export class TaskDetailPanelComponent implements OnChanges {
     this.backlogService.assignToUser(this.task.id, member?.userId ?? null).subscribe({
       next: (r: any) => {
         if (r.success) {
-          this.pushActivity('status_change', `a assigné la tâche à ${member?.fullName ?? 'personne'}`);
-          this.snackBar.open(member ? `Assigné à ${member.fullName}` : 'Désassigné', 'Fermer', { duration: 2000 });
+          this.pushActivity('status_change', `assigned the task to ${member?.fullName ?? 'nobody'}`);
+          this.snackBar.open(member ? `Assigned to ${member.fullName}` : 'Unassigned', 'Close', { duration: 2000 });
           this.taskUpdated.emit();
           if (this.task) this.loadAll(this.task.id);
         } else if (this.task) {
@@ -394,7 +394,7 @@ export class TaskDetailPanelComponent implements OnChanges {
       },
       error: () => {
         if (this.task) { this.task.assignedToId = prevId; this.task.assignedToName = prevName; }
-        this.snackBar.open('Erreur', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Error', 'Close', { duration: 3000 });
       }
     });
   }
@@ -413,7 +413,7 @@ export class TaskDetailPanelComponent implements OnChanges {
     this.backlogService.updateComplexity(this.task.id, pointsToSend).subscribe({
       next: (r: any) => {
         if (r.success && this.task) {
-          this.snackBar.open(`Story points : ${pts === -1 ? '?' : pts + ' pts'}`, 'Fermer', { duration: 2000 });
+          this.snackBar.open(`Story points: ${pts === -1 ? '?' : pts + ' pts'}`, 'Close', { duration: 2000 });
           this.taskUpdated.emit();
           if (this.task) this.loadAll(this.task.id);
         } else {
@@ -424,7 +424,7 @@ export class TaskDetailPanelComponent implements OnChanges {
       error: () => {
         this.editStoryPoints = prevPts;
         if (this.task) this.task.storyPoints = prevPts ?? undefined;
-        this.snackBar.open('Erreur', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Error', 'Close', { duration: 3000 });
       }
     });
   }
@@ -445,14 +445,14 @@ export class TaskDetailPanelComponent implements OnChanges {
     this.backlogService.updateBacklogItemStatus(this.task.id, status).subscribe({
       next: (r: any) => {
         if (r.success) {
-          this.pushActivity('status_change', `a changé le statut → ${this.getStatusLabel(status)}`);
-          this.snackBar.open(`Statut: ${this.getStatusLabel(status)}`, 'Fermer', { duration: 2000 });
+          this.pushActivity('status_change', `changed status → ${this.getStatusLabel(status)}`);
+          this.snackBar.open(`Status: ${this.getStatusLabel(status)}`, 'Close', { duration: 2000 });
           this.taskUpdated.emit();
         } else if (this.task) { this.task.status = prev; }
       },
       error: () => {
         if (this.task) this.task.status = prev;
-        this.snackBar.open('Erreur', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Error', 'Close', { duration: 3000 });
       }
     });
   }
@@ -466,14 +466,14 @@ export class TaskDetailPanelComponent implements OnChanges {
     this.backlogService.updatePriority(this.task.id, priority).subscribe({
       next: (r: any) => {
         if (r.success) {
-          this.pushActivity('priority_change', `a changé la priorité → ${this.getPrioLabel(priority)}`);
-          this.snackBar.open(`Priorité: ${this.getPrioLabel(priority)}`, 'Fermer', { duration: 2000 });
+          this.pushActivity('priority_change', `changed priority → ${this.getPrioLabel(priority)}`);
+          this.snackBar.open(`Priority: ${this.getPrioLabel(priority)}`, 'Close', { duration: 2000 });
           this.taskUpdated.emit();
         } else if (this.task) { this.task.priority = prev; }
       },
       error: () => {
         if (this.task) this.task.priority = prev;
-        this.snackBar.open('Erreur', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Error', 'Close', { duration: 3000 });
       }
     });
   }
@@ -491,11 +491,11 @@ export class TaskDetailPanelComponent implements OnChanges {
       next: (r: any) => {
         if (r.success && this.task) {
           this.task.title = t;
-          this.pushActivity('description', 'a mis à jour le titre');
+          this.pushActivity('description', 'updated the title');
           this.taskUpdated.emit();
         }
       },
-      error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+      error: () => this.snackBar.open('Error', 'Close', { duration: 3000 })
     });
   }
 
@@ -513,11 +513,11 @@ export class TaskDetailPanelComponent implements OnChanges {
         this.descSaving = false;
         if (r.success && this.task) {
           this.task.description = this.editDescription;
-          this.pushActivity('description', 'a mis à jour la description');
+          this.pushActivity('description', 'updated the description');
           this.taskUpdated.emit();
         }
       },
-      error: () => { this.descSaving = false; this.snackBar.open('Erreur', 'Fermer', { duration: 3000 }); }
+      error: () => { this.descSaving = false; this.snackBar.open('Error', 'Close', { duration: 3000 }); }
     });
   }
 
@@ -535,13 +535,13 @@ export class TaskDetailPanelComponent implements OnChanges {
             status: 0,
             createdAt: new Date(r.data.createdAt)
           }];
-          this.pushActivity('subtask', `a ajouté la sous-tâche "${r.data.title}"`);
+          this.pushActivity('subtask', `added subtask "${r.data.title}"`);
           this.newSubTaskTitle = '';
           this.addingSubTask = false;
-          this.snackBar.open('Sous-tâche créée', 'Fermer', { duration: 2000 });
+          this.snackBar.open('Subtask created', 'Close', { duration: 2000 });
         }
       },
-      error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+      error: () => this.snackBar.open('Error', 'Close', { duration: 3000 })
     });
   }
 
@@ -558,16 +558,16 @@ export class TaskDetailPanelComponent implements OnChanges {
         if (r.success) {
           st.status = nextStatus;
           st.completed = isCompleted;
-          const labels = ['À faire', 'En cours', 'Terminé'];
-          this.pushActivity('subtask', `a mis "${st.title}" → ${labels[nextStatus]}`);
+          const labels = ['To do', 'In progress', 'Done'];
+          this.pushActivity('subtask', `set "${st.title}" → ${labels[nextStatus]}`);
         }
       },
-      error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+      error: () => this.snackBar.open('Error', 'Close', { duration: 3000 })
     });
   }
 
   getSubTaskStatusLabel(st: SubTask): string {
-    return ['À FAIRE', 'EN COURS', 'TERMINÉ'][st.status ?? 0];
+    return ['TO DO', 'IN PROGRESS', 'DONE'][st.status ?? 0];
   }
 
   getSubTaskStatusClass(st: SubTask): string {
@@ -586,7 +586,7 @@ export class TaskDetailPanelComponent implements OnChanges {
     if (t && t !== st.title && this.task) {
       this.backlogService.updateSubTask(this.task.id, st.id, { title: t }).subscribe({
         next: (r: any) => { if (r.success) st.title = t; },
-        error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+        error: () => this.snackBar.open('Error', 'Close', { duration: 3000 })
       });
     }
     this.editingSubTaskId = null;
@@ -598,11 +598,11 @@ export class TaskDetailPanelComponent implements OnChanges {
       next: (r: any) => {
         if (r.success) {
           this.subTasks = this.subTasks.filter(s => s.id !== st.id);
-          this.pushActivity('subtask', `a supprimé la sous-tâche "${st.title}"`);
-          this.snackBar.open('Supprimé', 'Fermer', { duration: 2000 });
+          this.pushActivity('subtask', `deleted subtask "${st.title}"`);
+          this.snackBar.open('Deleted', 'Close', { duration: 2000 });
         }
       },
-      error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+      error: () => this.snackBar.open('Error', 'Close', { duration: 3000 })
     });
   }
 
@@ -624,12 +624,12 @@ export class TaskDetailPanelComponent implements OnChanges {
           this.richEditorRef?.resetEditor();
         }
       },
-      error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+      error: () => this.snackBar.open('Error', 'Close', { duration: 3000 })
     });
   }
 
   onCommentDeleted(comment: RichComment): void {
-    if (!this.task || !confirm('Supprimer ce commentaire ?')) return;
+    if (!this.task || !confirm('Delete this comment?')) return;
     this.taskService.deleteComment(this.task.id, comment.id).subscribe({
       next: (r: any) => {
         if (r.success) this.richComments = this.richComments.filter(c => c.id !== comment.id);
@@ -645,17 +645,17 @@ export class TaskDetailPanelComponent implements OnChanges {
   // ── Delete task ───────────────────────────────────────────────
 
   confirmDelete(): void {
-    if (!this.task || !confirm(`Supprimer "${this.task.title}" ?`)) return;
+    if (!this.task || !confirm(`Delete "${this.task.title}"?`)) return;
     this.backlogService.deleteBacklogItem(this.task.id).subscribe({
       next: (r: any) => {
         if (r.success && this.task) {
           const id = this.task.id;
-          this.snackBar.open('Tâche supprimée', 'Fermer', { duration: 2000 });
+          this.snackBar.open('Task deleted', 'Close', { duration: 2000 });
           this.taskDeleted.emit(id);
           this.close();
         }
       },
-      error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+      error: () => this.snackBar.open('Error', 'Close', { duration: 3000 })
     });
   }
 
@@ -700,8 +700,8 @@ export class TaskDetailPanelComponent implements OnChanges {
     });
   }
 
-  getStatusLabel(s: number): string { return ['À FAIRE', 'EN COURS', 'TERMINÉ'][s] ?? 'À FAIRE'; }
-  getPrioLabel(p: number): string { return this.priorities[p]?.label ?? 'Faible'; }
+  getStatusLabel(s: number): string { return ['TO DO', 'IN PROGRESS', 'DONE'][s] ?? 'TO DO'; }
+  getPrioLabel(p: number): string { return this.priorities[p]?.label ?? 'Low'; }
   getPrioIcon(p: number): string { return this.priorities[p]?.icon ?? 'arrow_downward'; }
   close(): void { this.closed.emit(); }
   updateStatus(s: number): void { this.selectStatus(s); }

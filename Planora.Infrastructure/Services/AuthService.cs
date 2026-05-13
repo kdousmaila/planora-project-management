@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Planora.Application.DTOs.Auth;
 using Planora.Application.Interfaces;
 using Planora.Domain.Entities;
+using System;
+using System.Threading.Tasks;
 
 namespace Planora.Infrastructure.Services;
 
@@ -60,10 +62,14 @@ public class AuthService : IAuthService
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
+
+        // ✅ Fix 1 : vérification null propre
         if (user == null || !user.IsActive)
             throw new UnauthorizedAccessException("Invalid credentials or account is inactive.");
 
         var isValid = await _userManager.CheckPasswordAsync(user, dto.Password);
+
+        // ✅ Fix 2 : typo corrigée ("" devant throw supprimé)
         if (!isValid)
             throw new UnauthorizedAccessException("Invalid credentials.");
 
@@ -76,8 +82,11 @@ public class AuthService : IAuthService
         if (principal == null)
             throw new UnauthorizedAccessException("Invalid token.");
 
-        var userId = principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        var user = await _userManager.FindByIdAsync(userId ?? string.Empty);
+        // ✅ Fix 3 : userId ne peut pas être null ici
+        var userId = principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                     ?? string.Empty;
+
+        var user = await _userManager.FindByIdAsync(userId);
 
         if (user == null || user.RefreshToken != dto.RefreshToken || user.RefreshTokenExpiry <= DateTime.UtcNow)
             throw new UnauthorizedAccessException("Invalid or expired refresh token.");
@@ -119,6 +128,7 @@ public class AuthService : IAuthService
             RefreshToken = refreshToken,
             Expiry = DateTime.UtcNow.AddMinutes(expiryMinutes),
             UserId = user.Id,
+            // ✅ Fix 4 : Email ne peut jamais être null dans AuthResponseDto
             Email = user.Email ?? string.Empty,
             FullName = $"{user.FirstName} {user.LastName}",
             Roles = roles

@@ -90,7 +90,7 @@ import { WorkspaceService } from '../../../core/services/workspace.service';
         <!-- Invitations menu -->
         <mat-menu #invitationsMenu="matMenu" class="planora-menu">
           <div class="menu-header" (click)="$event.stopPropagation()">
-            <span class="menu-title">Invitations en attente</span>
+            <span class="menu-title">Pending Invitations</span>
             @if (pendingInvitations.length) {
               <span class="menu-badge">{{ pendingInvitations.length }}</span>
             }
@@ -101,7 +101,7 @@ import { WorkspaceService } from '../../../core/services/workspace.service';
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07"/>
                 <path d="M1 1l22 22"/>
               </svg>
-              <span>Aucune invitation</span>
+              <span>No invitations</span>
             </div>
           }
           @for (invitation of pendingInvitations; track invitation.id) {
@@ -112,8 +112,8 @@ import { WorkspaceService } from '../../../core/services/workspace.service';
                 <span>{{ invitation.email }}</span>
               </div>
               <div class="invite-actions">
-                <button class="btn-accept" (click)="acceptInvitation(invitation)">Accepter</button>
-                <button class="btn-reject" (click)="rejectInvitation(invitation)">Refuser</button>
+                <button class="btn-accept" (click)="acceptInvitation(invitation)">Accept</button>
+                <button class="btn-reject" (click)="rejectInvitation(invitation)">Decline</button>
               </div>
             </div>
           }
@@ -137,7 +137,7 @@ import { WorkspaceService } from '../../../core/services/workspace.service';
               <polyline points="16 17 21 12 16 7"/>
               <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
-            <span>Déconnexion</span>
+            <span>Sign out</span>
           </button>
         </mat-menu>
 
@@ -367,9 +367,9 @@ export class NavbarComponent implements OnInit {
     'projects': 'Projects',
     'users': 'Users',
     'backlog': 'Backlog',
-    'board': 'Tableau Kanban',
-    'tasks': 'Tâches',
-    'history': 'Historique',
+    'board': 'Kanban Board',
+    'tasks': 'Tasks',
+    'history': 'History',
   };
 
   ngOnInit(): void {
@@ -417,7 +417,7 @@ export class NavbarComponent implements OnInit {
       next: response => {
         if (response.success) {
           this.loadPendingInvitations();
-          this.workspaceService.workspaceListChanged$.next(); // ← notifie WorkspacesComponent
+          this.workspaceService.workspaceListChanged$.next();
         }
       }
     });

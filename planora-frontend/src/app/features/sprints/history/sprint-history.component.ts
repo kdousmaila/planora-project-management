@@ -44,18 +44,27 @@ export class SprintHistoryComponent implements OnInit {
 
   loadCompletedSprints(): void {
     this.loading = true;
+
     this.sprintService.getCompletedSprints(this.projectId).subscribe({
       next: (response: any) => {
         if (response && response.success) {
           this.completedSprints = response.data || [];
           this.loadSprintTasks();
         }
+
         this.loading = false;
       },
+
       error: (err) => {
-        console.error('Erreur chargement sprints terminés:', err);
+        console.error('Error loading completed sprints:', err);
+
         this.loading = false;
-        this.snackBar.open('Erreur de chargement des sprints', 'Fermer', { duration: 3000 });
+
+        this.snackBar.open(
+          'Error loading sprints',
+          'Close',
+          { duration: 3000 }
+        );
       }
     });
   }
@@ -64,17 +73,23 @@ export class SprintHistoryComponent implements OnInit {
     if (this.completedSprints.length === 0) return;
 
     this.completedSprints.forEach(sprint => {
+
       this.sprintService.getSprintTasks(sprint.id).subscribe({
+
         next: (response: any) => {
           if (response && response.success) {
             this.sprintTasksMap.set(sprint.id, response.data || []);
           }
         },
+
         error: (err) => {
-          console.error(`Erreur chargement tâches pour sprint ${sprint.id}:`, err);
+          console.error(`Error loading tasks for sprint ${sprint.id}:`, err);
+
           this.sprintTasksMap.set(sprint.id, []);
         }
+
       });
+
     });
   }
 
@@ -84,30 +99,39 @@ export class SprintHistoryComponent implements OnInit {
 
   getSprintCompletedTasksCount(sprintId: string): number {
     const tasks = this.sprintTasksMap.get(sprintId) || [];
+
     return tasks.filter(t => t.status === TaskStatus.Done).length;
   }
 
   getSprintCompletionRate(sprintId: string): number {
     const total = this.getSprintTasksCount(sprintId);
+
     if (total === 0) return 0;
+
     const completed = this.getSprintCompletedTasksCount(sprintId);
+
     return Math.round((completed / total) * 100);
   }
 
   getTotalCompletedTasks(): number {
     let total = 0;
+
     this.completedSprints.forEach(sprint => {
       total += this.getSprintCompletedTasksCount(sprint.id);
     });
+
     return total;
   }
 
   getAverageCompletionRate(): number {
     if (this.completedSprints.length === 0) return 0;
+
     let total = 0;
+
     this.completedSprints.forEach(sprint => {
       total += this.getSprintCompletionRate(sprint.id);
     });
+
     return Math.round(total / this.completedSprints.length);
   }
 

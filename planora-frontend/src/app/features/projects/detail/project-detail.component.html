@@ -1,6 +1,8 @@
 <!-- project-detail.component.html - RED THEME -->
 <div class="page-container">
-
+  @if (projectId) {
+  <app-daily-checkin [projectId]="projectId"></app-daily-checkin>
+  }
   @if (loading) {
   <app-loading></app-loading>
   }

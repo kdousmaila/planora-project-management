@@ -13,7 +13,10 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !req.url.includes('/auth/')) {
+      // ✅ CORRECTION : exclure /auth/login ET /auth/register pour ne jamais logout sur ces pages
+      const isAuthEndpoint = req.url.includes('/auth/login') || req.url.includes('/auth/register');
+
+      if (error.status === 401 && !isAuthEndpoint) {
         const refreshToken = authService.getRefreshToken();
         if (refreshToken) {
           return authService.refreshToken().pipe(
@@ -34,6 +37,8 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
         }
         authService.logout();
       }
+
+      // ✅ Dans tous les cas, l'erreur remonte au composant (login.component l'affiche)
       return throwError(() => error);
     })
   );

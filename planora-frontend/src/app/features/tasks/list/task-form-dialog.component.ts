@@ -29,61 +29,61 @@ import { Task, TaskStatus, TaskPriority, Sprint, ProjectMember } from '../../../
     MatSnackBarModule
   ],
   template: `
-    <h2 mat-dialog-title>{{ data.task ? 'Modifier' : 'Créer' }} une tâche</h2>
+    <h2 mat-dialog-title>{{ data.task ? 'Edit' : 'Create' }} task</h2>
     <mat-dialog-content>
       <form [formGroup]="form" class="form">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Titre</mat-label>
-          <input matInput formControlName="title" placeholder="Titre de la tâche">
+          <mat-label>Title</mat-label>
+          <input matInput formControlName="title" placeholder="Task title">
           @if (form.get('title')?.hasError('required')) {
-            <mat-error>Requis</mat-error>
+            <mat-error>Required</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Description</mat-label>
-          <textarea matInput formControlName="description" rows="3" placeholder="Description détaillée"></textarea>
+          <textarea matInput formControlName="description" rows="3" placeholder="Detailed description"></textarea>
         </mat-form-field>
 
         <div class="row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Statut</mat-label>
+            <mat-label>Status</mat-label>
             <mat-select formControlName="status">
-              <mat-option [value]="0">À faire</mat-option>
-              <mat-option [value]="1">En cours</mat-option>
-              <mat-option [value]="2">Terminé</mat-option>
+              <mat-option [value]="0">To do</mat-option>
+              <mat-option [value]="1">In progress</mat-option>
+              <mat-option [value]="2">Done</mat-option>
             </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Priorité</mat-label>
+            <mat-label>Priority</mat-label>
             <mat-select formControlName="priority">
-              <mat-option [value]="0">Faible</mat-option>
-              <mat-option [value]="1">Moyenne</mat-option>
-              <mat-option [value]="2">Haute</mat-option>
-              <mat-option [value]="3">Critique</mat-option>
+              <mat-option [value]="0">Low</mat-option>
+              <mat-option [value]="1">Medium</mat-option>
+              <mat-option [value]="2">High</mat-option>
+              <mat-option [value]="3">Critical</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
 
         <div class="row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Date d'échéance</mat-label>
+            <mat-label>Due date</mat-label>
             <input matInput [matDatepicker]="dp" formControlName="dueDate">
             <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
             <mat-datepicker #dp></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Progression (%)</mat-label>
+            <mat-label>Progress (%)</mat-label>
             <input matInput type="number" formControlName="progressPercentage" min="0" max="100">
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Assigné à</mat-label>
+          <mat-label>Assigned to</mat-label>
           <mat-select formControlName="assignedToId">
-            <mat-option value="">Non assigné</mat-option>
+            <mat-option value="">Unassigned</mat-option>
             @for (u of users; track u.userId) {
               <mat-option [value]="u.userId">{{ u.fullName }}</mat-option>
             }
@@ -91,9 +91,9 @@ import { Task, TaskStatus, TaskPriority, Sprint, ProjectMember } from '../../../
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Sprint (optionnel)</mat-label>
+          <mat-label>Sprint (optional)</mat-label>
           <mat-select formControlName="sprintId">
-            <mat-option value="">Aucun sprint</mat-option>
+            <mat-option value="">No sprint</mat-option>
             @for (s of sprints; track s.id) {
               <mat-option [value]="s.id">{{ s.name }}</mat-option>
             }
@@ -103,9 +103,9 @@ import { Task, TaskStatus, TaskPriority, Sprint, ProjectMember } from '../../../
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button [mat-dialog-close]="undefined">Annuler</button>
+      <button mat-button [mat-dialog-close]="undefined">Cancel</button>
       <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid || saving">
-        {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+        {{ saving ? 'Saving...' : 'Save' }}
       </button>
     </mat-dialog-actions>
   `,
@@ -117,26 +117,13 @@ import { Task, TaskStatus, TaskPriority, Sprint, ProjectMember } from '../../../
       min-width: 450px;
       padding-top: 8px;
     }
-    .full-width {
-      width: 100%;
-    }
-    .half-width {
-      width: calc(50% - 8px);
-    }
-    .row {
-      display: flex;
-      gap: 16px;
-    }
+    .full-width { width: 100%; }
+    .half-width { width: calc(50% - 8px); }
+    .row { display: flex; gap: 16px; }
     @media (max-width: 600px) {
-      .row {
-        flex-direction: column;
-      }
-      .half-width {
-        width: 100%;
-      }
-      .form {
-        min-width: auto;
-      }
+      .row { flex-direction: column; }
+      .half-width { width: 100%; }
+      .form { min-width: auto; }
     }
   `]
 })
@@ -166,7 +153,7 @@ export class TaskFormDialogComponent implements OnInit {
   constructor(@Inject(MAT_DIALOG_DATA) public data: { task: Task | null; projectId: string; sprintId?: string | null }) { }
 
   ngOnInit(): void {
-    // Charger les sprints du projet
+    // Load project sprints
     this.sprintService.getSprintsByProject(this.data.projectId).subscribe({
       next: (response) => {
         if (response.success) {
@@ -175,7 +162,7 @@ export class TaskFormDialogComponent implements OnInit {
       }
     });
 
-    // Charger les membres du projet pour l'assignation
+    // Load project members for assignment
     this.projectService.getProject(this.data.projectId).subscribe({
       next: (response) => {
         if (response.success) {
@@ -184,7 +171,7 @@ export class TaskFormDialogComponent implements OnInit {
       }
     });
 
-    // Si on est en mode édition, pré-remplir le formulaire
+    // If in edit mode, pre-fill the form
     if (this.data.task) {
       const task = this.data.task;
       this.form.patchValue({
@@ -198,7 +185,7 @@ export class TaskFormDialogComponent implements OnInit {
         sprintId: task.sprintId || ''
       });
     } else if (this.data.sprintId) {
-      // Si on crée une tâche dans un sprint spécifique
+      // If creating a task within a specific sprint
       this.form.patchValue({
         sprintId: this.data.sprintId
       });
@@ -232,18 +219,18 @@ export class TaskFormDialogComponent implements OnInit {
         this.saving = false;
         if (response.success) {
           this.snackBar.open(
-            `Tâche ${this.data.task ? 'modifiée' : 'créée'} avec succès !`,
-            'Fermer',
+            `Task ${this.data.task ? 'updated' : 'created'} successfully!`,
+            'Close',
             { duration: 3000 }
           );
           this.dialogRef.close(true);
         } else {
-          this.snackBar.open(response.message || 'Erreur', 'Fermer', { duration: 4000 });
+          this.snackBar.open(response.message || 'Error', 'Close', { duration: 4000 });
         }
       },
       error: (err) => {
         this.saving = false;
-        this.snackBar.open(err?.error?.message || 'Erreur lors de l\'enregistrement', 'Fermer', { duration: 4000 });
+        this.snackBar.open(err?.error?.message || 'Error while saving', 'Close', { duration: 4000 });
       }
     });
   }

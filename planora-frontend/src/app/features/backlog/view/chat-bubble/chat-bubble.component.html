@@ -34,7 +34,7 @@
     @if (isDraggingOver) {
     <div class="drag-overlay">
       <mat-icon>cloud_upload</mat-icon>
-      <span>Déposer pour envoyer</span>
+      <span>Drop to send</span>
     </div>
     }
 
@@ -49,17 +49,17 @@
           <span class="header-title">{{ selectedSession.title }}</span>
           <span class="header-sub">{{ sessions.length }} conversation{{ sessions.length !== 1 ? 's' : '' }}</span>
           } @else {
-          <span class="header-title">Inbox du projet</span>
+          <span class="header-title">Project Inbox</span>
           <span class="header-sub">{{ sessions.length }} conversation{{ sessions.length !== 1 ? 's' : '' }}</span>
           }
         </div>
       </div>
       <div class="chat-header-actions">
-        <button class="header-btn" (click)="toggleSearch(); $event.stopPropagation()" matTooltip="Rechercher">
+        <button class="header-btn" (click)="toggleSearch(); $event.stopPropagation()" matTooltip="Search">
           <mat-icon>search</mat-icon>
         </button>
         <button class="header-btn" (click)="showNewSessionForm = !showNewSessionForm; $event.stopPropagation()"
-                matTooltip="Nouvelle conversation">
+                matTooltip="New conversation">
           <mat-icon>add</mat-icon>
         </button>
         <button class="header-btn" (click)="toggleChat()">
@@ -73,9 +73,9 @@
     <div class="search-bar" (click)="$event.stopPropagation()">
       <mat-icon class="search-icon">search</mat-icon>
       <input class="search-input" type="text" [(ngModel)]="searchQuery"
-             (input)="onSearchChange()" placeholder="Rechercher dans la conversation..." autofocus />
+             (input)="onSearchChange()" placeholder="Search in conversation..." autofocus />
       @if (searchQuery) {
-      <span class="search-count">{{ searchResults.length }} résultat{{ searchResults.length !== 1 ? 's' : '' }}</span>
+      <span class="search-count">{{ searchResults.length }} result{{ searchResults.length !== 1 ? 's' : '' }}</span>
       <button class="search-nav" (click)="searchPrev()"><mat-icon>keyboard_arrow_up</mat-icon></button>
       <button class="search-nav" (click)="searchNext()"><mat-icon>keyboard_arrow_down</mat-icon></button>
       }
@@ -88,9 +88,9 @@
     <div class="new-session-form" (click)="$event.stopPropagation()">
       <form [formGroup]="sessionForm" (ngSubmit)="createSession()">
         <input class="session-input" formControlName="title"
-               placeholder="Titre de la conversation..." />
+               placeholder="Conversation title..." />
         <button type="submit" class="create-btn" [disabled]="sessionForm.invalid || creatingSession">
-          {{ creatingSession ? '...' : 'Créer' }}
+          {{ creatingSession ? '...' : 'Create' }}
         </button>
       </form>
     </div>
@@ -104,7 +104,7 @@
         <button class="session-tab" (click)="selectSession(session)" [matTooltip]="session.title">
           {{ session.title.length > 12 ? session.title.slice(0, 12) + '…' : session.title }}
         </button>
-        <button class="session-delete-btn" (click)="deleteSession(session, $event)" matTooltip="Supprimer">
+        <button class="session-delete-btn" (click)="deleteSession(session, $event)" matTooltip="Delete">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -118,15 +118,15 @@
       @if (sessions.length === 0) {
       <div class="empty-chat">
         <div class="empty-icon"><mat-icon>chat_bubble_outline</mat-icon></div>
-        <span>Aucune conversation — créez-en une !</span>
+        <span>No conversations yet — create one!</span>
       </div>
       }
 
       @if (selectedSession && messages.length === 0) {
       <div class="empty-chat">
         <div class="empty-icon"><mat-icon>chat_bubble_outline</mat-icon></div>
-        <span>Aucun message pour l'instant</span>
-        <p class="empty-hint">Envoyez un message ou utilisez <code>@chat</code> pour l'IA</p>
+        <span>No messages yet</span>
+        <p class="empty-hint">Send a message or use <code>@chat</code> for AI</p>
       </div>
       }
 
@@ -185,7 +185,7 @@
                  [class.command-bubble]="isChatCommand(msg) && !msg.isAssistant">
               {{ msg.content }}
               @if (msg.isEdited) {
-              <span class="edited-badge">modifié</span>
+              <span class="edited-badge">edited</span>
               }
             </div>
             }
@@ -218,7 +218,7 @@
             </div>
             }
 
-            <!-- Audio player pour les messages vocaux -->
+            <!-- Audio player for voice messages -->
             @if (msg.messageType === 'audio' && msg.attachments?.length) {
             <div class="msg-audio">
               <mat-icon class="audio-icon">mic</mat-icon>
@@ -238,20 +238,20 @@
                 }
               </div>
               <div class="action-divider"></div>
-              <button class="action-btn" (click)="setReply(msg)" matTooltip="Répondre">
+              <button class="action-btn" (click)="setReply(msg)" matTooltip="Reply">
                 <mat-icon>reply</mat-icon>
               </button>
               @if (isMine(msg) && !msg.isAssistant) {
-              <button class="action-btn" (click)="startEdit(msg)" matTooltip="Modifier">
+              <button class="action-btn" (click)="startEdit(msg)" matTooltip="Edit">
                 <mat-icon>edit</mat-icon>
               </button>
-              <button class="action-btn danger" (click)="deleteMessage(msg)" matTooltip="Supprimer">
+              <button class="action-btn danger" (click)="deleteMessage(msg)" matTooltip="Delete">
                 <mat-icon>delete</mat-icon>
               </button>
               }
               @if (canPin && !msg.isAssistant) {
               <button class="action-btn" [class.is-pinned]="isPinned(msg)"
-                      (click)="openSchedulePopup(msg)" matTooltip="Planifier">
+                      (click)="openSchedulePopup(msg)" matTooltip="Schedule">
                 <mat-icon>push_pin</mat-icon>
               </button>
               }
@@ -261,7 +261,7 @@
             } @else {
             <div class="msg-bubble deleted-bubble">
               <mat-icon style="font-size:14px;vertical-align:middle;">block</mat-icon>
-              Ce message a été supprimé
+              This message has been deleted
             </div>
             }
           </div>
@@ -293,7 +293,7 @@
       </div>
       }
 
-    </div><!-- ← ferme .messages-area -->
+    </div><!-- ← closes .messages-area -->
     <!-- ── Upload Progress ── -->
     @if (uploadingFiles.length > 0) {
     <div class="upload-progress-bar">
@@ -344,7 +344,7 @@
     @if (editingMessage) {
     <div class="edit-banner" (click)="$event.stopPropagation()">
       <mat-icon class="edit-icon">edit</mat-icon>
-      <span>Modification du message</span>
+      <span>Editing message</span>
       <button class="reply-cancel" (click)="cancelEdit()"><mat-icon>close</mat-icon></button>
     </div>
     }
@@ -352,14 +352,14 @@
     <!-- ── Hint ── -->
     @if (!replyingTo && !editingMessage && !isRecording) {
     <div class="chat-hint">
-      Tapez <code>@chat</code> pour invoquer l'IA · <kbd>Shift+Enter</kbd> pour saut de ligne
+      Type <code>@chat</code> to invoke AI · <kbd>Shift+Enter</kbd> for line break
     </div>
     }
 
     <!-- ── Composer ── -->
     <div class="chat-composer" (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
 
-      <!-- Backdrop pour fermer les pickers -->
+      <!-- Backdrop to close pickers -->
       @if (showEmojiPicker || showStickerPicker || showAttachMenu) {
       <div class="picker-backdrop"
            (mousedown)="closeAllPickers(); $event.stopPropagation()"
@@ -420,19 +420,19 @@
                 (mousedown)="$event.stopPropagation()"
                 (click)="triggerFileInput(); $event.stopPropagation()">
           <mat-icon>attach_file</mat-icon>
-          <span>Fichier</span>
+          <span>File</span>
         </button>
       </div>
       }
 
-      <!-- ══ MODE NORMAL ══ -->
+      <!-- ══ NORMAL MODE ══ -->
       @if (!isRecording) {
 
       <div class="composer-toolbar">
         <button class="tool-btn"
                 (mousedown)="$event.stopPropagation()"
                 (click)="showAttachMenu = !showAttachMenu; showEmojiPicker = false; showStickerPicker = false; $event.stopPropagation()"
-                matTooltip="Joindre un fichier">
+                matTooltip="Attach a file">
           <mat-icon>add_circle_outline</mat-icon>
         </button>
         <button class="tool-btn"
@@ -450,7 +450,7 @@
       </div>
       <textarea #chatInputEl class="chat-input"
                 [formControl]="messageForm.controls.content"
-                [placeholder]="editingMessage ? 'Modifier le message...' : 'Écrire un message...'"
+                [placeholder]="editingMessage ? 'Edit message...' : 'Write a message...'"
                 rows="1"
                 (mousedown)="$event.stopPropagation()"
                 (click)="$event.stopPropagation()"
@@ -467,43 +467,43 @@
       <button class="send-btn mic-btn"
               (mousedown)="$event.stopPropagation()"
               (click)="startRecording(); $event.stopPropagation()"
-              matTooltip="Enregistrer un message vocal">
+              matTooltip="Record a voice message">
         <mat-icon>mic</mat-icon>
       </button>
       }
 
-      }<!-- ← fin MODE NORMAL -->
-      <!-- ══ MODE ENREGISTREMENT ══ -->
+      }<!-- ← end NORMAL MODE -->
+      <!-- ══ RECORDING MODE ══ -->
       @if (isRecording) {
 
       <button class="rec-btn cancel"
               (mousedown)="$event.stopPropagation()"
               (click)="cancelRecording(); $event.stopPropagation()"
-              matTooltip="Annuler">
+              matTooltip="Cancel">
         <mat-icon>delete</mat-icon>
       </button>
 
       <div class="recording-bar">
         <span class="rec-dot"></span>
         <span class="rec-time">{{ formatRecordingTime() }}</span>
-        <span class="rec-label">Enregistrement en cours...</span>
+        <span class="rec-label">Recording in progress...</span>
       </div>
 
       <button class="rec-btn send"
               (mousedown)="$event.stopPropagation()"
               (click)="stopRecording(); $event.stopPropagation()"
-              matTooltip="Envoyer">
+              matTooltip="Send">
         <mat-icon>send</mat-icon>
       </button>
 
-      }<!-- ← fin MODE ENREGISTREMENT -->
+      }<!-- ← end RECORDING MODE -->
 
-    </div><!-- ← ferme .chat-composer -->
+    </div><!-- ← closes .chat-composer -->
 
-  </div><!-- ← ferme .chat-window -->
-  }<!-- ← ferme @if (isOpen) -->
+  </div><!-- ← closes .chat-window -->
+  }<!-- ← closes @if (isOpen) -->
   <!-- ══ FAB ══ -->
-  <button class="chat-fab" (click)="toggleChat()" matTooltip="Inbox projet">
+  <button class="chat-fab" (click)="toggleChat()" matTooltip="Project inbox">
     <mat-icon>{{ isOpen ? 'close' : 'forum' }}</mat-icon>
     @if (!isOpen && unreadCount > 0) {
     <span class="fab-badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
@@ -517,7 +517,7 @@
 
       <div class="popup-header">
         <mat-icon>push_pin</mat-icon>
-        <span>Planifier ce message</span>
+        <span>Schedule this message</span>
         <button class="popup-close" (click)="closeSchedulePopup()"><mat-icon>close</mat-icon></button>
       </div>
 
@@ -528,17 +528,17 @@
 
       @if (!scheduleMode) {
       <div class="mode-choice">
-        <p class="mode-hint">Que voulez-vous faire avec ce message ?</p>
+        <p class="mode-hint">What would you like to do with this message?</p>
         <div class="mode-options">
           <div class="mode-card" (click)="scheduleMode = 'task'">
             <mat-icon>event_note</mat-icon>
-            <span class="mode-title">Tâche</span>
-            <span class="mode-sub">Ajouter au calendrier sans réunion</span>
+            <span class="mode-title">Task</span>
+            <span class="mode-sub">Add to calendar without a meeting</span>
           </div>
           <div class="mode-card" (click)="scheduleMode = 'meet'">
             <mat-icon>videocam</mat-icon>
-            <span class="mode-title">Réunion Meet</span>
-            <span class="mode-sub">Créer une réunion avec lien Jitsi</span>
+            <span class="mode-title">Meet</span>
+            <span class="mode-sub">Create a meeting with a Jitsi link</span>
           </div>
         </div>
       </div>
@@ -547,29 +547,29 @@
       @if (scheduleMode) {
       <div class="popup-body">
         <button class="btn-back" (click)="scheduleMode = null">
-          <mat-icon>arrow_back</mat-icon> Retour
+          <mat-icon>arrow_back</mat-icon> Back
         </button>
-        <label class="popup-label">Titre</label>
-        <input class="popup-input" type="text" [(ngModel)]="scheduleTitle" placeholder="Ex: Daily standup..." />
+        <label class="popup-label">Title</label>
+        <input class="popup-input" type="text" [(ngModel)]="scheduleTitle" placeholder="E.g. Daily standup..." />
         <label class="popup-label">Date</label>
         <input class="popup-input" type="date" [(ngModel)]="scheduleDate" [min]="todayStr" />
-        <label class="popup-label">Heure</label>
+        <label class="popup-label">Time</label>
         <input class="popup-input" type="time" [(ngModel)]="scheduleTime" />
         <label class="popup-label">Participants</label>
         <div class="visibility-toggle">
           <button type="button" [class.active]="scheduleMeetVisibility === 'all'"
                   (click)="scheduleMeetVisibility = 'all'">
-            <mat-icon>groups</mat-icon> Tout le groupe
+            <mat-icon>groups</mat-icon> Entire group
           </button>
           <button type="button" [class.active]="scheduleMeetVisibility === 'specific'"
                   (click)="scheduleMeetVisibility = 'specific'">
-            <mat-icon>person_search</mat-icon> Membres spécifiques
+            <mat-icon>person_search</mat-icon> Specific members
           </button>
         </div>
         @if (scheduleMeetVisibility === 'specific') {
         <div class="members-list">
           @if (projectMembers.length === 0) {
-          <p class="empty-hint">Aucun membre trouvé.</p>
+          <p class="empty-hint">No members found.</p>
           }
           @for (member of projectMembers; track member.userId) {
           <div class="member-item" [class.selected]="scheduleMeetMemberIds.has(member.userId)"
@@ -583,17 +583,17 @@
         }
       </div>
       <div class="popup-actions">
-        <button class="btn-cancel" (click)="closeSchedulePopup()">Annuler</button>
+        <button class="btn-cancel" (click)="closeSchedulePopup()">Cancel</button>
         <button class="btn-confirm" [disabled]="!scheduleDate || !scheduleTime || !scheduleTitle"
                 (click)="confirmSchedule()">
           <mat-icon>{{ scheduleMode === 'meet' ? 'videocam' : 'event_note' }}</mat-icon>
-          {{ scheduleMode === 'meet' ? 'Créer la réunion' : 'Ajouter la tâche' }}
+          {{ scheduleMode === 'meet' ? 'Create meeting' : 'Add task' }}
         </button>
       </div>
       }
 
-    </div><!-- ← ferme .schedule-popup -->
-  </div><!-- ← ferme .schedule-overlay -->
-  }<!-- ← ferme @if (showSchedulePopup) -->
+    </div><!-- ← closes .schedule-popup -->
+  </div><!-- ← closes .schedule-overlay -->
+  }<!-- ← closes @if (showSchedulePopup) -->
 
-</div><!-- ← ferme .chat-bubble-wrapper -->
+</div><!-- ← closes .chat-bubble-wrapper -->

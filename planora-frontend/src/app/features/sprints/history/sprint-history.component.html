@@ -6,8 +6,8 @@
         <mat-icon>arrow_back</mat-icon>
       </button>
       <div>
-        <h1>Historique des sprints</h1>
-        <p class="subtitle">Sprints terminés du projet</p>
+        <h1>Sprint History</h1>
+        <p class="subtitle">Completed project sprints</p>
       </div>
     </div>
   </div>
@@ -17,20 +17,23 @@
   }
 
   @if (!loading) {
+
   <!-- Stats Cards -->
   @if (completedSprints.length > 0) {
   <div class="stats-cards">
     <div class="stat-card">
       <div class="stat-value">{{ completedSprints.length }}</div>
-      <div class="stat-label">Sprints terminés</div>
+      <div class="stat-label">Completed Sprints</div>
     </div>
+
     <div class="stat-card">
       <div class="stat-value">{{ getTotalCompletedTasks() }}</div>
-      <div class="stat-label">Tâches complétées</div>
+      <div class="stat-label">Completed Tasks</div>
     </div>
+
     <div class="stat-card">
       <div class="stat-value">{{ getAverageCompletionRate() }}%</div>
-      <div class="stat-label">Taux de complétion moyen</div>
+      <div class="stat-label">Average Completion Rate</div>
     </div>
   </div>
   }
@@ -39,50 +42,66 @@
   @if (completedSprints.length > 0) {
   <div class="sprints-timeline">
     <div class="timeline-line"></div>
+
     @for (sprint of completedSprints; let i = $index; track sprint.id) {
     <div class="sprint-card">
+
       <div class="timeline-dot" [style.background]="getSprintColor(i)"></div>
+
       <div class="sprint-content">
+
         <div class="sprint-header">
           <div class="sprint-title">
             <mat-icon>sprint</mat-icon>
             <h3>{{ sprint.name }}</h3>
           </div>
-          <span class="sprint-status closed">Terminé</span>
+
+          <span class="sprint-status closed">Completed</span>
         </div>
+
         @if (sprint.goal) {
         <div class="sprint-goal">
           <mat-icon>flag</mat-icon>
           <span>{{ sprint.goal }}</span>
         </div>
         }
+
         <div class="sprint-dates">
           <mat-icon>event</mat-icon>
           <span>{{ sprint.startDate | date:'dd MMM yyyy' }} - {{ sprint.endDate | date:'dd MMM yyyy' }}</span>
         </div>
+
         <div class="sprint-stats">
+
           <div class="stat-item">
-            <span class="stat-label">Tâches</span>
+            <span class="stat-label">Tasks</span>
             <span class="stat-value">{{ getSprintTasksCount(sprint.id) }}</span>
           </div>
+
           <div class="stat-item">
-            <span class="stat-label">Complétées</span>
+            <span class="stat-label">Completed</span>
             <span class="stat-value success">{{ getSprintCompletedTasksCount(sprint.id) }}</span>
           </div>
+
           <div class="stat-item">
-            <span class="stat-label">Taux</span>
+            <span class="stat-label">Rate</span>
             <span class="stat-value">{{ getSprintCompletionRate(sprint.id) }}%</span>
           </div>
+
         </div>
+
         <div class="sprint-progress">
-          <mat-progress-bar mode="determinate" [value]="getSprintCompletionRate(sprint.id)"
-            [color]="getSprintCompletionRate(sprint.id) >= 80 ? 'primary' : 'warn'">
+          <mat-progress-bar mode="determinate"
+                            [value]="getSprintCompletionRate(sprint.id)"
+                            [color]="getSprintCompletionRate(sprint.id) >= 80 ? 'primary' : 'warn'">
           </mat-progress-bar>
         </div>
+
         <button class="view-sprint-btn" (click)="viewSprint(sprint.id)">
           <mat-icon>visibility</mat-icon>
-          Voir les détails
+          View Details
         </button>
+
       </div>
     </div>
     }
@@ -93,13 +112,17 @@
   @if (completedSprints.length === 0) {
   <div class="empty-history">
     <mat-icon>history</mat-icon>
-    <h3>Aucun sprint terminé</h3>
-    <p>Les sprints que vous terminerez apparaîtront ici</p>
+
+    <h3>No Completed Sprint</h3>
+
+    <p>The sprints you complete will appear here</p>
+
     <button mat-raised-button color="primary" routerLink="../board">
       <mat-icon>sprint</mat-icon>
-      Voir le sprint actif
+      View Active Sprint
     </button>
   </div>
   }
+
   }
 </div>

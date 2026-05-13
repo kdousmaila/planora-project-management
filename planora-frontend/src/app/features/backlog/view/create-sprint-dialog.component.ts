@@ -25,30 +25,30 @@ import { SprintService } from '../../../core/services/sprint.service';
     MatNativeDateModule
   ],
   template: `
-    <h2 mat-dialog-title>Créer un nouveau sprint</h2>
+    <h2 mat-dialog-title>Create a new sprint</h2>
     <mat-dialog-content>
       <form [formGroup]="sprintForm" class="sprint-form">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nom du sprint</mat-label>
+          <mat-label>Sprint name</mat-label>
           <input matInput formControlName="name" placeholder="Ex: Sprint 1" autofocus>
-          <mat-error *ngIf="sprintForm.get('name')?.hasError('required')">Le nom est requis</mat-error>
+          <mat-error *ngIf="sprintForm.get('name')?.hasError('required')">Name is required</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Objectif</mat-label>
-          <textarea matInput formControlName="goal" rows="2" placeholder="Objectif du sprint..."></textarea>
+          <mat-label>Goal</mat-label>
+          <textarea matInput formControlName="goal" rows="2" placeholder="Sprint goal..."></textarea>
         </mat-form-field>
 
         <div class="date-row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Date de début</mat-label>
+            <mat-label>Start date</mat-label>
             <input matInput [matDatepicker]="startPicker" formControlName="startDate">
             <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
             <mat-datepicker #startPicker></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Date de fin</mat-label>
+            <mat-label>End date</mat-label>
             <input matInput [matDatepicker]="endPicker" formControlName="endDate">
             <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
             <mat-datepicker #endPicker></mat-datepicker>
@@ -58,9 +58,9 @@ import { SprintService } from '../../../core/services/sprint.service';
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-button [mat-dialog-close]="undefined">Annuler</button>
-<button mat-raised-button class="btn-blue" (click)="save()" [disabled]="sprintForm.invalid || saving">
-        {{ saving ? 'Création...' : 'Créer' }}
+      <button mat-button [mat-dialog-close]="undefined">Cancel</button>
+      <button mat-raised-button class="btn-blue" (click)="save()" [disabled]="sprintForm.invalid || saving">
+        {{ saving ? 'Creating...' : 'Create' }}
       </button>
     </mat-dialog-actions>
   `,
@@ -70,14 +70,16 @@ import { SprintService } from '../../../core/services/sprint.service';
   .date-row { display: flex; gap: 16px; }
   .half-width { width: calc(50% - 8px); }
   .btn-blue { background: linear-gradient(135deg, #4f46e5, #4338ca) !important; color: white !important; box-shadow: 0 2px 8px rgba(79,70,229,0.3); }
-.btn-blue:hover { background: linear-gradient(135deg, #4338ca, #3730a3) !important; }
-.btn-blue:disabled { background: #a5b4fc !important; color: white !important; box-shadow: none; }
+  .btn-blue:hover { background: linear-gradient(135deg, #4338ca, #3730a3) !important; }
+  .btn-blue:disabled { background: #a5b4fc !important; color: white !important; box-shadow: none; }
+
   @media (max-width: 600px) {
     .date-row { flex-direction: column; }
     .half-width { width: 100%; }
     .sprint-form { min-width: auto; }
   }
-`]})
+`]
+})
 export class CreateSprintDialogComponent {
   private fb = inject(FormBuilder);
   private sprintService = inject(SprintService);
@@ -113,15 +115,15 @@ export class CreateSprintDialogComponent {
       next: (response: any) => {
         this.saving = false;
         if (response.success) {
-          this.snackBar.open('Sprint créé avec succès !', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Sprint created successfully!', 'Close', { duration: 3000 });
           this.dialogRef.close(true);
         } else {
-          this.snackBar.open(response.message || 'Erreur lors de la création', 'Fermer', { duration: 3000 });
+          this.snackBar.open(response.message || 'Creation error', 'Close', { duration: 3000 });
         }
       },
       error: (err) => {
         this.saving = false;
-        this.snackBar.open('Erreur lors de la création du sprint', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Error while creating sprint', 'Close', { duration: 3000 });
         console.error(err);
       }
     });

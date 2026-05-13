@@ -13,7 +13,7 @@
     </a>
   </div>
 
-  <!-- ── NAVIGATION PRINCIPALE ── -->
+  <!-- ── MAIN NAVIGATION ── -->
   @if (!collapsed) {
   <div class="sidebar-section-label">Navigation</div>
   }
@@ -61,7 +61,7 @@
   <div class="sidebar-divider"></div>
 
   @if (!collapsed) {
-  <div class="sidebar-section-label">Projet actif</div>
+  <div class="sidebar-section-label">Active Project</div>
   }
 
   <div class="project-section">
@@ -75,7 +75,7 @@
       </div>
       @if (!collapsed) {
       <span class="project-name">{{ currentProject.name }}</span>
-      <span class="project-tag">Actif</span>
+      <span class="project-tag">Active</span>
       }
     </div>
 
@@ -101,46 +101,48 @@
          [matTooltip]="collapsed ? 'Kanban' : ''"
          matTooltipPosition="right">
         <mat-icon>view_kanban</mat-icon>
-        @if (!collapsed) { <span>Tableau Kanban</span> }
+        @if (!collapsed) { <span>Kanban Board</span> }
       </a>
 
       <a [routerLink]="['/projects', currentProject.id, 'tasks']"
          routerLinkActive="active"
          class="project-nav-item"
-         [matTooltip]="collapsed ? 'Tâches' : ''"
+         [matTooltip]="collapsed ? 'Tasks' : ''"
          matTooltipPosition="right">
         <mat-icon>task_alt</mat-icon>
-        @if (!collapsed) { <span>Tâches</span> }
+        @if (!collapsed) { <span>Tasks</span> }
       </a>
 
       <a [routerLink]="['/projects', currentProject.id, 'history']"
          routerLinkActive="active"
          class="project-nav-item"
-         [matTooltip]="collapsed ? 'Historique' : ''"
+         [matTooltip]="collapsed ? 'History' : ''"
          matTooltipPosition="right">
         <mat-icon>history</mat-icon>
-        @if (!collapsed) { <span>Historique</span> }
+        @if (!collapsed) { <span>History</span> }
       </a>
 
-      <!-- ← AJOUTE ICI -->
+      <!-- Calendar -->
       <a [routerLink]="['/projects', currentProject.id, 'calendar']"
          routerLinkActive="active"
          class="project-nav-item"
-         [matTooltip]="collapsed ? 'Calendrier' : ''"
+         [matTooltip]="collapsed ? 'Calendar' : ''"
          matTooltipPosition="right">
         <mat-icon>calendar_month</mat-icon>
-        @if (!collapsed) { <span>Calendrier</span> }
+        @if (!collapsed) { <span>Calendar</span> }
       </a>
+
       @if (canSeeHealth) {
       <a [routerLink]="['/projects', currentProject.id, 'team-health']"
          routerLinkActive="active"
          class="project-nav-item project-nav-item--health"
-         [matTooltip]="collapsed ? 'Santé équipe' : ''"
+         [matTooltip]="collapsed ? 'Team Health' : ''"
          matTooltipPosition="right">
         <mat-icon>favorite</mat-icon>
-        @if (!collapsed) { <span>Santé équipe</span> }
+        @if (!collapsed) { <span>Team Health</span> }
       </a>
       }
+
     </div>
   </div>
   }

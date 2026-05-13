@@ -1,4 +1,3 @@
-// project-detail.component.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
@@ -16,6 +15,7 @@ import { ProjectService } from '../../../core/services/project.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Project, WorkspaceMember, ProjectMember } from '../../../core/models';
 import { LoadingComponent } from '../../../shared/components/loading/loading.component';
+import { DailyCheckInComponent } from '../daily-checkin/daily-checkin.component';
 
 @Component({
   selector: 'app-project-detail',
@@ -23,7 +23,8 @@ import { LoadingComponent } from '../../../shared/components/loading/loading.com
   imports: [
     CommonModule, RouterLink, MatCardModule, MatButtonModule,
     MatIconModule, MatChipsModule, MatProgressBarModule, MatFormFieldModule,
-    MatSelectModule, ReactiveFormsModule, MatSnackBarModule, LoadingComponent
+    MatSelectModule, ReactiveFormsModule, MatSnackBarModule, LoadingComponent,
+    DailyCheckInComponent, 
   ],
   templateUrl: './project-detail.component.html',
   styleUrls: ['./project-detail.component.css']
@@ -41,9 +42,22 @@ export class ProjectDetailComponent implements OnInit {
   workspaceMembers: WorkspaceMember[] = [];
   addingMember = false;
 
+  // ✅ Ajouté
+  projectId = '';
+
   memberForm = this.fb.group({
     userId: ['', Validators.required]
   });
+
+  // ✅ Ajouté
+  get isPM(): boolean {
+    return this.authService.currentUser?.userId === this.project?.projectManagerId;
+  }
+
+  // ✅ Ajouté
+  get isAdmin(): boolean {
+    return this.authService.hasRole(['Admin']);
+  }
 
   get canManageMembers(): boolean {
     const currentUserId = this.authService.currentUser?.userId;
@@ -54,45 +68,42 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   get availableWorkspaceMembers(): WorkspaceMember[] {
-    const projectMemberIds = new Set((this.project?.members || []).map(member => member.userId));
-    return this.workspaceMembers.filter(member => !projectMemberIds.has(member.userId));
+    const projectMemberIds = new Set((this.project?.members || []).map(m => m.userId));
+    return this.workspaceMembers.filter(m => !projectMemberIds.has(m.userId));
   }
 
   get canOpenInbox(): boolean {
     const currentUserId = this.authService.currentUser?.userId;
     if (!this.project || !currentUserId) return false;
-    return (this.project.members || []).some(member => member.userId === currentUserId) ||
+    return (this.project.members || []).some(m => m.userId === currentUserId) ||
       currentUserId === this.project.projectManagerId;
   }
 
   ngOnInit(): void {
-    const projectId = this.route.snapshot.paramMap.get('projectId');
-    if (!projectId || projectId === 'null' || projectId === 'undefined') {
+    const id = this.route.snapshot.paramMap.get('projectId');
+    if (!id || id === 'null' || id === 'undefined') {
       this.loading = false;
       this.snackBar.open('Invalid project id in URL', 'Close', { duration: 3000 });
       return;
     }
-
-    this.loadProject(projectId);
+    this.projectId = id; // ✅ Stocké ici
+    this.loadProject(id);
   }
 
   loadProject(projectId: string): void {
     this.loading = true;
     this.projectService.getProject(projectId).subscribe({
-      next: response => {
+      next: (response: any) => {
         this.loading = false;
         if (response.success) {
           this.project = response.data;
-          console.log('Projet chargé:', this.project);
-          console.log('Membres du projet:', this.project.members);
           this.loadWorkspaceMembers();
         } else {
           this.snackBar.open('Project not found', 'Close', { duration: 3000 });
         }
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
-        console.error('Erreur chargement projet:', err);
         this.snackBar.open('Failed to load project', 'Close', { duration: 3000 });
       }
     });
@@ -100,89 +111,64 @@ export class ProjectDetailComponent implements OnInit {
 
   loadWorkspaceMembers(): void {
     if (!this.project) return;
-
     this.workspaceService.getMembers(this.project.workspaceId).subscribe({
-      next: response => {
+      next: (response: any) => {
         if (response.success) {
           this.workspaceMembers = response.data;
-          console.log('Membres du workspace:', this.workspaceMembers);
-          console.log('Membres déjà dans le projet:', this.project?.members);
-          console.log('Membres disponibles:', this.availableWorkspaceMembers);
-
           if (this.availableWorkspaceMembers.length > 0 && !this.memberForm.value.userId) {
             this.memberForm.patchValue({ userId: this.availableWorkspaceMembers[0].userId });
           }
         }
       },
-      error: (err) => {
-        console.error('Erreur chargement membres workspace:', err);
+      error: () => {
         this.snackBar.open('Failed to load workspace members', 'Close', { duration: 3000 });
       }
     });
   }
 
-  // ✅ Correction: Utiliser ProjectMember au lieu de WorkspaceMember
   canRemoveMember(member: ProjectMember): boolean {
     const currentUserId = this.authService.currentUser?.userId;
     if (!this.project || !currentUserId) return false;
-
     if (member.userId === this.project.projectManagerId) return false;
-
     return currentUserId === this.project.projectManagerId ||
       currentUserId === this.project.workspaceOwnerId ||
       this.authService.hasRole(['Admin']);
   }
 
-  // ✅ Correction: Utiliser ProjectMember au lieu de WorkspaceMember
   removeMember(member: ProjectMember): void {
     if (!this.project) return;
-
-    const confirmRemove = confirm(`Are you sure you want to remove ${member.fullName} from this project?`);
-    if (!confirmRemove) return;
-
+    if (!confirm(`Remove ${member.fullName} from this project?`)) return;
     this.projectService.removeMember(this.project.id, member.userId).subscribe({
-      next: response => {
+      next: (response: any) => {
         if (response.success) {
-          this.snackBar.open('Member removed successfully', 'Close', { duration: 3000 });
+          this.snackBar.open('Member removed', 'Close', { duration: 3000 });
           this.loadProject(this.project!.id);
         }
       },
-      error: err => {
-        this.snackBar.open(err?.error?.message || 'Failed to remove member', 'Close', { duration: 4000 });
+      error: (err: any) => {
+        this.snackBar.open(err?.error?.message || 'Failed to remove', 'Close', { duration: 4000 });
       }
     });
   }
 
   addMember(): void {
-    if (!this.project || this.memberForm.invalid) {
-      this.snackBar.open('Please select a member to add', 'Close', { duration: 3000 });
-      return;
-    }
-
+    if (!this.project || this.memberForm.invalid) return;
     this.addingMember = true;
     const userId = this.memberForm.value.userId!;
-
-    console.log('Ajout du membre:', userId, 'au projet:', this.project.id);
-
     this.projectService.addMember(this.project.id, userId).subscribe({
-      next: response => {
+      next: (response: any) => {
         this.addingMember = false;
         if (response.success) {
-          this.snackBar.open('Member added to project successfully!', 'Close', { duration: 3000 });
+          this.snackBar.open('Member added!', 'Close', { duration: 3000 });
           this.loadProject(this.project!.id);
           this.memberForm.reset();
-          if (this.availableWorkspaceMembers.length > 0) {
-            this.memberForm.patchValue({ userId: this.availableWorkspaceMembers[0].userId });
-          }
         } else {
           this.snackBar.open(response.message || 'Failed to add member', 'Close', { duration: 4000 });
         }
       },
-      error: (err) => {
+      error: (err: any) => {
         this.addingMember = false;
-        console.error('Erreur ajout membre:', err);
-        const errorMessage = err?.error?.message || err?.message || 'Failed to add member';
-        this.snackBar.open(errorMessage, 'Close', { duration: 4000 });
+        this.snackBar.open(err?.error?.message || 'Failed to add member', 'Close', { duration: 4000 });
       }
     });
   }

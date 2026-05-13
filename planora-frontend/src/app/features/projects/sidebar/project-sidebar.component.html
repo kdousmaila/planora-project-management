@@ -34,7 +34,7 @@
 
   @if (currentProject) {
   <div class="sidebar-divider"></div>
-  <div class="sidebar-section-label">Projet actif</div>
+  <div class="sidebar-section-label">Active Project</div>
 
   <div class="project-section">
     <div class="project-header">
@@ -43,7 +43,7 @@
       </div>
       <div class="project-meta">
         <span class="project-name">{{ currentProject.name }}</span>
-        <span class="project-tag">Actif</span>
+        <span class="project-tag">Active</span>
       </div>
     </div>
 
@@ -66,37 +66,37 @@
          routerLinkActive="active"
          class="project-nav-item">
         <mat-icon>view_kanban</mat-icon>
-        <span>Tableau Kanban</span>
+        <span>Kanban Board</span>
       </a>
 
       <a [routerLink]="['/projects', currentProject.id, 'tasks']"
          routerLinkActive="active"
          class="project-nav-item">
         <mat-icon>task_alt</mat-icon>
-        <span>Tâches</span>
+        <span>Tasks</span>
       </a>
 
       <a [routerLink]="['/projects', currentProject.id, 'history']"
          routerLinkActive="active"
          class="project-nav-item">
         <mat-icon>history</mat-icon>
-        <span>Historique</span>
+        <span>History</span>
       </a>
 
       <a [routerLink]="['/projects', currentProject.id, 'calendar']"
          routerLinkActive="active"
          class="project-nav-item">
         <mat-icon>calendar_month</mat-icon>
-        <span>Calendrier</span>
+        <span>Calendar</span>
       </a>
 
-      <!-- ✅ Santé équipe — visible Admin et PM uniquement -->
+      <!-- ✅ Team Health — visible to Admin and PM only -->
       @if (canSeeHealth) {
       <a [routerLink]="['/projects', currentProject.id, 'team-health']"
          routerLinkActive="active"
          class="project-nav-item project-nav-item--health">
         <mat-icon>favorite</mat-icon>
-        <span>Santé équipe</span>
+        <span>Team Health</span>
       </a>
       }
 
@@ -113,7 +113,7 @@
         <div class="user-name">{{ userName }}</div>
         <div class="user-email">{{ userEmail }}</div>
       </div>
-      <button mat-icon-button class="logout-btn" (click)="logout()" matTooltip="Déconnexion">
+      <button mat-icon-button class="logout-btn" (click)="logout()" matTooltip="Logout">
         <mat-icon>logout</mat-icon>
       </button>
       <span class="online-dot"></span>

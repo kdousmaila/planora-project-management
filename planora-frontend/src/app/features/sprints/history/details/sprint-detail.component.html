@@ -1,17 +1,22 @@
 <!-- src/app/features/sprints/history/details/sprint-detail.component.html -->
 <div class="detail-container">
+
   <!-- Header -->
   <div class="detail-header">
     <div class="header-left">
+
       <button mat-icon-button (click)="goBack()" class="back-btn">
         <mat-icon>arrow_back</mat-icon>
       </button>
+
       <div>
-        <h1>Détails du sprint</h1>
+        <h1>Sprint Details</h1>
+
         @if (sprint) {
-        <p class="subtitle">Tickets du sprint "{{ sprint.name }}"</p>
+        <p class="subtitle">Sprint tickets "{{ sprint.name }}"</p>
         }
       </div>
+
     </div>
   </div>
 
@@ -20,134 +25,180 @@
   }
 
   @if (!loading && sprint) {
-  <!-- Informations du sprint -->
+
+  <!-- Sprint Information -->
   <div class="sprint-info-card">
+
     <div class="sprint-header">
       <div class="sprint-title">
         <mat-icon>sprint</mat-icon>
         <h2>{{ sprint.name }}</h2>
       </div>
-      <span class="sprint-status closed">Terminé</span>
+
+      <span class="sprint-status closed">Completed</span>
     </div>
+
     @if (sprint.goal) {
     <div class="sprint-goal">
       <mat-icon>flag</mat-icon>
       <span>{{ sprint.goal }}</span>
     </div>
     }
+
     <div class="sprint-dates">
       <mat-icon>event</mat-icon>
       <span>{{ sprint.startDate | date:'dd MMMM yyyy' }} - {{ sprint.endDate | date:'dd MMMM yyyy' }}</span>
     </div>
+
     <div class="sprint-duration">
       <mat-icon>schedule</mat-icon>
-      <span>Durée : {{ getDuration() }} jours</span>
+      <span>Duration: {{ getDuration() }} days</span>
     </div>
+
   </div>
 
-  <!-- Statistiques -->
+  <!-- Statistics -->
   <div class="stats-grid">
+
     <div class="stat-card">
       <div class="stat-icon">📋</div>
       <div class="stat-value">{{ tasks.length }}</div>
-      <div class="stat-label">Total des tickets</div>
+      <div class="stat-label">Total Tickets</div>
     </div>
+
     <div class="stat-card success">
       <div class="stat-icon">✅</div>
       <div class="stat-value">{{ getCompletedCount() }}</div>
-      <div class="stat-label">Tickets terminés</div>
+      <div class="stat-label">Completed Tickets</div>
     </div>
 
     <div class="stat-card primary">
       <div class="stat-icon">📊</div>
       <div class="stat-value">{{ getCompletionRate() }}%</div>
-      <div class="stat-label">Taux de complétion</div>
+      <div class="stat-label">Completion Rate</div>
     </div>
+
   </div>
 
-  <!-- Barre de progression -->
+  <!-- Progress Bar -->
   <div class="progress-card">
+
     <div class="progress-header">
-      <span>Progression du sprint</span>
+      <span>Sprint Progress</span>
       <span class="progress-value">{{ getCompletionRate() }}%</span>
     </div>
-    <mat-progress-bar mode="determinate" [value]="getCompletionRate()"
-      [color]="getCompletionRate() >= 80 ? 'primary' : 'warn'">
+
+    <mat-progress-bar mode="determinate"
+                      [value]="getCompletionRate()"
+                      [color]="getCompletionRate() >= 80 ? 'primary' : 'warn'">
     </mat-progress-bar>
+
   </div>
 
-  <!-- Filtres -->
+  <!-- Filters -->
   <div class="filter-bar">
-    <button class="filter-btn" [class.active]="statusFilter === 'all'" (click)="setFilter('all')">
-      Tous ({{ tasks.length }})
+
+    <button class="filter-btn"
+            [class.active]="statusFilter === 'all'"
+            (click)="setFilter('all')">
+
+      All ({{ tasks.length }})
+
     </button>
 
   </div>
 
-  <!-- Tableau des tickets -->
+  <!-- Tasks Table -->
   <div class="tasks-card">
+
     <div class="table-container">
+
       <table class="tasks-table">
+
         <thead>
           <tr>
             <th>ID</th>
-            <th>Titre</th>
+            <th>Title</th>
             <th>Description</th>
-            <th>Priorité</th>
-            <th>Statut</th>
+            <th>Priority</th>
+            <th>Status</th>
           </tr>
         </thead>
+
         <tbody>
+
           @for (task of filteredTasks; track task.id) {
           <tr>
+
             <td class="task-id">#{{ task.id.slice(-6) }}</td>
+
             <td class="task-title">{{ task.title }}</td>
-            <!-- ✅ CORRECTION : description avec valeur par défaut -->
-            <td class="task-description">{{ (task.description || '') | slice:0:60 }}{{ (task.description || '').length >
-              60 ? '...' : '' }}</td>
+
+            <!-- Description with default value -->
+            <td class="task-description">
+              {{ (task.description || '') | slice:0:60 }}
+              {{ (task.description || '').length > 60 ? '...' : '' }}
+            </td>
+
             <td>
               <span class="priority-badge" [ngClass]="getPriorityClass(task.priority)">
                 {{ getPriorityLabel(task.priority) }}
               </span>
             </td>
+
             <td>
               <span class="status-badge" [ngClass]="getStatusClass(task.status)">
                 {{ getStatusLabel(task.status) }}
               </span>
             </td>
+
           </tr>
           }
+
           @if (filteredTasks.length === 0) {
           <tr>
             <td colspan="5" class="empty-row">
               <mat-icon>inbox</mat-icon>
-              <span>Aucun ticket dans cette catégorie</span>
+              <span>No tickets in this category</span>
             </td>
           </tr>
           }
+
         </tbody>
+
       </table>
+
     </div>
+
   </div>
 
-  <!-- Bouton d'export -->
+  <!-- Export Button -->
   <div class="action-buttons">
+
     <button class="export-btn" (click)="exportToCSV()">
       <mat-icon>download</mat-icon>
-      Exporter en CSV
+      Export to CSV
     </button>
+
+  </div>
+
+  }
+
+  <!-- Error -->
+  @if (!loading && !sprint) {
+  <div class="error-state">
+
+    <mat-icon>error</mat-icon>
+
+    <h3>Sprint Not Found</h3>
+
+    <p>The sprint you are looking for does not exist or has been deleted.</p>
+
+    <button mat-raised-button (click)="goBack()">
+      Back to History
+    </button>
+
   </div>
   }
 
-  <!-- Erreur -->
-  @if (!loading && !sprint) {
-  <div class="error-state">
-    <mat-icon>error</mat-icon>
-    <h3>Sprint non trouvé</h3>
-    <p>Le sprint que vous recherchez n'existe pas ou a été supprimé.</p>
-    <button mat-raised-button (click)="goBack()">
-      Retour à l'historique
-    </button>
-  </div>
-  }
 </div>

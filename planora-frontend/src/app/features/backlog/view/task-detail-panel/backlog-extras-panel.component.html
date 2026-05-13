@@ -1,27 +1,27 @@
 <!-- ── PLUS BUTTON ── -->
 <div class="extras-header">
   <div class="plus-wrap">
-    <button class="plus-btn" (click)="plusMenuOpen = !plusMenuOpen" matTooltip="Ajouter">
+    <button class="plus-btn" (click)="plusMenuOpen = !plusMenuOpen" matTooltip="Add">
       <mat-icon>add</mat-icon>
     </button>
 
     <div class="plus-menu" *ngIf="plusMenuOpen">
       <div class="pm-search">
         <mat-icon>search</mat-icon>
-        <span>Rechercher un élément de menu</span>
+        <span>Search a menu item</span>
       </div>
       <div class="pm-item" (click)="openAction('link')">
-        <mat-icon>link</mat-icon><span>Associer un ticket</span>
+        <mat-icon>link</mat-icon><span>Link a ticket</span>
       </div>
       <div class="pm-item" (click)="openAction('attachment')">
-        <mat-icon>attach_file</mat-icon><span>Ajouter une pièce jointe</span>
+        <mat-icon>attach_file</mat-icon><span>Add an attachment</span>
       </div>
       <div class="pm-divider"></div>
       <div class="pm-item" (click)="openAction('weblink'); newWebLinkType = 0">
-        <mat-icon>language</mat-icon><span>Ajouter un lien web</span>
+        <mat-icon>language</mat-icon><span>Add a web link</span>
       </div>
       <div class="pm-item" (click)="openAction('weblink'); newWebLinkType = 1">
-        <mat-icon>play_circle</mat-icon><span>Vidéo</span>
+        <mat-icon>play_circle</mat-icon><span>Video</span>
       </div>
       <div class="pm-item" (click)="openAction('weblink'); newWebLinkType = 2">
         <mat-icon>description</mat-icon><span>Document</span>
@@ -37,20 +37,20 @@
 <div class="extra-form" *ngIf="activeAction === 'link'">
   <div class="ef-header">
     <mat-icon>link</mat-icon>
-    <span>Associer un ticket</span>
+    <span>Link a ticket</span>
     <button class="ef-close" (click)="closeAction()"><mat-icon>close</mat-icon></button>
   </div>
   <div class="ef-row">
-    <label>Type de lien</label>
+    <label>Link type</label>
     <select class="ef-select" [(ngModel)]="selectedLinkType">
       <option *ngFor="let t of ticketLinkTypes" [value]="t.value">{{ t.label }}</option>
     </select>
   </div>
   <div class="ef-row">
-    <label>Rechercher un ticket</label>
+    <label>Search a ticket</label>
     <div class="ef-search-wrap">
       <input class="ef-input" [(ngModel)]="ticketSearchQuery"
-             (input)="searchTickets()" placeholder="Titre du ticket...">
+             (input)="searchTickets()" placeholder="Ticket title...">
       <mat-icon class="ef-search-icon" *ngIf="!searchLoading">search</mat-icon>
       <span class="ef-loading" *ngIf="searchLoading">…</span>
     </div>
@@ -60,12 +60,12 @@
       <span class="ef-ticket-id">{{ t.id.slice(-6).toUpperCase() }}</span>
       <span class="ef-ticket-title">{{ t.title }}</span>
       <span class="ef-status-pill">
-        {{ t.status === 0 ? 'À FAIRE' : t.status === 1 ? 'EN COURS' : 'TERMINÉ' }}
+        {{ t.status === 0 ? 'TO DO' : t.status === 1 ? 'IN PROGRESS' : 'DONE' }}
       </span>
     </div>
   </div>
   <div class="ef-empty" *ngIf="ticketSearchQuery && !ticketSearchResults.length && !searchLoading">
-    Aucun résultat
+    No results
   </div>
 </div>
 
@@ -73,13 +73,13 @@
 <div class="extra-form" *ngIf="activeAction === 'attachment'">
   <div class="ef-header">
     <mat-icon>attach_file</mat-icon>
-    <span>Pièce jointe</span>
+    <span>Attachment</span>
     <button class="ef-close" (click)="closeAction()"><mat-icon>close</mat-icon></button>
   </div>
   <div class="ef-drop-zone" (click)="triggerFileInput()" [class.uploading]="uploading">
     <mat-icon>cloud_upload</mat-icon>
-    <span *ngIf="!uploading">Cliquez pour choisir un fichier (max 20 MB)</span>
-    <span *ngIf="uploading">Envoi en cours…</span>
+    <span *ngIf="!uploading">Click to choose a file (max 20 MB)</span>
+    <span *ngIf="uploading">Uploading…</span>
     <input [id]="'file-input-' + backlogItemId" type="file"
            style="display:none" (change)="onFileSelected($event)">
   </div>
@@ -108,20 +108,20 @@
            placeholder="https://..." (keydown.enter)="saveWebLink()">
   </div>
   <div class="ef-row">
-    <label>Texte d'affichage</label>
+    <label>Display text</label>
     <input class="ef-input" [(ngModel)]="newLabel"
-           placeholder="Optionnel" (keydown.enter)="saveWebLink()">
+           placeholder="Optional" (keydown.enter)="saveWebLink()">
   </div>
   <div class="ef-actions">
-    <button class="btn-primary" (click)="saveWebLink()" [disabled]="!newUrl.trim()">Insérer</button>
-    <button class="btn-ghost" (click)="closeAction()">Annuler</button>
+    <button class="btn-primary" (click)="saveWebLink()" [disabled]="!newUrl.trim()">Insert</button>
+    <button class="btn-ghost" (click)="closeAction()">Cancel</button>
   </div>
 </div>
 
 <!-- ════════ DISPLAY SECTIONS ════════ -->
 <!-- ── Ticket links ── -->
 <div class="extras-section" *ngIf="links.length">
-  <div class="es-title"><mat-icon>link</mat-icon> Tickets liés</div>
+  <div class="es-title"><mat-icon>link</mat-icon> Linked tickets</div>
   <div class="link-group" *ngFor="let typeGroup of ticketLinkTypes">
     <ng-container *ngIf="getLinksByType(links, typeGroup.value).length">
       <div class="lg-label">{{ typeGroup.label }}</div>
@@ -137,7 +137,7 @@
 
 <!-- ── Attachments ── -->
 <div class="extras-section" *ngIf="attachments.length">
-  <div class="es-title"><mat-icon>attach_file</mat-icon> Pièces jointes</div>
+  <div class="es-title"><mat-icon>attach_file</mat-icon> Attachments</div>
   <div class="att-item" *ngFor="let a of attachments">
     <mat-icon class="att-icon">{{ getFileIcon(a.contentType) }}</mat-icon>
     <div class="att-info">
@@ -152,7 +152,7 @@
 
 <!-- ── Web links ── -->
 <div class="extras-section" *ngIf="webLinks.length">
-  <div class="es-title"><mat-icon>language</mat-icon> Liens</div>
+  <div class="es-title"><mat-icon>language</mat-icon> Links</div>
   <div class="wl-item" *ngFor="let w of webLinks">
     <mat-icon class="wl-icon">{{ getWebLinkIcon(w.linkType) }}</mat-icon>
     <div class="wl-info">

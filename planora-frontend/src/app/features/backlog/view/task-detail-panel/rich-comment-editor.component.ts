@@ -33,12 +33,12 @@ export interface RichComment {
       <div class="rce-comment-body">
         <div class="rce-comment-meta">
           <strong class="rce-author">{{ c.authorName }}</strong>
-          <span class="rce-date">{{ c.createdAt | date:'d MMM yyyy à HH:mm' }}</span>
+          <span class="rce-date">{{ c.createdAt | date:'d MMM yyyy at HH:mm' }}</span>
           <div class="rce-comment-actions" *ngIf="canDelete(c)">
-            <button class="rce-act-btn" (click)="startEdit(c)" matTooltip="Modifier">
+            <button class="rce-act-btn" (click)="startEdit(c)" matTooltip="Edit">
               <mat-icon>edit</mat-icon>
             </button>
-            <button class="rce-act-btn rce-act-btn--del" (click)="deleteComment(c)" matTooltip="Supprimer">
+            <button class="rce-act-btn rce-act-btn--del" (click)="deleteComment(c)" matTooltip="Delete">
               <mat-icon>delete_outline</mat-icon>
             </button>
           </div>
@@ -65,7 +65,7 @@ export interface RichComment {
 
   <div class="rce-empty" *ngIf="!comments.length && !editMode">
     <mat-icon>chat_bubble_outline</mat-icon>
-    <p>Aucun commentaire pour l'instant</p>
+    <p>No comments yet</p>
   </div>
 
   <!-- ═══════════ COMPOSER ═══════════ -->
@@ -76,7 +76,7 @@ export interface RichComment {
 
       <!-- Collapsed placeholder -->
       <div class="rce-placeholder" *ngIf="!composerOpen" (click)="openComposer()">
-        Ajouter un commentaire…
+        Add a comment…
       </div>
 
       <!-- Full editor -->
@@ -84,35 +84,35 @@ export interface RichComment {
         <!-- Toolbar -->
         <div class="rce-toolbar">
           <div class="rce-toolbar-group">
-            <select class="rce-font-select" (change)="execCmd('fontName', $event)" matTooltip="Police">
-              <option value="inherit">Police</option>
+            <select class="rce-font-select" (change)="execCmd('fontName', $event)" matTooltip="Font">
+              <option value="inherit">Font</option>
               <option value="Arial">Arial</option>
               <option value="Georgia">Georgia</option>
               <option value="'Courier New'">Courier New</option>
               <option value="Verdana">Verdana</option>
               <option value="'Times New Roman'">Times New Roman</option>
             </select>
-            <select class="rce-size-select" (change)="execCmd('fontSize', $event)" matTooltip="Taille">
+            <select class="rce-size-select" (change)="execCmd('fontSize', $event)" matTooltip="Size">
               <option value="3">Normal</option>
-              <option value="1">Petit</option>
-              <option value="4">Grand</option>
-              <option value="5">Très grand</option>
+              <option value="1">Small</option>
+              <option value="4">Large</option>
+              <option value="5">Very large</option>
             </select>
           </div>
 
           <div class="rce-toolbar-sep"></div>
 
           <div class="rce-toolbar-group">
-            <button class="rce-tb-btn" (click)="exec('bold')" matTooltip="Gras (Ctrl+B)">
+            <button class="rce-tb-btn" (click)="exec('bold')" matTooltip="Bold (Ctrl+B)">
               <mat-icon>format_bold</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="exec('italic')" matTooltip="Italique (Ctrl+I)">
+            <button class="rce-tb-btn" (click)="exec('italic')" matTooltip="Italic (Ctrl+I)">
               <mat-icon>format_italic</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="exec('underline')" matTooltip="Souligné (Ctrl+U)">
+            <button class="rce-tb-btn" (click)="exec('underline')" matTooltip="Underline (Ctrl+U)">
               <mat-icon>format_underlined</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="exec('strikeThrough')" matTooltip="Barré">
+            <button class="rce-tb-btn" (click)="exec('strikeThrough')" matTooltip="Strikethrough">
               <mat-icon>strikethrough_s</mat-icon>
             </button>
           </div>
@@ -120,16 +120,16 @@ export interface RichComment {
           <div class="rce-toolbar-sep"></div>
 
           <div class="rce-toolbar-group">
-            <button class="rce-tb-btn" (click)="exec('insertUnorderedList')" matTooltip="Liste à puces">
+            <button class="rce-tb-btn" (click)="exec('insertUnorderedList')" matTooltip="Bullet list">
               <mat-icon>format_list_bulleted</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="exec('insertOrderedList')" matTooltip="Liste numérotée">
+            <button class="rce-tb-btn" (click)="exec('insertOrderedList')" matTooltip="Numbered list">
               <mat-icon>format_list_numbered</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="exec('indent')" matTooltip="Indenter">
+            <button class="rce-tb-btn" (click)="exec('indent')" matTooltip="Indent">
               <mat-icon>format_indent_increase</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="exec('outdent')" matTooltip="Désindenter">
+            <button class="rce-tb-btn" (click)="exec('outdent')" matTooltip="Outdent">
               <mat-icon>format_indent_decrease</mat-icon>
             </button>
           </div>
@@ -137,13 +137,13 @@ export interface RichComment {
           <div class="rce-toolbar-sep"></div>
 
           <div class="rce-toolbar-group">
-            <button class="rce-tb-btn" (click)="exec('justifyLeft')" matTooltip="Aligner à gauche">
+            <button class="rce-tb-btn" (click)="exec('justifyLeft')" matTooltip="Align left">
               <mat-icon>format_align_left</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="exec('justifyCenter')" matTooltip="Centrer">
+            <button class="rce-tb-btn" (click)="exec('justifyCenter')" matTooltip="Center">
               <mat-icon>format_align_center</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="exec('justifyRight')" matTooltip="Aligner à droite">
+            <button class="rce-tb-btn" (click)="exec('justifyRight')" matTooltip="Align right">
               <mat-icon>format_align_right</mat-icon>
             </button>
           </div>
@@ -152,12 +152,12 @@ export interface RichComment {
 
           <div class="rce-toolbar-group">
             <!-- Color picker -->
-            <div class="rce-color-wrap" matTooltip="Couleur du texte">
+            <div class="rce-color-wrap" matTooltip="Text color">
               <mat-icon>format_color_text</mat-icon>
               <input type="color" class="rce-color-input" (input)="execCmd('foreColor', $event)">
             </div>
             <!-- Highlight -->
-            <div class="rce-color-wrap rce-color-wrap--hl" matTooltip="Surligner">
+            <div class="rce-color-wrap rce-color-wrap--hl" matTooltip="Highlight">
               <mat-icon>highlight</mat-icon>
               <input type="color" class="rce-color-input" value="#FFFF00" (input)="execCmd('hiliteColor', $event)">
             </div>
@@ -166,16 +166,16 @@ export interface RichComment {
           <div class="rce-toolbar-sep"></div>
 
           <div class="rce-toolbar-group">
-            <button class="rce-tb-btn" (click)="insertLink()" matTooltip="Insérer un lien">
+            <button class="rce-tb-btn" (click)="insertLink()" matTooltip="Insert link">
               <mat-icon>link</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="insertCode()" matTooltip="Code inline">
+            <button class="rce-tb-btn" (click)="insertCode()" matTooltip="Inline code">
               <mat-icon>code</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="insertQuote()" matTooltip="Citation">
+            <button class="rce-tb-btn" (click)="insertQuote()" matTooltip="Quote">
               <mat-icon>format_quote</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="triggerImageUpload()" matTooltip="Insérer une image">
+            <button class="rce-tb-btn" (click)="triggerImageUpload()" matTooltip="Insert image">
               <mat-icon>image</mat-icon>
             </button>
             <input #imgInput type="file" accept="image/*" style="display:none"
@@ -185,10 +185,10 @@ export interface RichComment {
           <div class="rce-toolbar-sep"></div>
 
           <div class="rce-toolbar-group">
-            <button class="rce-tb-btn" (click)="exec('undo')" matTooltip="Annuler">
+            <button class="rce-tb-btn" (click)="exec('undo')" matTooltip="Undo">
               <mat-icon>undo</mat-icon>
             </button>
-            <button class="rce-tb-btn" (click)="exec('redo')" matTooltip="Rétablir">
+            <button class="rce-tb-btn" (click)="exec('redo')" matTooltip="Redo">
               <mat-icon>redo</mat-icon>
             </button>
           </div>
@@ -198,7 +198,7 @@ export interface RichComment {
         <div #editorEl
              class="rce-editable"
              contenteditable="true"
-             [attr.data-placeholder]="editMode ? '' : 'Écrivez votre commentaire...'"
+             [attr.data-placeholder]="editMode ? '' : 'Write your comment...'"
              (input)="onEditorInput()"
              (keydown)="onKeydown($event)"
              (paste)="onPaste($event)">
@@ -207,13 +207,13 @@ export interface RichComment {
         <!-- Footer actions -->
         <div class="rce-footer">
           <div class="rce-footer-left">
-            <span class="rce-hint">Ctrl+Entrée pour enregistrer</span>
+            <span class="rce-hint">Ctrl+Enter to save</span>
           </div>
           <div class="rce-footer-right">
-            <button class="rce-btn-ghost" (click)="cancel()">Annuler</button>
+            <button class="rce-btn-ghost" (click)="cancel()">Cancel</button>
             <button class="rce-btn-primary" (click)="save()"
                     [disabled]="isEmpty || saving">
-              {{ saving ? 'Enregistrement...' : (editMode ? 'Mettre à jour' : 'Enregistrer') }}
+              {{ saving ? 'Saving...' : (editMode ? 'Update' : 'Save') }}
             </button>
           </div>
         </div>
@@ -248,9 +248,9 @@ export interface RichComment {
          (keydown)="onKeydown($event)">
     </div>
     <div class="rce-footer">
-      <button class="rce-btn-ghost" (click)="cancelled.emit()">Annuler</button>
+      <button class="rce-btn-ghost" (click)="cancelled.emit()">Cancel</button>
       <button class="rce-btn-primary" (click)="save()" [disabled]="isEmpty || saving">
-        {{ saving ? '...' : 'Mettre à jour' }}
+        {{ saving ? '...' : 'Update' }}
       </button>
     </div>
   </div>
@@ -594,7 +594,7 @@ export class RichCommentEditorComponent implements AfterViewInit {
     }, 50);
   }
 
-  // FIX: cast to `any` pour supprimer les warnings TypeScript sur execCommand déprécié
+  // FIX: cast to `any` to suppress TypeScript warnings on deprecated execCommand
   exec(cmd: string): void {
     (document as any).execCommand(cmd, false);
     this.editorEl?.nativeElement?.focus();
@@ -607,7 +607,7 @@ export class RichCommentEditorComponent implements AfterViewInit {
   }
 
   insertLink(): void {
-    const url = prompt('URL du lien :');
+    const url = prompt('Link URL:');
     if (url) {
       (document as any).execCommand('createLink', false, url);
       this.editorEl?.nativeElement?.querySelectorAll('a').forEach((a: HTMLAnchorElement) => {

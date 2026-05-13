@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Planora.Application.DTOs.Auth;
 using Planora.Application.DTOs.Common;
 using Planora.Application.Interfaces;
+using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Planora.Controllers;
 
@@ -18,33 +20,63 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    /// <summary>Register a new user</summary>
     [HttpPost("register")]
-    [ProducesResponseType(typeof(ApiResponseDto<AuthResponseDto>), 200)]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
-        var result = await _authService.RegisterAsync(dto);
-        return Ok(ApiResponseDto<AuthResponseDto>.SuccessResult(result, "Registration successful."));
+        // ✅ Vérifie les DataAnnotations ([EmailAddress], [Required], etc.)
+        if (!ModelState.IsValid)
+        {
+            var firstError = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .FirstOrDefault() ?? "Données invalides.";
+
+            return BadRequest(ApiResponseDto<object>.ErrorResult(firstError));
+        }
+
+        try
+        {
+            var result = await _authService.RegisterAsync(dto);
+            return Ok(ApiResponseDto<AuthResponseDto>.SuccessResult(result, "Registration successful."));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ApiResponseDto<object>.ErrorResult(ex.Message));
+        }
     }
 
-    /// <summary>Login with credentials</summary>
     [HttpPost("login")]
-    [ProducesResponseType(typeof(ApiResponseDto<AuthResponseDto>), 200)]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
-        var result = await _authService.LoginAsync(dto);
-        return Ok(ApiResponseDto<AuthResponseDto>.SuccessResult(result, "Login successful."));
+        try
+        {
+            var result = await _authService.LoginAsync(dto);
+            return Ok(ApiResponseDto<AuthResponseDto>.SuccessResult(result, "Login successful."));
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ApiResponseDto<object>.ErrorResult(ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ApiResponseDto<object>.ErrorResult(ex.Message));
+        }
     }
 
-    /// <summary>Refresh access token</summary>
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenDto dto)
     {
-        var result = await _authService.RefreshTokenAsync(dto);
-        return Ok(ApiResponseDto<AuthResponseDto>.SuccessResult(result, "Token refreshed successfully."));
+        try
+        {
+            var result = await _authService.RefreshTokenAsync(dto);
+            return Ok(ApiResponseDto<AuthResponseDto>.SuccessResult(result, "Token refreshed successfully."));
+        }
+        catch (Exception ex)
+        {
+            return Unauthorized(ApiResponseDto<object>.ErrorResult(ex.Message));
+        }
     }
 
-    /// <summary>Logout current user</summary>
     [Authorize]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()

@@ -137,7 +137,7 @@ export class BacklogViewComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.snackBar.open('Erreur de chargement', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Loading error', 'Close', { duration: 3000 });
       }
     });
   }
@@ -245,15 +245,15 @@ export class BacklogViewComponent implements OnInit {
     call$.subscribe({
       error: () => {
         this.loadData();
-        this.snackBar.open('Erreur de synchronisation', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Sync error', 'Close', { duration: 3000 });
       }
     });
 
     if (isMovingToBacklog) {
-      this.snackBar.open('↩️ Retour au backlog', 'Fermer', { duration: 2000 });
+      this.snackBar.open('↩️ Moved back to backlog', 'Close', { duration: 2000 });
     } else {
       const sprint = this.sprints.find(s => s.id === destinationSprintId);
-      this.snackBar.open(`✅ Déplacé vers ${sprint?.name}`, 'Fermer', { duration: 2000 });
+      this.snackBar.open(`✅ Moved to ${sprint?.name}`, 'Close', { duration: 2000 });
     }
   }
 
@@ -261,12 +261,12 @@ export class BacklogViewComponent implements OnInit {
   changeStatus(item: BacklogItem, status: number): void {
     item.status = status;
     this.backlogService.updateBacklogItemStatus(item.id, status).subscribe({
-      error: () => this.snackBar.open('Erreur mise à jour statut', 'Fermer', { duration: 3000 })
+      error: () => this.snackBar.open('Status update error', 'Close', { duration: 3000 })
     });
   }
 
   getStatusLabel(status: number): string {
-    return ['À FAIRE', 'EN COURS', 'TERMINÉ'][status] ?? 'À FAIRE';
+    return ['TO DO', 'IN PROGRESS', 'DONE'][status] ?? 'TO DO';
   }
 
   getStatusPillClass(status: number): string {
@@ -275,7 +275,7 @@ export class BacklogViewComponent implements OnInit {
 
   // ===== PRIORITY =====
   getPriorityLabel(priority: TaskPriority): string {
-    return ['Faible', 'Moyenne', 'Haute', 'Critique'][priority] ?? '';
+    return ['Low', 'Medium', 'High', 'Critical'][priority] ?? '';
   }
 
   getPriorityDotClass(priority: TaskPriority): string {
@@ -296,7 +296,7 @@ export class BacklogViewComponent implements OnInit {
   }
 
   getComplexityTextLabel(complexity: number): string {
-    return ['Très facile', 'Facile', 'Moyenne', 'Difficile', 'Très difficile'][complexity] ?? 'Moyenne';
+    return ['Very Easy', 'Easy', 'Medium', 'Hard', 'Very Hard'][complexity] ?? 'Medium';
   }
 
   getComplexityTextClass(complexity: number): string {
@@ -315,11 +315,11 @@ export class BacklogViewComponent implements OnInit {
         next: (response: ApiResponse<BacklogItem>) => {
           if (response.success) {
             item.storyPoints = points;
-            const label = points === -1 ? 'Non estimé' : `${points} pts`;
-            this.snackBar.open(`⏱️ Estimation : ${label}`, 'Fermer', { duration: 2000 });
+            const label = points === -1 ? 'Not estimated' : `${points} pts`;
+            this.snackBar.open(`⏱️ Estimate: ${label}`, 'Close', { duration: 2000 });
           }
         },
-        error: () => this.snackBar.open('❌ Erreur mise à jour', 'Fermer', { duration: 3000 })
+        error: () => this.snackBar.open('❌ Update error', 'Close', { duration: 3000 })
       });
     });
   }
@@ -343,18 +343,18 @@ export class BacklogViewComponent implements OnInit {
         next: (response: ApiResponse<BacklogItem>) => {
           if (response.success) {
             item.complexity = complexity ?? 0;
-            this.snackBar.open(`📊 Complexité: ${this.getComplexityTextLabel(item.complexity)}`, 'Fermer', { duration: 2000 });
+            this.snackBar.open(`📊 Complexity: ${this.getComplexityTextLabel(item.complexity)}`, 'Close', { duration: 2000 });
             this.loadData();
           }
         },
-        error: () => this.snackBar.open('❌ Erreur mise à jour complexité', 'Fermer', { duration: 3000 })
+        error: () => this.snackBar.open('❌ Complexity update error', 'Close', { duration: 3000 })
       });
     });
   }
 
   // ===== SPRINT STATUS =====
   getSprintStatusLabel(status: number): string {
-    return ['Planning', 'Actif', 'Fermé'][status] ?? '';
+    return ['Planning', 'Active', 'Closed'][status] ?? '';
   }
 
   getSprintStatusClass(status: number): string {
@@ -381,7 +381,7 @@ export class BacklogViewComponent implements OnInit {
     ref.afterClosed().subscribe((result: boolean | undefined) => {
       if (result) {
         this.loadData();
-        this.snackBar.open('Sprint créé !', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Sprint created!', 'Close', { duration: 3000 });
       }
     });
   }
@@ -391,12 +391,12 @@ export class BacklogViewComponent implements OnInit {
       next: (response: ApiResponse<Sprint>) => {
         if (response.success) {
           this.router.navigate(['/projects', this.projectId, 'board'], { queryParams: { sprintId } });
-          this.snackBar.open('Sprint démarré !', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Sprint started!', 'Close', { duration: 3000 });
         } else {
-          this.snackBar.open('Erreur lors du démarrage', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Error starting sprint', 'Close', { duration: 3000 });
         }
       },
-      error: () => this.snackBar.open('Erreur lors du démarrage du sprint', 'Fermer', { duration: 3000 })
+      error: () => this.snackBar.open('Error starting sprint', 'Close', { duration: 3000 })
     });
   }
 
@@ -423,7 +423,7 @@ export class BacklogViewComponent implements OnInit {
   deleteItem(item: BacklogItem): void {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
-      data: { title: 'Supprimer', message: `Supprimer "${item.title}" ?`, confirmLabel: 'Supprimer', danger: true }
+      data: { title: 'Delete', message: `Delete "${item.title}"?`, confirmLabel: 'Delete', danger: true }
     });
     ref.afterClosed().subscribe((confirmed: boolean) => {
       if (!confirmed) return;
@@ -431,10 +431,10 @@ export class BacklogViewComponent implements OnInit {
         next: (response: ApiResponse<boolean>) => {
           if (response.success) {
             this.backlogItems = this.backlogItems.filter(i => i.id !== item.id);
-            this.snackBar.open('Ticket supprimé', 'Fermer', { duration: 2000 });
+            this.snackBar.open('Ticket deleted', 'Close', { duration: 2000 });
           }
         },
-        error: () => this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 })
+        error: () => this.snackBar.open('Error deleting ticket', 'Close', { duration: 3000 })
       });
     });
   }
@@ -458,10 +458,10 @@ export class BacklogViewComponent implements OnInit {
                   }
                 }
               });
-              this.snackBar.open('✅ Tâche assignée !', 'Fermer', { duration: 2000 });
+              this.snackBar.open('✅ Task assigned!', 'Close', { duration: 2000 });
             }
           },
-          error: () => this.snackBar.open('❌ Erreur lors de l\'assignation', 'Fermer', { duration: 3000 })
+          error: () => this.snackBar.open('❌ Assignment error', 'Close', { duration: 3000 })
         });
       }
     });

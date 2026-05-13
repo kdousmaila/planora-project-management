@@ -10,7 +10,9 @@ import joblib
 import numpy as np
 import os
 import pyodbc
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+UTC = timezone.utc
 
 app = Flask(__name__)
 CORS(app)
@@ -19,6 +21,7 @@ MODEL_PATH = os.path.join(os.path.dirname(__file__), 'planora_sentiment_model.pk
 try:
     model = joblib.load(MODEL_PATH)
     print(f'✅ Model loaded from {MODEL_PATH}')
+    print(f'🔍 Model classes: {model.classes_}')
 except FileNotFoundError:
     print(f'❌ Model file not found : {MODEL_PATH}')
     model = None
@@ -34,7 +37,17 @@ def get_db_connection():
     return pyodbc.connect(DB_CONNECTION_STRING)
 
 def normalize(s):
-    return s
+    mapping = {
+        'Positive':   'Positive',
+        'Neutral':    'Neutral',
+        'Stressed':   'Stressed',
+        'Frustrated': 'Frustrated',
+        'Positif':    'Positive',
+        'Neutre':     'Neutral',
+        'Stresse':    'Stressed',
+        'Frustre':    'Frustrated',
+    }
+    return mapping.get(s, 'Neutral')
 
 
 @app.route('/api/sentiment/team-health-live', methods=['POST'])
@@ -51,7 +64,7 @@ def analyze_team_health_live():
     try:
         conn   = get_db_connection()
         cursor = conn.cursor()
-        since  = datetime.utcnow() - timedelta(days=7)
+        since  = datetime.now(UTC) - timedelta(days=7)
 
         if scope_id.lower() == 'all':
             cursor.execute("""
@@ -89,17 +102,19 @@ def analyze_team_health_live():
     except Exception as e:
         return jsonify({'error': f'Database error: {str(e)}'}), 500
 
+    EMPTY = {'Positive': 0, 'Neutral': 0, 'Stressed': 0, 'Frustrated': 0}
+
     if not rows:
         return jsonify({
-            'projectId': scope_id,
-            'analyzedAt': datetime.utcnow().isoformat(),
-            'totalMessages': 0,
-            'globalScore': 5,
-            'globalMood': 'Not enough data',
+            'projectId':      scope_id,
+            'analyzedAt':     datetime.now(UTC).isoformat(),
+            'totalMessages':  0,
+            'globalScore':    5,
+            'globalMood':     'Not enough data',
             'globalMoodIcon': '💤',
-            'globalMoodColor': 'neutral',
-            'distribution': {'Positive': 0, 'Neutral': 0, 'Stressed': 0, 'Frustrated': 0},
-            'percentages':  {'Positive': 0, 'Neutral': 0, 'Stressed': 0, 'Frustrated': 0},
+            'globalMoodColor':'neutral',
+            'distribution':   EMPTY,
+            'percentages':    EMPTY,
             'alerts': [], 'membersSummary': [], 'messageResults': []
         })
 
@@ -108,22 +123,37 @@ def analyze_team_health_live():
     sentiments = model.predict(texts)
     probas     = model.predict_proba(texts)
 
+    print(f'🔍 Raw sentiments (first 5): {list(sentiments[:5])}')
+
     counts = {'Positive': 0, 'Neutral': 0, 'Stressed': 0, 'Frustrated': 0}
     for s in sentiments:
-        counts[normalize(s)] = counts.get(normalize(s), 0) + 1
+        normalized = normalize(s)
+        counts[normalized] = counts.get(normalized, 0) + 1
 
-    total = len(messages)
-    pct   = {k: round(v / total * 100, 1) for k, v in counts.items()}
-    pos_r = counts['Positive']   / total
-    str_r = counts['Stressed']   / total
-    fru_r = counts['Frustrated'] / total
+    total     = len(messages)
+    pct       = {k: round(v / total * 100, 1) for k, v in counts.items()}
+    pos_r     = counts['Positive']   / total
+    neu_r     = counts['Neutral']    / total
+    str_r     = counts['Stressed']   / total
+    fru_r     = counts['Frustrated'] / total
 
-    global_score = max(0, min(10, round((pos_r * 10) - (str_r * 4) - (fru_r * 6))))
+    print(f'📊 Distribution: {counts}')
+    print(f'📊 Ratios: pos={pos_r:.2f} neu={neu_r:.2f} str={str_r:.2f} fru={fru_r:.2f}')
 
-    if global_score >= 7:   mood, icon, color = 'Motivated team',  '🚀', 'positive'
-    elif global_score >= 5: mood, icon, color = 'Good atmosphere', '😊', 'neutral'
-    elif str_r > fru_r:     mood, icon, color = 'Stress detected', '⚠️', 'stressed'
-    else:                   mood, icon, color = 'Team tensions',   '🔴', 'frustrated'
+    # ✅ Balanced formula — neutral contributes positively
+    global_score = max(1, min(10, round(
+        (pos_r * 10) +
+        (neu_r * 5)  -
+        (str_r * 3)  -
+        (fru_r * 4)
+    )))
+
+    print(f'📊 Final global score: {global_score}')
+
+    if global_score >= 7:   mood, icon, color = 'Motivated team',    '🚀', 'positive'
+    elif global_score >= 5: mood, icon, color = 'Good atmosphere',   '😊', 'neutral'
+    elif str_r > fru_r:     mood, icon, color = 'Stress detected',   '⚠️', 'stressed'
+    else:                   mood, icon, color = 'Tension detected',  '🔴', 'frustrated'
 
     member_stats = {}
     for msg, sentiment, proba in zip(messages, sentiments, probas):
@@ -132,9 +162,10 @@ def analyze_team_health_live():
         s    = normalize(sentiment)
         if aid not in member_stats:
             member_stats[aid] = {
-                'authorId': aid, 'authorName': name,
+                'authorId':   aid,
+                'authorName': name,
                 'counts': {'Positive': 0, 'Neutral': 0, 'Stressed': 0, 'Frustrated': 0},
-                'total': 0
+                'total':  0
             }
         member_stats[aid]['counts'][s] = member_stats[aid]['counts'].get(s, 0) + 1
         member_stats[aid]['total'] += 1
@@ -145,11 +176,11 @@ def analyze_team_health_live():
         s_r = stats['counts']['Stressed']   / t
         f_r = stats['counts']['Frustrated'] / t
         members_summary.append({
-            'authorId': uid,
-            'authorName': stats['authorName'],
-            'totalMessages': t,
-            'dominantMood': max(stats['counts'], key=stats['counts'].get),
-            'stressRatio': round(s_r * 100, 1),
+            'authorId':         uid,
+            'authorName':       stats['authorName'],
+            'totalMessages':    t,
+            'dominantMood':     max(stats['counts'], key=stats['counts'].get),
+            'stressRatio':      round(s_r * 100, 1),
             'frustrationRatio': round(f_r * 100, 1)
         })
         if s_r >= 0.5:
@@ -168,28 +199,28 @@ def analyze_team_health_live():
     if global_score <= 3 and not alerts:
         alerts.append({
             'type': 'team', 'icon': '🔴', 'level': 'danger',
-            'message': 'General atmosphere degraded',
-            'detail':  'Team morale needs immediate attention'
+            'message': 'Overall atmosphere degraded',
+            'detail':  'Team morale requires immediate attention'
         })
 
     return jsonify({
-        'projectId': scope_id,
-        'analyzedAt': datetime.utcnow().isoformat(),
-        'totalMessages': total,
-        'globalScore': global_score,
-        'globalMood': mood,
-        'globalMoodIcon': icon,
+        'projectId':       scope_id,
+        'analyzedAt':      datetime.now(UTC).isoformat(),
+        'totalMessages':   total,
+        'globalScore':     global_score,
+        'globalMood':      mood,
+        'globalMoodIcon':  icon,
         'globalMoodColor': color,
-        'distribution': counts,
-        'percentages': pct,
-        'alerts': alerts,
-        'membersSummary': members_summary,
+        'distribution':    counts,
+        'percentages':     pct,
+        'alerts':          alerts,
+        'membersSummary':  members_summary,
         'messageResults': [
             {
-                'id': m['id'],
-                'content': m['content'],
+                'id':         m['id'],
+                'content':    m['content'],
                 'authorName': m['authorName'],
-                'sentiment': normalize(s),
+                'sentiment':  normalize(s),
                 'confidence': round(float(np.max(p)) * 100, 1)
             }
             for m, s, p in zip(messages, sentiments, probas)
@@ -206,10 +237,10 @@ def health():
     except Exception as e:
         db_status = f'error: {str(e)}'
     return jsonify({
-        'status': 'ok',
-        'model': 'loaded' if model else 'missing',
+        'status':   'ok',
+        'model':    'loaded' if model else 'missing',
         'database': db_status,
-        'time': datetime.utcnow().isoformat()
+        'time':     datetime.now(UTC).isoformat()
     })
 
 

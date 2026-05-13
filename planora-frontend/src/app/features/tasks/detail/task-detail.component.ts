@@ -28,7 +28,7 @@ import { LoadingComponent } from '../../../shared/components/loading/loading.com
   ],
   template: `
     @if (!isDialogMode) {
-      <!-- MODE PAGE NORMALE -->
+      <!-- NORMAL PAGE MODE -->
       <div class="page-container">
         @if (loading) {
           <app-loading></app-loading>
@@ -38,39 +38,39 @@ import { LoadingComponent } from '../../../shared/components/loading/loading.com
             <div class="page-header">
               <h1>{{ task.title }}</h1>
               <button mat-button [routerLink]="['/projects', task.projectId, 'tasks']">
-                <mat-icon>arrow_back</mat-icon> Retour aux tâches
+                <mat-icon>arrow_back</mat-icon> Back to tasks
               </button>
             </div>
             <div class="detail-grid">
               <mat-card>
-                <mat-card-header><mat-card-title>Détails de la tâche</mat-card-title></mat-card-header>
+                <mat-card-header><mat-card-title>Task details</mat-card-title></mat-card-header>
                 <mat-card-content>
-                  <p>{{ task.description || 'Aucune description' }}</p>
+                  <p>{{ task.description || 'No description' }}</p>
                   <div class="info-row">
-                    <span class="label">Statut:</span>
+                    <span class="label">Status:</span>
                     <mat-select [value]="task.status" (selectionChange)="updateStatus($event.value)" style="width: auto;">
-                      <mat-option [value]="0">À faire</mat-option>
-                      <mat-option [value]="1">En cours</mat-option>
-                      <mat-option [value]="2">Terminé</mat-option>
+                      <mat-option [value]="0">To do</mat-option>
+                      <mat-option [value]="1">In progress</mat-option>
+                      <mat-option [value]="2">Done</mat-option>
                     </mat-select>
                   </div>
                   <div class="info-row">
-                    <span class="label">Priorité:</span>
+                    <span class="label">Priority:</span>
                     <mat-select [value]="task.priority" (selectionChange)="updatePriority($event.value)" style="width: auto;">
-                      <mat-option [value]="0">Faible</mat-option>
-                      <mat-option [value]="1">Moyenne</mat-option>
-                      <mat-option [value]="2">Haute</mat-option>
-                      <mat-option [value]="3">Critique</mat-option>
+                      <mat-option [value]="0">Low</mat-option>
+                      <mat-option [value]="1">Medium</mat-option>
+                      <mat-option [value]="2">High</mat-option>
+                      <mat-option [value]="3">Critical</mat-option>
                     </mat-select>
                   </div>
-                  <div class="info-row"><span class="label">Assigné à:</span><span>{{ task.assignedToName || 'Non assigné' }}</span></div>
-                  <div class="info-row"><span class="label">Sprint:</span><span>{{ task.sprintName || 'Aucun sprint' }}</span></div>
-                  <div class="info-row"><span class="label">Date échéance:</span><span>{{ task.dueDate ? (task.dueDate | date:'mediumDate') : '—' }}</span></div>
-                  <div class="info-row"><span class="label">Progression:</span><span>{{ task.progressPercentage }}%</span></div>
+                  <div class="info-row"><span class="label">Assigned to:</span><span>{{ task.assignedToName || 'Unassigned' }}</span></div>
+                  <div class="info-row"><span class="label">Sprint:</span><span>{{ task.sprintName || 'No sprint' }}</span></div>
+                  <div class="info-row"><span class="label">Due date:</span><span>{{ task.dueDate ? (task.dueDate | date:'mediumDate') : '—' }}</span></div>
+                  <div class="info-row"><span class="label">Progress:</span><span>{{ task.progressPercentage }}%</span></div>
                 </mat-card-content>
               </mat-card>
               <mat-card>
-                <mat-card-header><mat-card-title>Commentaires</mat-card-title></mat-card-header>
+                <mat-card-header><mat-card-title>Comments</mat-card-title></mat-card-header>
                 <mat-card-content>
                   @if (commentsLoading) {
                     <app-loading></app-loading>
@@ -91,15 +91,15 @@ import { LoadingComponent } from '../../../shared/components/loading/loading.com
                     </div>
                   }
                   @if (!commentsLoading && !comments.length) {
-                    <p class="no-data">Aucun commentaire</p>
+                    <p class="no-data">No comments</p>
                   }
                   <div class="add-comment">
                     <mat-form-field appearance="outline" class="full-width">
-                      <mat-label>Ajouter un commentaire</mat-label>
+                      <mat-label>Add a comment</mat-label>
                       <textarea matInput [formControl]="commentCtrl" rows="2"></textarea>
                     </mat-form-field>
                     <button mat-raised-button color="primary" (click)="addComment()" [disabled]="commentCtrl.invalid || addingComment">
-                      {{ addingComment ? 'Envoi...' : 'Envoyer' }}
+                      {{ addingComment ? 'Sending...' : 'Send' }}
                     </button>
                   </div>
                 </mat-card-content>
@@ -111,7 +111,7 @@ import { LoadingComponent } from '../../../shared/components/loading/loading.com
     }
 
     @if (isDialogMode) {
-      <!-- MODE DIALOG (PANEL LATÉRAL) — layout original restauré -->
+      <!-- DIALOG MODE (SIDE PANEL) -->
       <div class="dialog-container">
         @if (loading) {
           <app-loading></app-loading>
@@ -131,58 +131,58 @@ import { LoadingComponent } from '../../../shared/components/loading/loading.com
               </div>
               <div class="description" (click)="startEditDescription()">
                 @if (!isEditingDescription) {
-                  <p>{{ task.description || 'Cliquez pour ajouter une description...' }}</p>
+                  <p>{{ task.description || 'Click to add a description...' }}</p>
                 }
                 @if (isEditingDescription) {
                   <textarea [(ngModel)]="editDescriptionText" rows="4" (click)="$event.stopPropagation()"></textarea>
                   <div class="edit-actions">
-                    <button mat-button (click)="cancelEditDescription(); $event.stopPropagation()">Annuler</button>
-                    <button mat-raised-button color="primary" (click)="saveDescription(); $event.stopPropagation()">Sauvegarder</button>
+                    <button mat-button (click)="cancelEditDescription(); $event.stopPropagation()">Cancel</button>
+                    <button mat-raised-button color="primary" (click)="saveDescription(); $event.stopPropagation()">Save</button>
                   </div>
                 }
               </div>
             </div>
 
-            <!-- Détails -->
+            <!-- Details -->
             <div class="dialog-section">
               <div class="section-title">
                 <mat-icon>info</mat-icon>
-                <span>Détails</span>
+                <span>Details</span>
               </div>
               <div class="details-grid">
                 <div class="detail-row">
-                  <span class="label">Statut</span>
+                  <span class="label">Status</span>
                   <mat-select [value]="task.status" (selectionChange)="updateStatus($event.value)">
-                    <mat-option [value]="0">À faire</mat-option>
-                    <mat-option [value]="1">En cours</mat-option>
-                    <mat-option [value]="2">Terminé</mat-option>
+                    <mat-option [value]="0">To do</mat-option>
+                    <mat-option [value]="1">In progress</mat-option>
+                    <mat-option [value]="2">Done</mat-option>
                   </mat-select>
                 </div>
                 <div class="detail-row">
-                  <span class="label">Priorité</span>
+                  <span class="label">Priority</span>
                   <mat-select [value]="task.priority" (selectionChange)="updatePriority($event.value)">
-                    <mat-option [value]="0">Faible</mat-option>
-                    <mat-option [value]="1">Moyenne</mat-option>
-                    <mat-option [value]="2">Haute</mat-option>
-                    <mat-option [value]="3">Critique</mat-option>
+                    <mat-option [value]="0">Low</mat-option>
+                    <mat-option [value]="1">Medium</mat-option>
+                    <mat-option [value]="2">High</mat-option>
+                    <mat-option [value]="3">Critical</mat-option>
                   </mat-select>
                 </div>
                 <div class="detail-row">
-                  <span class="label">Assigné à</span>
-                  <span>{{ task.assignedToName || 'Non assigné' }}</span>
+                  <span class="label">Assigned to</span>
+                  <span>{{ task.assignedToName || 'Unassigned' }}</span>
                 </div>
                 <div class="detail-row">
                   <span class="label">Sprint</span>
-                  <span>{{ task.sprintName || 'Non sprinté' }}</span>
+                  <span>{{ task.sprintName || 'No sprint' }}</span>
                 </div>
               </div>
             </div>
 
-            <!-- Commentaires -->
+            <!-- Comments -->
             <div class="dialog-section">
               <div class="section-title">
                 <mat-icon>comment</mat-icon>
-                <span>Commentaires ({{ comments.length }})</span>
+                <span>Comments ({{ comments.length }})</span>
               </div>
               <div class="comments-list">
                 @for (c of comments; track c.id) {
@@ -200,13 +200,13 @@ import { LoadingComponent } from '../../../shared/components/loading/loading.com
                   </div>
                 }
                 @if (comments.length === 0) {
-                  <p class="no-comments">Aucun commentaire</p>
+                  <p class="no-comments">No comments</p>
                 }
               </div>
               <div class="add-comment">
-                <textarea [(ngModel)]="newComment" placeholder="Ajouter un commentaire..." rows="2"></textarea>
+                <textarea [(ngModel)]="newComment" placeholder="Add a comment..." rows="2"></textarea>
                 <button mat-raised-button color="primary" (click)="addCommentDialog()" [disabled]="!newComment.trim()">
-                  Envoyer
+                  Send
                 </button>
               </div>
             </div>
@@ -216,7 +216,7 @@ import { LoadingComponent } from '../../../shared/components/loading/loading.com
     }
   `,
   styles: [`
-    /* Mode page normale */
+    /* Normal page mode */
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     h1 { margin: 0; }
     .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -229,7 +229,7 @@ import { LoadingComponent } from '../../../shared/components/loading/loading.com
     .add-comment { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
     .full-width { width: 100%; }
 
-    /* Mode dialog */
+    /* Dialog mode */
     .dialog-container { padding: 0; }
     .dialog-task-header { margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb; }
     .dialog-task-header h2 { margin: 0 0 8px 0; font-size: 18px; font-weight: 600; }
@@ -298,7 +298,7 @@ export class TaskDetailComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.snackBar.open('Erreur de chargement', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Loading error', 'Close', { duration: 3000 });
       }
     });
   }
@@ -323,23 +323,23 @@ export class TaskDetailComponent implements OnInit {
     this.isEditingDescription = false;
   }
 
-  // FIX: subscribe manquant dans la version précédente
+  // FIX: missing subscribe in previous version
   saveDescription(): void {
     if (!this.task) return;
     this.backlogService.updateBacklogItem(this.task.id, {
       title: this.task.title,
       priority: this.task.priority,
       description: this.editDescriptionText
-      // AssignedToId volontairement omis → le backend ne touche pas la FK
+      // AssignedToId intentionally omitted → backend does not touch the FK
     }).subscribe({
       next: (response) => {
         if (response.success && this.task) {
           this.task.description = this.editDescriptionText;
           this.isEditingDescription = false;
-          this.snackBar.open('Description mise à jour', 'Fermer', { duration: 2000 });
+          this.snackBar.open('Description updated', 'Close', { duration: 2000 });
         }
       },
-      error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+      error: () => this.snackBar.open('Error', 'Close', { duration: 3000 })
     });
   }
 
@@ -349,10 +349,10 @@ export class TaskDetailComponent implements OnInit {
         next: (response) => {
           if (response.success && this.task) {
             this.task.status = status;
-            this.snackBar.open('Statut mis à jour', 'Fermer', { duration: 2000 });
+            this.snackBar.open('Status updated', 'Close', { duration: 2000 });
           }
         },
-        error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+        error: () => this.snackBar.open('Error', 'Close', { duration: 3000 })
       });
     }
   }
@@ -363,10 +363,10 @@ export class TaskDetailComponent implements OnInit {
         next: (response) => {
           if (response.success && this.task) {
             this.task.priority = priority;
-            this.snackBar.open('Priorité mise à jour', 'Fermer', { duration: 2000 });
+            this.snackBar.open('Priority updated', 'Close', { duration: 2000 });
           }
         },
-        error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+        error: () => this.snackBar.open('Error', 'Close', { duration: 3000 })
       });
     }
   }
@@ -384,7 +384,7 @@ export class TaskDetailComponent implements OnInit {
       },
       error: () => {
         this.addingComment = false;
-        this.snackBar.open('Erreur', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Error', 'Close', { duration: 3000 });
       }
     });
   }
@@ -398,12 +398,12 @@ export class TaskDetailComponent implements OnInit {
         if (r.success) {
           this.newComment = '';
           this.loadComments(this.task!.id);
-          this.snackBar.open('Commentaire ajouté', 'Fermer', { duration: 2000 });
+          this.snackBar.open('Comment added', 'Close', { duration: 2000 });
         }
       },
       error: () => {
         this.addingComment = false;
-        this.snackBar.open('Erreur', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Error', 'Close', { duration: 3000 });
       }
     });
   }
@@ -414,10 +414,10 @@ export class TaskDetailComponent implements OnInit {
       next: r => {
         if (r.success) {
           this.loadComments(this.task!.id);
-          this.snackBar.open('Commentaire supprimé', 'Fermer', { duration: 2000 });
+          this.snackBar.open('Comment deleted', 'Close', { duration: 2000 });
         }
       },
-      error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+      error: () => this.snackBar.open('Error', 'Close', { duration: 3000 })
     });
   }
 

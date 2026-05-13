@@ -16,7 +16,7 @@ import {
 
 type MenuAction = 'link' | 'attachment' | 'weblink' | 'branch' | 'commit' | null;
 
-// Extension locale : branche enrichie avec ses commits
+// Local extension: branch enriched with its commits
 interface BranchWithCommits extends BacklogBranch {
   commits: BacklogCommit[];
 }
@@ -96,10 +96,10 @@ export class BacklogExtrasPanelComponent implements OnChanges {
     this.svc.getBranches(this.backlogItemId).subscribe(rb => {
       if (!rb.success) return;
       const branches: BacklogBranch[] = rb.data;
-      // Initialiser chaque branche avec un tableau vide
+      // Initialize each branch with an empty array
       this.branchesWithCommits = branches.map(b => ({ ...b, commits: [] }));
 
-      // Charger tous les commits puis les distribuer dans leurs branches
+      // Load all commits then distribute them into their branches
       this.svc.getCommits(this.backlogItemId!).subscribe(rc => {
         if (!rc.success) return;
         const allCommits: BacklogCommit[] = rc.data;
@@ -114,7 +114,7 @@ export class BacklogExtrasPanelComponent implements OnChanges {
     this.plusMenuOpen = false;
     this.activeAction = action;
     this.resetForms();
-    // Pré-sélectionner si une seule branche disponible
+    // Pre-select if only one branch available
     if (action === 'commit' && this.branchesWithCommits.length === 1) {
       this.selectedBranchId = this.branchesWithCommits[0].id;
     }
@@ -166,12 +166,12 @@ export class BacklogExtrasPanelComponent implements OnChanges {
     }).subscribe({
       next: r => {
         if (r.success) {
-          this.snack.open('Lien créé', 'Fermer', { duration: 2000 });
+          this.snack.open('Link created', 'Close', { duration: 2000 });
           this.closeAction();
           this.svc.getLinks(this.backlogItemId!).subscribe(lr => { if (lr.success) this.links = lr.data; });
         }
       },
-      error: () => this.snack.open('Erreur', 'Fermer', { duration: 3000 })
+      error: () => this.snack.open('Error', 'Close', { duration: 3000 })
     });
   }
 
@@ -181,7 +181,7 @@ export class BacklogExtrasPanelComponent implements OnChanges {
       next: r => {
         if (r.success) {
           this.links = this.links.filter(l => l.id !== link.id);
-          this.snack.open('Supprimé', 'Fermer', { duration: 2000 });
+          this.snack.open('Deleted', 'Close', { duration: 2000 });
         }
       }
     });
@@ -206,11 +206,11 @@ export class BacklogExtrasPanelComponent implements OnChanges {
         this.uploading = false;
         if (r.success) {
           this.attachments = [r.data, ...this.attachments];
-          this.snack.open('Fichier ajouté', 'Fermer', { duration: 2000 });
+          this.snack.open('File added', 'Close', { duration: 2000 });
           this.closeAction();
         }
       },
-      error: () => { this.uploading = false; this.snack.open('Erreur upload', 'Fermer', { duration: 3000 }); }
+      error: () => { this.uploading = false; this.snack.open('Upload error', 'Close', { duration: 3000 }); }
     });
     input.value = '';
   }
@@ -224,7 +224,7 @@ export class BacklogExtrasPanelComponent implements OnChanges {
         a.href = url; a.download = att.fileName; a.click();
         window.URL.revokeObjectURL(url);
       },
-      error: () => this.snack.open('Erreur téléchargement', 'Fermer', { duration: 3000 })
+      error: () => this.snack.open('Download error', 'Close', { duration: 3000 })
     });
   }
 
@@ -234,7 +234,7 @@ export class BacklogExtrasPanelComponent implements OnChanges {
       next: r => {
         if (r.success) {
           this.attachments = this.attachments.filter(a => a.id !== att.id);
-          this.snack.open('Supprimé', 'Fermer', { duration: 2000 });
+          this.snack.open('Deleted', 'Close', { duration: 2000 });
         }
       }
     });
@@ -266,11 +266,11 @@ export class BacklogExtrasPanelComponent implements OnChanges {
       next: r => {
         if (r.success) {
           this.webLinks = [r.data, ...this.webLinks];
-          this.snack.open('Lien ajouté', 'Fermer', { duration: 2000 });
+          this.snack.open('Link added', 'Close', { duration: 2000 });
           this.closeAction();
         }
       },
-      error: () => this.snack.open('Erreur', 'Fermer', { duration: 3000 })
+      error: () => this.snack.open('Error', 'Close', { duration: 3000 })
     });
   }
 
@@ -280,7 +280,7 @@ export class BacklogExtrasPanelComponent implements OnChanges {
       next: r => {
         if (r.success) {
           this.webLinks = this.webLinks.filter(w => w.id !== wl.id);
-          this.snack.open('Supprimé', 'Fermer', { duration: 2000 });
+          this.snack.open('Deleted', 'Close', { duration: 2000 });
         }
       }
     });
@@ -303,12 +303,12 @@ export class BacklogExtrasPanelComponent implements OnChanges {
         this.savingBranch = false;
         if (r.success) {
           this.branchesWithCommits = [{ ...r.data, commits: [] }, ...this.branchesWithCommits];
-          this.snack.open('Branche ajoutée', 'Fermer', { duration: 2000 });
+          this.snack.open('Branch added', 'Close', { duration: 2000 });
           this.closeAction();
           this.devUpdated.emit();
         }
       },
-      error: () => { this.savingBranch = false; this.snack.open('Erreur', 'Fermer', { duration: 3000 }); }
+      error: () => { this.savingBranch = false; this.snack.open('Error', 'Close', { duration: 3000 }); }
     });
   }
 
@@ -318,7 +318,7 @@ export class BacklogExtrasPanelComponent implements OnChanges {
       next: r => {
         if (r.success) {
           this.branchesWithCommits = this.branchesWithCommits.filter(x => x.id !== b.id);
-          this.snack.open('Supprimé', 'Fermer', { duration: 2000 });
+          this.snack.open('Deleted', 'Close', { duration: 2000 });
           this.devUpdated.emit();
         }
       }
@@ -341,35 +341,36 @@ export class BacklogExtrasPanelComponent implements OnChanges {
           if (branch) {
             branch.commits = [r.data, ...branch.commits];
           }
-          this.snack.open('Commit ajouté', 'Fermer', { duration: 2000 });
+          this.snack.open('Commit added', 'Close', { duration: 2000 });
           this.closeAction();
           this.devUpdated.emit();
         }
       },
       error: (err: any) => {
         this.savingCommit = false;
-        this.snack.open('Erreur: ' + (err.error?.message || 'Erreur serveur'), 'Fermer', { duration: 3000 });
+        this.snack.open('Error: ' + (err.error?.message || 'Server error'), 'Close', { duration: 3000 });
       }
     });
   }
 
   deleteCommit(commit: BacklogCommit, branchId: string): void {
     if (!this.backlogItemId) return;
-    this.svc.deleteCommit(this.backlogItemId, branchId, commit.id).subscribe({  // c.id → commit.id
+    this.svc.deleteCommit(this.backlogItemId, branchId, commit.id).subscribe({
       next: (r: any) => {
         if (r.success) {
           const branch = this.branchesWithCommits.find(b => b.id === branchId);
           if (branch) {
-            branch.commits = branch.commits.filter(x => x.id !== commit.id);  // c.id → commit.id
+            branch.commits = branch.commits.filter(x => x.id !== commit.id);
           }
-          this.snack.open('Supprimé', 'Fermer', { duration: 2000 });
+          this.snack.open('Deleted', 'Close', { duration: 2000 });
         }
       },
       error: (err: any) => {
-        this.snack.open('Erreur: ' + (err.error?.message || 'Erreur serveur'), 'Fermer', { duration: 3000 });
+        this.snack.open('Error: ' + (err.error?.message || 'Server error'), 'Close', { duration: 3000 });
       }
     });
   }
+
   shortHash(hash: string): string {
     return hash.length > 7 ? hash.slice(0, 7) : hash;
   }

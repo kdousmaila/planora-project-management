@@ -80,7 +80,7 @@ export class BacklogListComponent implements OnInit {
         },
         error: () => {
           this.loading = false;
-          this.snackBar.open('Erreur de chargement', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Loading error', 'Close', { duration: 3000 });
         }
       });
     });
@@ -127,19 +127,19 @@ export class BacklogListComponent implements OnInit {
         next: r => {
           if (r.success) {
             item.sprintId = targetSprintId;
-            this.snackBar.open('✅ Déplacé vers le sprint !', 'Fermer', { duration: 2000 });
+            this.snackBar.open('✅ Moved to sprint!', 'Close', { duration: 2000 });
           }
         },
         error: () => {
           this.loadAll();
-          this.snackBar.open('Erreur lors du déplacement', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Error while moving', 'Close', { duration: 3000 });
         }
       });
     } else {
       this.backlogService.removeFromSprint(item.id).subscribe({
         next: () => {
           item.sprintId = null;
-          this.snackBar.open('↩️ Retour au backlog', 'Fermer', { duration: 2000 });
+          this.snackBar.open('↩️ Back to backlog', 'Close', { duration: 2000 });
         },
         error: () => this.loadAll()
       });
@@ -156,7 +156,7 @@ export class BacklogListComponent implements OnInit {
         if (idx !== -1) sprintList.splice(idx, 1);
         item.sprintId = null;
         this.backlogItems.push(item);
-        this.snackBar.open('↩️ Retour au backlog', 'Fermer', { duration: 2000 });
+        this.snackBar.open('↩️ Back to backlog', 'Close', { duration: 2000 });
       },
       error: () => this.loadAll()
     });
@@ -176,7 +176,7 @@ export class BacklogListComponent implements OnInit {
       next: r => {
         if (r.success) {
           item.priority = next;
-          this.snackBar.open(`Priorité: ${this.getPriorityLabel(next)}`, 'Fermer', { duration: 1500 });
+          this.snackBar.open(`Priority: ${this.getPriorityLabel(next)}`, 'Close', { duration: 1500 });
         }
       }
     });
@@ -184,7 +184,7 @@ export class BacklogListComponent implements OnInit {
 
   moveToSprint(item: BacklogItem): void {
     if (this.sprints.length === 0) {
-      this.snackBar.open('Aucun sprint disponible', 'Fermer', { duration: 3000 });
+      this.snackBar.open('No sprints available', 'Close', { duration: 3000 });
       return;
     }
 
@@ -199,12 +199,12 @@ export class BacklogListComponent implements OnInit {
       this.backlogService.moveToSprint(item.id, sprintId).subscribe({
         next: response => {
           if (response.success) {
-            this.snackBar.open('Élément déplacé vers le sprint', 'Fermer', { duration: 2000 });
+            this.snackBar.open('Item moved to sprint', 'Close', { duration: 2000 });
             this.loadAll();
           }
         },
         error: () => {
-          this.snackBar.open('Erreur lors du déplacement', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Error while moving', 'Close', { duration: 3000 });
         }
       });
     });
@@ -214,9 +214,9 @@ export class BacklogListComponent implements OnInit {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       width: '380px',
       data: {
-        title: 'Supprimer',
-        message: `Supprimer "${item.title}" ?`,
-        confirmLabel: 'Supprimer',
+        title: 'Delete',
+        message: `Delete "${item.title}"?`,
+        confirmLabel: 'Delete',
         danger: true
       }
     });
@@ -226,7 +226,7 @@ export class BacklogListComponent implements OnInit {
         next: r => {
           if (r.success) {
             this.backlogItems = this.backlogItems.filter(i => i.id !== item.id);
-            this.snackBar.open('Élément supprimé', 'Fermer', { duration: 2000 });
+            this.snackBar.open('Item deleted', 'Close', { duration: 2000 });
           }
         }
       });
@@ -234,7 +234,7 @@ export class BacklogListComponent implements OnInit {
   }
 
   getPriorityLabel(priority: TaskPriority): string {
-    return ['Faible', 'Moyenne', 'Haute', 'Critique'][priority] ?? '';
+    return ['Low', 'Medium', 'High', 'Critical'][priority] ?? '';
   }
 
   getPriorityClass(priority: TaskPriority): string {
@@ -242,7 +242,7 @@ export class BacklogListComponent implements OnInit {
   }
 
   getSprintStatusLabel(status: number): string {
-    return ['Planning', 'Actif', 'Fermé'][status] ?? '';
+    return ['Planning', 'Active', 'Closed'][status] ?? '';
   }
 
   getSprintStatusClass(status: number): string {
@@ -277,4 +277,3 @@ export class MoveToSprintDialogComponent {
   selectedSprintId = '';
   constructor(@Inject(MAT_DIALOG_DATA) public data: { sprints: Sprint[] }) { }
 }
-

@@ -8,8 +8,8 @@
         <mat-icon>view_kanban</mat-icon>
       </div>
       <div>
-        <h1>Backlog et Sprints</h1>
-        <p class="subtitle">Gérez vos tickets et sprints</p>
+        <h1>Backlog & Sprints</h1>
+        <p class="subtitle">Manage your tickets and sprints</p>
       </div>
     </div>
   </div>
@@ -32,7 +32,7 @@
         <span class="section-name">{{ sprint.name }}</span>
         <span class="section-count">· {{ getSprintItems(sprint.id).length }} ticket{{ getSprintItems(sprint.id).length > 1 ? 's' : '' }}</span>
         @if (sprint.status === 1) {
-        <span class="sprint-active-badge">Actif</span>
+        <span class="sprint-active-badge">Active</span>
         }
         @if (sprint.startDate) {
         <span class="sprint-dates">
@@ -40,16 +40,16 @@
         </span>
         }
         <div class="sp-badges">
-          <span class="sp-badge total" matTooltip="Story points totaux du sprint">
+          <span class="sp-badge total" matTooltip="Total sprint story points">
             Total: {{ getSprintTotalStoryPoints(sprint.id) }} pts
           </span>
-          <span class="sp-badge" matTooltip="Story points - À faire">
+          <span class="sp-badge" matTooltip="Story points - To do">
             {{ getSprintStoryPointsByStatus(sprint.id, 0) }} pts
           </span>
-          <span class="sp-badge blue" matTooltip="Story points - En cours">
+          <span class="sp-badge blue" matTooltip="Story points - In progress">
             {{ getSprintStoryPointsByStatus(sprint.id, 1) }} pts
           </span>
-          <span class="sp-badge" matTooltip="Story points - Terminé">
+          <span class="sp-badge" matTooltip="Story points - Done">
             {{ getSprintStoryPointsByStatus(sprint.id, 2) }} pts
           </span>
           <mat-icon class="settings-icon">settings</mat-icon>
@@ -58,9 +58,9 @@
           <button class="btn-start-sprint"
                   (click)="startSprint(sprint.id)"
                   [disabled]="getSprintItems(sprint.id).length === 0"
-                  [matTooltip]="getSprintItems(sprint.id).length === 0 ? 'Ajoutez au moins une tâche avant de démarrer' : 'Démarrer le sprint'">
+                  [matTooltip]="getSprintItems(sprint.id).length === 0 ? 'Add at least one task before starting' : 'Start sprint'">
             <mat-icon>play_arrow</mat-icon>
-            Démarrer le sprint
+            Start sprint
           </button>
         </div>
       </div>
@@ -87,21 +87,21 @@
             <mat-icon>arrow_drop_down</mat-icon>
           </span>
           <mat-menu #statusMenu="matMenu">
-            <button mat-menu-item (click)="changeStatus(item, 0)">À faire</button>
-            <button mat-menu-item (click)="changeStatus(item, 1)">En cours</button>
-            <button mat-menu-item (click)="changeStatus(item, 2)">Terminé</button>
+            <button mat-menu-item (click)="changeStatus(item, 0)">To do</button>
+            <button mat-menu-item (click)="changeStatus(item, 1)">In progress</button>
+            <button mat-menu-item (click)="changeStatus(item, 2)">Done</button>
           </mat-menu>
           <span class="priority-dot" [ngClass]="getPriorityDotClass(item.priority)"
                 [matTooltip]="getPriorityLabel(item.priority)"></span>
           <div class="assign-avatar"
-               [matTooltip]="item.assignedToName ?? (item.assignedToId ? 'Assigné' : 'Non assigné')"
+               [matTooltip]="item.assignedToName ?? (item.assignedToId ? 'Assigned' : 'Unassigned')"
                (click)="assignTask(item); $event.stopPropagation()">
             @if (!item.assignedToId) { <mat-icon>person</mat-icon> }
             @if (item.assignedToId) { <span>{{ getInitials(item) }}</span> }
           </div>
           @if (item.storyPoints !== null && item.storyPoints !== undefined) {
           <div class="points-avatar"
-               [matTooltip]="'Estimation: ' + getStoryPointsLabel(item)"
+               [matTooltip]="'Estimate: ' + getStoryPointsLabel(item)"
                (click)="setStoryPoints(item); $event.stopPropagation()">
             <span>{{ getStoryPointsLabel(item) }}</span>
           </div>
@@ -118,17 +118,17 @@
             </button>
             <mat-menu #sprintRowMenu="matMenu">
               <button mat-menu-item (click)="assignTask(item)">
-                <mat-icon>person_add</mat-icon><span>Assigner à...</span>
+                <mat-icon>person_add</mat-icon><span>Assign to...</span>
               </button>
               <button mat-menu-item (click)="openSetComplexity(item)">
-                <mat-icon>timeline</mat-icon><span>Complexité</span>
+                <mat-icon>timeline</mat-icon><span>Complexity</span>
               </button>
               <button mat-menu-item (click)="setStoryPoints(item)">
-                <mat-icon>hourglass_empty</mat-icon><span>Estimation durée</span>
+                <mat-icon>hourglass_empty</mat-icon><span>Time estimate</span>
               </button>
               <mat-divider></mat-divider>
               <button mat-menu-item (click)="deleteItem(item)" class="danger-item">
-                <mat-icon>delete</mat-icon><span>Supprimer</span>
+                <mat-icon>delete</mat-icon><span>Delete</span>
               </button>
             </mat-menu>
           </div>
@@ -138,7 +138,7 @@
         @if (getSprintItems(sprint.id).length === 0) {
         <div class="empty-sprint-drop">
           <mat-icon>drag_indicator</mat-icon>
-          Glissez des tickets ici
+          Drag tickets here
         </div>
         }
       </div>
@@ -146,7 +146,7 @@
 
       @if (isSectionOpen(sprint.id)) {
       <div class="create-row" (click)="openCreate(sprint.id)">
-        <mat-icon>add</mat-icon> Créer un ticket
+        <mat-icon>add</mat-icon> Create a ticket
       </div>
       }
     </div>
@@ -156,8 +156,8 @@
     @if (sprints.length === 0) {
     <div class="no-sprint-row">
       <mat-icon>sprint</mat-icon>
-      <span>Aucun sprint — </span>
-      <button class="link-btn" (click)="createNewSprint()">Créer un sprint</button>
+      <span>No sprints — </span>
+      <button class="link-btn" (click)="createNewSprint()">Create a sprint</button>
     </div>
     }
 
@@ -168,25 +168,25 @@
         <span class="section-name">Backlog</span>
         <span class="section-count">&nbsp;({{ backlogItems.length }} ticket{{ backlogItems.length > 1 ? 's' : '' }})</span>
         <div class="sp-badges">
-          <span class="sp-badge total" matTooltip="Story points totaux du backlog">
+          <span class="sp-badge total" matTooltip="Total backlog story points">
             Total: {{ getBacklogTotalStoryPoints() }} pts
           </span>
-          <span class="sp-badge" matTooltip="Story points - À faire">
+          <span class="sp-badge" matTooltip="Story points - To do">
             {{ getBacklogStoryPointsByStatus(0) }} pts
           </span>
-          <span class="sp-badge blue" matTooltip="Story points - En cours">
+          <span class="sp-badge blue" matTooltip="Story points - In progress">
             {{ getBacklogStoryPointsByStatus(1) }} pts
           </span>
-          <span class="sp-badge" matTooltip="Story points - Terminé">
+          <span class="sp-badge" matTooltip="Story points - Done">
             {{ getBacklogStoryPointsByStatus(2) }} pts
           </span>
           <mat-icon class="settings-icon">settings</mat-icon>
         </div>
         <div class="section-actions" (click)="$event.stopPropagation()">
-          <button class="btn-create-sprint" (click)="createNewSprint()">Créer un sprint</button>
+          <button class="btn-create-sprint" (click)="createNewSprint()">Create a sprint</button>
         </div>
       </div>
-    
+
       @if (isSectionOpen('backlog')) {
       <div class="ticket-list" cdkDropList id="backlog-list" [cdkDropListData]="backlogItems"
            [cdkDropListConnectedTo]="getSprintListIds()" (cdkDropListDropped)="onDrop($event, 'backlog-list')">
@@ -207,21 +207,21 @@
             <mat-icon>arrow_drop_down</mat-icon>
           </span>
           <mat-menu #statusMenuB="matMenu">
-            <button mat-menu-item (click)="changeStatus(item, 0)">À faire</button>
-            <button mat-menu-item (click)="changeStatus(item, 1)">En cours</button>
-            <button mat-menu-item (click)="changeStatus(item, 2)">Terminé</button>
+            <button mat-menu-item (click)="changeStatus(item, 0)">To do</button>
+            <button mat-menu-item (click)="changeStatus(item, 1)">In progress</button>
+            <button mat-menu-item (click)="changeStatus(item, 2)">Done</button>
           </mat-menu>
           <span class="priority-dot" [ngClass]="getPriorityDotClass(item.priority)"
                 [matTooltip]="getPriorityLabel(item.priority)"></span>
           <div class="assign-avatar"
-               [matTooltip]="item.assignedToName ?? (item.assignedToId ? 'Assigné' : 'Non assigné')"
+               [matTooltip]="item.assignedToName ?? (item.assignedToId ? 'Assigned' : 'Unassigned')"
                (click)="assignTask(item); $event.stopPropagation()">
             @if (!item.assignedToId) { <mat-icon>person</mat-icon> }
             @if (item.assignedToId) { <span>{{ getInitials(item) }}</span> }
           </div>
           @if (item.storyPoints !== null && item.storyPoints !== undefined) {
           <div class="points-avatar"
-               [matTooltip]="'Estimation: ' + getStoryPointsLabel(item)"
+               [matTooltip]="'Estimate: ' + getStoryPointsLabel(item)"
                (click)="setStoryPoints(item); $event.stopPropagation()">
             <span>{{ getStoryPointsLabel(item) }}</span>
           </div>
@@ -233,25 +233,23 @@
           </span>
           }
           <div class="row-actions">
-            <button mat-icon-button (click)="editItem(item)" class="row-menu-btn" matTooltip="Modifier">
-              <mat-icon>edit</mat-icon>
-            </button>
+            
             <button mat-icon-button [matMenuTriggerFor]="backlogRowMenu" class="row-menu-btn">
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #backlogRowMenu="matMenu">
               <button mat-menu-item (click)="assignTask(item)">
-                <mat-icon>person_add</mat-icon><span>Assigner à...</span>
+                <mat-icon>person_add</mat-icon><span>Assign to...</span>
               </button>
               <button mat-menu-item (click)="openSetComplexity(item)">
-                <mat-icon>timeline</mat-icon><span>Complexité</span>
+                <mat-icon>timeline</mat-icon><span>Complexity</span>
               </button>
               <button mat-menu-item (click)="setStoryPoints(item)">
-                <mat-icon>hourglass_empty</mat-icon><span>Estimation durée</span>
+                <mat-icon>hourglass_empty</mat-icon><span>Time estimate</span>
               </button>
               <mat-divider></mat-divider>
               <button mat-menu-item (click)="deleteItem(item)" class="danger-item">
-                <mat-icon>delete</mat-icon><span>Supprimer</span>
+                <mat-icon>delete</mat-icon><span>Delete</span>
               </button>
             </mat-menu>
           </div>
@@ -261,13 +259,13 @@
         @if (backlogItems.length === 0) {
         <div class="empty-backlog-row">
           <mat-icon>inbox</mat-icon>
-          <span>Backlog vide — créez votre premier ticket</span>
+          <span>Backlog is empty — create your first ticket</span>
         </div>
         }
       </div>
 
       <div class="create-row" (click)="openCreate()">
-        <mat-icon>add</mat-icon> Créer
+        <mat-icon>add</mat-icon> Create
       </div>
       }
     </div>
