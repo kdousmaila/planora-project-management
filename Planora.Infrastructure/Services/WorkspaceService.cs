@@ -367,7 +367,7 @@ public class WorkspaceService : IWorkspaceService
             .OrderBy(wu => wu.JoinedAt)
             .ToListAsync();
 
-        // FirstOrDefaultAsync au lieu de FindAsync pour éviter l'erreur Guid?
+        // Use FirstOrDefaultAsync instead of FindAsync to avoid the Guid? issue
         var workspace = await _dbContext.Workspaces
             .FirstOrDefaultAsync(w => w.Id == workspaceId);
 

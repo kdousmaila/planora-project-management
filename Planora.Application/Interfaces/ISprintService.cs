@@ -12,5 +12,5 @@ public interface ISprintService
     Task<SprintDto> CloseSprintAsync(Guid id, string currentUserId);
     Task<SprintDto> StartSprintAsync(Guid id, string currentUserId);
     Task DeleteSprintAsync(Guid id, string currentUserId);
-    Task<IEnumerable<SprintDto>> GetCompletedSprintsAsync(Guid projectId); // ✅ Ajouter cette ligne
+    Task<IEnumerable<SprintDto>> GetCompletedSprintsAsync(Guid projectId); // ✅ Add this line
 }

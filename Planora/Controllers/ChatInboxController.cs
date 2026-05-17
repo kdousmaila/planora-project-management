@@ -45,7 +45,7 @@ public class ChatInboxController : ControllerBase
         if (userId == null) return Unauthorized(ApiResponseDto<object>.ErrorResult("User not authenticated."));
 
         var result = await _chatInboxService.CreateSessionAsync(projectId, dto, userId);
-        return Ok(ApiResponseDto<ChatSessionDto>.SuccessResult(result, "Conversation créée avec succès."));
+        return Ok(ApiResponseDto<ChatSessionDto>.SuccessResult(result, "Conversation created successfully."));
     }
 
     [HttpGet("sessions/{sessionId:guid}")]
@@ -65,7 +65,7 @@ public class ChatInboxController : ControllerBase
         if (userId == null) return Unauthorized(ApiResponseDto<object>.ErrorResult("User not authenticated."));
 
         await _chatInboxService.DeleteSessionAsync(projectId, sessionId, userId);
-        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Conversation supprimée."));
+        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Conversation deleted."));
     }
 
     // ── Messages ──────────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ public class ChatInboxController : ControllerBase
         if (userId == null) return Unauthorized(ApiResponseDto<object>.ErrorResult("User not authenticated."));
 
         var result = await _chatInboxService.SendMessageAsync(projectId, sessionId, dto, userId);
-        return Ok(ApiResponseDto<ChatMessageDto>.SuccessResult(result, "Message envoyé."));
+        return Ok(ApiResponseDto<ChatMessageDto>.SuccessResult(result, "Message sent."));
     }
 
     [HttpPatch("sessions/{sessionId:guid}/messages/{messageId:guid}")]
@@ -100,7 +100,7 @@ public class ChatInboxController : ControllerBase
 
         // ✅ All business logic (ownership check, broadcast) delegated to service
         var result = await _chatInboxService.EditMessageAsync(projectId, sessionId, messageId, dto, userId);
-        return Ok(ApiResponseDto<ChatMessageDto>.SuccessResult(result, "Message modifié."));
+        return Ok(ApiResponseDto<ChatMessageDto>.SuccessResult(result, "Message updated."));
     }
 
     [HttpDelete("sessions/{sessionId:guid}/messages/{messageId:guid}")]
@@ -111,7 +111,7 @@ public class ChatInboxController : ControllerBase
 
         // ✅ All business logic (PM check, broadcast) delegated to service
         await _chatInboxService.DeleteMessageAsync(projectId, sessionId, messageId, userId);
-        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Message supprimé."));
+        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Message deleted."));
     }
 
     // ── Reactions ─────────────────────────────────────────────────────────────
@@ -144,13 +144,13 @@ public class ChatInboxController : ControllerBase
         if (file.Length > 20 * 1024 * 1024)
             return BadRequest(ApiResponseDto<object>.ErrorResult("File too large. Max 20MB."));
 
-        // Crée le dossier si inexistant
+        // Create the folder if it does not exist
         var uploadsDir = Path.Combine(
             Directory.GetCurrentDirectory(), "wwwroot", "uploads", "chat", projectId.ToString()
         );
         Directory.CreateDirectory(uploadsDir);
 
-        // Nom unique pour éviter les collisions
+        // Unique name to avoid collisions
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         var safeFileName = $"{Guid.NewGuid()}{extension}";
         var fullPath = Path.Combine(uploadsDir, safeFileName);
@@ -176,7 +176,7 @@ public class ChatInboxController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        // Sécurité : empêche la traversée de répertoires
+        // Security: prevent directory traversal
         var safePath = Path.GetFullPath(
             Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", path.TrimStart('/'))
         );
@@ -185,7 +185,7 @@ public class ChatInboxController : ControllerBase
         );
 
         if (!safePath.StartsWith(allowedBase))
-            return BadRequest("Chemin non autorisé.");
+            return BadRequest("Unauthorized path.");
 
         if (!System.IO.File.Exists(safePath))
             return NotFound();
@@ -195,7 +195,7 @@ public class ChatInboxController : ControllerBase
 
         var fileBytes = await System.IO.File.ReadAllBytesAsync(safePath);
 
-        // Content-Disposition: attachment force le téléchargement
+        // Content-Disposition: attachment forces the download
         Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{fileName}\"");
 
         return File(fileBytes, mimeType, fileName);

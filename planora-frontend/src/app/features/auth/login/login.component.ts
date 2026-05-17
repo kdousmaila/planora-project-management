@@ -92,7 +92,7 @@ import { AuthService } from '../../../core/services/auth.service';
       box-shadow: 0 20px 40px rgba(0,0,0,.15);
     }
 
-    /* ✅ Bannière d'erreur */
+    /* ✅ Error banner */
     .error-banner {
       display: flex;
       align-items: center;
@@ -187,9 +187,9 @@ export class LoginComponent {
         if (status === 401 || status === 400) {
           this.errorMessage.set('Email ou mot de passe incorrect.');
         } else if (status === 0) {
-          this.errorMessage.set('Impossible de contacter le serveur. Vérifie ta connexion.');
+          this.errorMessage.set('Unable to contact the server. Check your connection.');
         } else {
-          this.errorMessage.set(err?.error?.message || 'Une erreur est survenue. Réessaie.');
+          this.errorMessage.set(err?.error?.message || 'An error occurred. Try again.');
         }
       }
     });

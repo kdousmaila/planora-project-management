@@ -56,12 +56,12 @@ export class SprintDetailComponent implements OnInit {
           this.loadTasks();
         } else {
           this.loading = false;
-          this.snackBar.open('Sprint non trouvé', 'Fermer', { duration: 3000 });
+          this.snackBar.open('Sprint not found', 'Close', { duration: 3000 });
         }
       },
       error: () => {
         this.loading = false;
-        this.snackBar.open('Erreur de chargement du sprint', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Failed to load sprint', 'Close', { duration: 3000 });
       }
     });
   }
@@ -75,7 +75,7 @@ export class SprintDetailComponent implements OnInit {
       error: () => {
         this.tasks = [];
         this.loading = false;
-        this.snackBar.open('Erreur de chargement des tickets', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Failed to load tickets', 'Close', { duration: 3000 });
       }
     });
   }
@@ -116,7 +116,7 @@ export class SprintDetailComponent implements OnInit {
   }
 
   getPriorityLabel(priority: TaskPriority): string {
-    const labels = ['Faible', 'Moyenne', 'Haute', 'Critique'];
+    const labels = ['Low', 'Medium', 'High', 'Critical'];
     return labels[priority] ?? '';
   }
 
@@ -126,7 +126,7 @@ export class SprintDetailComponent implements OnInit {
   }
 
   getStatusLabel(status: TaskStatus): string {
-    const labels = ['À faire', 'En cours', 'Terminé'];
+    const labels = ['To do', 'In progress', 'Done'];
     return labels[status] ?? '';
   }
 
@@ -136,7 +136,7 @@ export class SprintDetailComponent implements OnInit {
   }
 
   exportToCSV(): void {
-    const headers = ['ID', 'Titre', 'Description', 'Priorité', 'Statut'];
+    const headers = ['ID', 'Title', 'Description', 'Priority', 'Status'];
     const rows = this.tasks.map(task => [
       task.id.slice(-6),
       `"${task.title.replace(/"/g, '""')}"`,
@@ -157,7 +157,7 @@ export class SprintDetailComponent implements OnInit {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    this.snackBar.open('Export CSV réussi !', 'Fermer', { duration: 2000 });
+    this.snackBar.open('CSV export successful!', 'Close', { duration: 2000 });
   }
 
   goBack(): void {

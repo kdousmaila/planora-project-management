@@ -9,6 +9,7 @@ from flask_cors import CORS
 import joblib
 import numpy as np
 import os
+import re
 import pyodbc
 from datetime import datetime, timedelta, timezone
 
@@ -19,12 +20,15 @@ CORS(app)
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'planora_sentiment_model.pkl')
 try:
-    model = joblib.load(MODEL_PATH)
+    sentiment_model = joblib.load(MODEL_PATH)
     print(f'✅ Model loaded from {MODEL_PATH}')
-    print(f'🔍 Model classes: {model.classes_}')
+    print(f'🔍 Model classes: {sentiment_model.classes_}')
 except FileNotFoundError:
     print(f'❌ Model file not found : {MODEL_PATH}')
-    model = None
+    sentiment_model = None
+except Exception as exc:
+    print(f'❌ Failed to load model: {exc}')
+    sentiment_model = None
 
 DB_CONNECTION_STRING = (
     "DRIVER={ODBC Driver 17 for SQL Server};"
@@ -35,6 +39,53 @@ DB_CONNECTION_STRING = (
 
 def get_db_connection():
     return pyodbc.connect(DB_CONNECTION_STRING)
+
+
+ENGLISH_HINT_WORDS = {
+    'the', 'and', 'is', 'are', 'am', 'to', 'for', 'with', 'thanks', 'great', 'good', 'nice',
+    'update', 'status', 'task', 'bug', 'issue', 'blocker', 'deadline', 'help', 'please', 'review',
+    'meeting', 'deploy', 'deployment', 'release', 'build', 'sprint', 'team', 'project', 'work',
+    'stuck', 'overwhelmed', 'frustrated', 'happy', 'progress', 'done', 'ready', 'today', 'tomorrow',
+    'again', 'nobody', 'nothing', 'someone', 'support', 'urgent', 'fix', 'broken', 'waiting', 'on',
+}
+
+FOREIGN_HINT_WORDS = {
+    'le', 'la', 'les', 'des', 'un', 'une', 'de', 'du', 'et', 'est', 'pour', 'avec', 'dans', 'sur',
+    'je', 'tu', 'il', 'elle', 'nous', 'vous', 'ils', 'elles', 'bonjour', 'merci', 'tres', 'très',
+    'equipe', 'équipe', 'travail', 'travaille', 'reunion', 'réunion', 'bloque', 'bloqué', 'delai',
+    'délai', 'sprint', 'projet', 'depuis', 'encore', 'personne', 'rapport', 'besoin', 'aide',
+}
+
+NON_ASCII_HINTS = set('àâçéèêëîïôùûüÿœæ')
+
+
+def tokenize(text):
+    return re.findall(r"[a-z']+", text.lower())
+
+
+def is_english_text(text):
+    if not text or not text.strip():
+        return False
+
+    lowered = text.lower()
+    if any(char in lowered for char in NON_ASCII_HINTS):
+        return False
+
+    tokens = tokenize(lowered)
+    if not tokens:
+        return False
+
+    english_score = 0.0
+    for token in tokens:
+        if token in ENGLISH_HINT_WORDS:
+            english_score += 1.5
+        if token in FOREIGN_HINT_WORDS:
+            english_score -= 2.5
+
+    if len(tokens) <= 2 and english_score <= 0:
+        return False
+
+    return english_score > 0
 
 def normalize(s):
     mapping = {
@@ -50,11 +101,22 @@ def normalize(s):
     return mapping.get(s, 'Neutral')
 
 
+def predict_sentiment(text):
+    if not is_english_text(text):
+        return 'Neutral', 0.0
+
+    if sentiment_model is None:
+        return 'Neutral', 0.0
+
+    probabilities = sentiment_model.predict_proba([text])[0]
+    label_index = int(np.argmax(probabilities))
+    label = normalize(sentiment_model.classes_[label_index])
+    confidence = round(float(np.max(probabilities)) * 100, 1)
+    return label, confidence
+
+
 @app.route('/api/sentiment/team-health-live', methods=['POST'])
 def analyze_team_health_live():
-    if model is None:
-        return jsonify({'error': 'Model not loaded'}), 503
-
     body     = request.get_json(force=True)
     scope_id = body.get('projectId', '').strip()
 
@@ -110,7 +172,7 @@ def analyze_team_health_live():
             'analyzedAt':     datetime.now(UTC).isoformat(),
             'totalMessages':  0,
             'globalScore':    5,
-            'globalMood':     'Not enough data',
+            'globalMood':     'Not enough English data',
             'globalMoodIcon': '💤',
             'globalMoodColor':'neutral',
             'distribution':   EMPTY,
@@ -120,10 +182,9 @@ def analyze_team_health_live():
 
     messages   = [{'id': str(r[0]), 'content': r[1], 'authorId': str(r[2]), 'authorName': r[3]} for r in rows]
     texts      = [m['content'] for m in messages]
-    sentiments = model.predict(texts)
-    probas     = model.predict_proba(texts)
-
-    print(f'🔍 Raw sentiments (first 5): {list(sentiments[:5])}')
+    predictions = [predict_sentiment(text) for text in texts]
+    sentiments  = [item[0] for item in predictions]
+    confidences = [item[1] for item in predictions]
 
     counts = {'Positive': 0, 'Neutral': 0, 'Stressed': 0, 'Frustrated': 0}
     for s in sentiments:
@@ -137,10 +198,6 @@ def analyze_team_health_live():
     str_r     = counts['Stressed']   / total
     fru_r     = counts['Frustrated'] / total
 
-    print(f'📊 Distribution: {counts}')
-    print(f'📊 Ratios: pos={pos_r:.2f} neu={neu_r:.2f} str={str_r:.2f} fru={fru_r:.2f}')
-
-    # ✅ Balanced formula — neutral contributes positively
     global_score = max(1, min(10, round(
         (pos_r * 10) +
         (neu_r * 5)  -
@@ -148,15 +205,13 @@ def analyze_team_health_live():
         (fru_r * 4)
     )))
 
-    print(f'📊 Final global score: {global_score}')
-
     if global_score >= 7:   mood, icon, color = 'Motivated team',    '🚀', 'positive'
     elif global_score >= 5: mood, icon, color = 'Good atmosphere',   '😊', 'neutral'
     elif str_r > fru_r:     mood, icon, color = 'Stress detected',   '⚠️', 'stressed'
     else:                   mood, icon, color = 'Tension detected',  '🔴', 'frustrated'
 
     member_stats = {}
-    for msg, sentiment, proba in zip(messages, sentiments, probas):
+    for msg, sentiment in zip(messages, sentiments):
         aid  = msg['authorId']
         name = msg['authorName']
         s    = normalize(sentiment)
@@ -221,9 +276,9 @@ def analyze_team_health_live():
                 'content':    m['content'],
                 'authorName': m['authorName'],
                 'sentiment':  normalize(s),
-                'confidence': round(float(np.max(p)) * 100, 1)
+                'confidence': confidence
             }
-            for m, s, p in zip(messages, sentiments, probas)
+            for m, s, confidence in zip(messages, sentiments, confidences)
         ]
     })
 
@@ -238,7 +293,7 @@ def health():
         db_status = f'error: {str(e)}'
     return jsonify({
         'status':   'ok',
-        'model':    'loaded' if model else 'missing',
+        'model':    'loaded' if sentiment_model else 'missing',
         'database': db_status,
         'time':     datetime.now(UTC).isoformat()
     })

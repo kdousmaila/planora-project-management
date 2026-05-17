@@ -41,8 +41,8 @@ export class MeetingCalendarComponent implements OnInit, OnDestroy {
   calendarDays: (Date | null)[] = [];
 
   readonly monthNames = [
-    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   ngOnInit(): void {
@@ -72,18 +72,18 @@ export class MeetingCalendarComponent implements OnInit, OnDestroy {
       .subscribe((res: ApiResponse<MeetingEvent[]>) => {
         if (res.success) {
           this.meetings = res.data;
-          // ✅ Vérifier immédiatement au chargement
+          // ✅ Check immediately on load
           this.checkAndOpenJitsi();
         }
       });
 
-    // ✅ Puis vérifier toutes les minutes
+    // ✅ Then check every minute
     const interval = setInterval(() => {
       this.checkAndOpenJitsi();
       this.meetings = [...this.meetings];
     }, 60_000);
 
-    // ✅ Nettoyer l'interval à la destruction du composant
+    // ✅ Clear the interval when the component is destroyed
     this.destroy$.subscribe(() => clearInterval(interval));
   }
 
@@ -102,7 +102,7 @@ export class MeetingCalendarComponent implements OnInit, OnDestroy {
       }
     });
   }
-  // ── Panneau épinglé ───────────────────────────
+  // ── Pinned panel ───────────────────────────
   togglePinned(): void { this.showPinned = !this.showPinned; }
   closePinned(): void { this.showPinned = false; }
   unpinMessage(pin: PinnedMessage): void {
@@ -112,7 +112,7 @@ export class MeetingCalendarComponent implements OnInit, OnDestroy {
         this.pinnedMessages = this.pinnedMessages.filter(p => p.id !== pin.id);
       });
   }
-  // ── Jitsi : nouvel onglet ─────────────────────
+  // ── Jitsi: new tab ─────────────────────
   joinMeeting(meeting: MeetingEvent): void {
     const name = encodeURIComponent(this.currentUserName || 'Participant');
     window.open(
@@ -135,7 +135,7 @@ export class MeetingCalendarComponent implements OnInit, OnDestroy {
   }
 
   isMeetActive(scheduledAt: string): boolean {
-    // Le backend renvoie sans Z (heure locale serveur) — on parse sans ajouter Z
+    // The backend returns values without Z (server local time) - parse without adding Z
     const meetTime = new Date(scheduledAt);
     const now = new Date();
     const diffMs = now.getTime() - meetTime.getTime();
@@ -208,11 +208,11 @@ export class MeetingCalendarComponent implements OnInit, OnDestroy {
     ref.afterClosed().subscribe((result: MeetingEvent | undefined) => {
       if (result) {
         this.meetings = [...this.meetings, result];
-        // ✅ Vérifier immédiatement si cette nouvelle réunion est déjà active
+        // ✅ Check immediately if this new meeting is already active
         this.checkAndOpenJitsi();
       }
     });
-  }  deleteMeeting(meetingId: string): void {
+  } deleteMeeting(meetingId: string): void {
     this.meetings = this.meetings.filter(m => m.id !== meetingId);
   }
 
@@ -220,6 +220,6 @@ export class MeetingCalendarComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
- 
-  }
+
+}
 

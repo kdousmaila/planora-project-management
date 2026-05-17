@@ -24,7 +24,7 @@ import { DailyCheckInComponent } from '../daily-checkin/daily-checkin.component'
     CommonModule, RouterLink, MatCardModule, MatButtonModule,
     MatIconModule, MatChipsModule, MatProgressBarModule, MatFormFieldModule,
     MatSelectModule, ReactiveFormsModule, MatSnackBarModule, LoadingComponent,
-    DailyCheckInComponent, 
+    DailyCheckInComponent,
   ],
   templateUrl: './project-detail.component.html',
   styleUrls: ['./project-detail.component.css']
@@ -42,19 +42,19 @@ export class ProjectDetailComponent implements OnInit {
   workspaceMembers: WorkspaceMember[] = [];
   addingMember = false;
 
-  // ✅ Ajouté
+  // ✅ Added
   projectId = '';
 
   memberForm = this.fb.group({
     userId: ['', Validators.required]
   });
 
-  // ✅ Ajouté
+  // ✅ Added
   get isPM(): boolean {
     return this.authService.currentUser?.userId === this.project?.projectManagerId;
   }
 
-  // ✅ Ajouté
+  // ✅ Added
   get isAdmin(): boolean {
     return this.authService.hasRole(['Admin']);
   }
@@ -86,7 +86,7 @@ export class ProjectDetailComponent implements OnInit {
       this.snackBar.open('Invalid project id in URL', 'Close', { duration: 3000 });
       return;
     }
-    this.projectId = id; // ✅ Stocké ici
+    this.projectId = id; // ✅ Stored here
     this.loadProject(id);
   }
 

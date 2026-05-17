@@ -94,10 +94,10 @@ public class UserService : IUserService
         if (!await _roleManager.RoleExistsAsync(dto.Role))
             throw new InvalidOperationException($"Role '{dto.Role}' does not exist.");
 
-        // Récupérer tous les rôles actuels
+        // Get all current roles
         var currentRoles = await _userManager.GetRolesAsync(user);
 
-        // Supprimer tous les rôles actuels
+        // Remove all current roles
         if (currentRoles.Any())
         {
             var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
@@ -105,7 +105,7 @@ public class UserService : IUserService
                 throw new InvalidOperationException($"Failed to remove current roles: {string.Join(", ", removeResult.Errors.Select(e => e.Description))}");
         }
 
-        // Ajouter le nouveau rôle
+        // Add the new role
         var addResult = await _userManager.AddToRoleAsync(user, dto.Role);
         if (!addResult.Succeeded)
             throw new InvalidOperationException($"Failed to add role: {string.Join(", ", addResult.Errors.Select(e => e.Description))}");

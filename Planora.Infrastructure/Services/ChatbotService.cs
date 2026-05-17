@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Planora.Application.Interfaces;
-using UglyToad.PdfPig; // ← la lib PDF
+using UglyToad.PdfPig; // PDF library
 
 namespace Planora.Infrastructure.Services;
 
@@ -18,7 +18,7 @@ public class ChatbotService : IChatbotService
         _configuration = configuration;
     }
 
-    // ← Nouvelle méthode : extrait le texte d'un PDF
+    // New method: extract text from a PDF
     public string ExtractTextFromPdf(string filePath)
     {
         if (!File.Exists(filePath)) return "";
@@ -40,7 +40,7 @@ public class ChatbotService : IChatbotService
 
         var systemMessage = "You are a helpful project management assistant for Planora.";
         if (!string.IsNullOrEmpty(context))
-            systemMessage += $"\n\nVoici le contenu du fichier envoyé par l'utilisateur:\n{context}";
+            systemMessage += $"\n\nHere is the content of the file sent by the user:\n{context}";
 
         var requestBody = new
         {

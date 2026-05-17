@@ -36,7 +36,7 @@ export class SidebarComponent implements OnInit {
   userEmail = '';
   userInitials = '';
   backlogCount = 0;
-  canSeeHealth = false; // ✅ AJOUT
+  canSeeHealth = false; // ✅ ADDITION
 
   ngOnInit(): void {
     // ✅ Lire les rôles depuis localStorage
@@ -52,17 +52,17 @@ export class SidebarComponent implements OnInit {
       }
     } catch { }
 
-    // Check immédiat au chargement
+    // Immediate check on load
     this.checkUrl(this.router.url);
 
-    // Check à chaque navigation
+    // Check on every navigation
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       this.checkUrl(this.router.url); // ← cette ligne manquait !
     });
   }
-  // ← AJOUTE cette méthode
+  // ← ADD this method
   private checkUrl(url: string): void {
     this.showProjectNav = url.includes('/projects/') &&
       !url.includes('/projects/list') &&

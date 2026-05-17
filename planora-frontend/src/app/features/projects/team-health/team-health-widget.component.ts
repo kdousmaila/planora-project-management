@@ -48,7 +48,7 @@ import { AuthService } from '../../../core/services/auth.service';
       @if (!loading && !error && !data) {
         <div class="health-empty">
           <mat-icon>chat_bubble_outline</mat-icon>
-          <p>No messages this week</p>
+          <span>No sentiment data yet. Run the analysis to see the team summary.</span>
         </div>
       }
 
@@ -70,28 +70,28 @@ import { AuthService } from '../../../core/services/auth.service';
 
         <div class="distribution">
           <div class="dist-bar-wrap">
-            <div class="dist-segment seg-positif"
-                 [style.width.%]="data.percentages['Positif']"
-                 [title]="'Positive: ' + data.percentages['Positif'] + '%'">
+            <div class="dist-segment seg-positive"
+              [style.width.%]="data.percentages['Positive']"
+              [title]="'Positive: ' + data.percentages['Positive'] + '%'">
             </div>
-            <div class="dist-segment seg-neutre"
-                 [style.width.%]="data.percentages['Neutre']"
-                 [title]="'Neutral: ' + data.percentages['Neutre'] + '%'">
+            <div class="dist-segment seg-neutral"
+              [style.width.%]="data.percentages['Neutral']"
+              [title]="'Neutral: ' + data.percentages['Neutral'] + '%'">
             </div>
-            <div class="dist-segment seg-stresse"
-                 [style.width.%]="data.percentages['Stresse']"
-                 [title]="'Stressed: ' + data.percentages['Stresse'] + '%'">
+            <div class="dist-segment seg-stressed"
+              [style.width.%]="data.percentages['Stressed']"
+              [title]="'Stressed: ' + data.percentages['Stressed'] + '%'">
             </div>
-            <div class="dist-segment seg-frustre"
-                 [style.width.%]="data.percentages['Frustre']"
-                 [title]="'Frustrated: ' + data.percentages['Frustre'] + '%'">
+            <div class="dist-segment seg-frustrated"
+              [style.width.%]="data.percentages['Frustrated']"
+              [title]="'Frustrated: ' + data.percentages['Frustrated'] + '%'">
             </div>
           </div>
           <div class="dist-legend">
-            <span class="leg-item"><span class="leg-dot dot-pos"></span>Positive {{ data.distribution['Positif'] }}</span>
-            <span class="leg-item"><span class="leg-dot dot-neu"></span>Neutral {{ data.distribution['Neutre'] }}</span>
-            <span class="leg-item"><span class="leg-dot dot-str"></span>Stressed {{ data.distribution['Stresse'] }}</span>
-            <span class="leg-item"><span class="leg-dot dot-fru"></span>Frustrated {{ data.distribution['Frustre'] }}</span>
+            <span class="leg-item"><span class="leg-dot dot-pos"></span>Positive {{ data.distribution['Positive'] }}</span>
+            <span class="leg-item"><span class="leg-dot dot-neu"></span>Neutral {{ data.distribution['Neutral'] }}</span>
+            <span class="leg-item"><span class="leg-dot dot-str"></span>Stressed {{ data.distribution['Stressed'] }}</span>
+            <span class="leg-item"><span class="leg-dot dot-fru"></span>Frustrated {{ data.distribution['Frustrated'] }}</span>
           </div>
         </div>
 
@@ -199,10 +199,10 @@ import { AuthService } from '../../../core/services/auth.service';
     .distribution { margin-bottom:20px; }
     .dist-bar-wrap { display:flex;height:8px;border-radius:8px;overflow:hidden;gap:1px;margin-bottom:8px; }
     .dist-segment { height:100%;transition:width .8s ease;min-width:2px; }
-    .seg-positif { background:#10b981; }
-    .seg-neutre  { background:#94a3b8; }
-    .seg-stresse { background:#f97316; }
-    .seg-frustre { background:#ef4444; }
+    .seg-positive   { background:#10b981; }
+    .seg-neutral    { background:#94a3b8; }
+    .seg-stressed   { background:#f97316; }
+    .seg-frustrated { background:#ef4444; }
     .dist-legend { display:flex;flex-wrap:wrap;gap:10px; }
     .leg-item { display:flex;align-items:center;gap:5px;font-size:12px;color:#64748b;font-weight:500; }
     .leg-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
@@ -225,10 +225,10 @@ import { AuthService } from '../../../core/services/auth.service';
     .member-name { font-size:13px;font-weight:600;color:#0f172a; }
     .member-msgs { font-size:11px;color:#94a3b8; }
     .mood-tag { font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap; }
-    .mood-Positif  { background:#d1fae5;color:#059669; }
-    .mood-Neutre   { background:#f1f5f9;color:#64748b; }
-    .mood-Stresse  { background:#fff7ed;color:#ea580c; }
-    .mood-Frustre  { background:#fee2e2;color:#dc2626; }
+    .mood-positive   { background:#d1fae5;color:#059669; }
+    .mood-neutral    { background:#f1f5f9;color:#64748b; }
+    .mood-stressed   { background:#fff7ed;color:#ea580c; }
+    .mood-frustrated { background:#fee2e2;color:#dc2626; }
 
     .health-footer { font-size:11px;color:#cbd5e1;text-align:right;margin-top:12px;padding-top:10px;border-top:1px solid #f5f3ff; }
   `]
@@ -288,16 +288,16 @@ export class TeamHealthWidgetComponent implements OnInit {
 
   getMoodClass(mood: string): string {
     const map: Record<string, string> = {
-      'Positif': 'Positif', 'Neutre': 'Neutre',
-      'Stresse': 'Stresse', 'Frustre': 'Frustre'
+      'Positive': 'positive', 'Neutral': 'neutral',
+      'Stressed': 'stressed', 'Frustrated': 'frustrated'
     };
-    return map[mood] ?? 'Neutre';
+    return map[mood] ?? 'neutral';
   }
 
   getMoodEmoji(mood: string): string {
     const map: Record<string, string> = {
-      'Positif': '😊', 'Neutre': '😐',
-      'Stresse': '😰', 'Frustre': '😤'
+      'Positive': '😊', 'Neutral': '😐',
+      'Stressed': '😰', 'Frustrated': '😤'
     };
     return map[mood] ?? '😐';
   }

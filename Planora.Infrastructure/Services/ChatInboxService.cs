@@ -156,7 +156,7 @@ public class ChatInboxService : IChatInboxService
             var transcriptSession = await SessionQuery().FirstAsync(s => s.Id == session.Id);
             var transcript = BuildSessionTranscript(transcriptSession);
 
-            // ── Extraction du contenu des fichiers joints ──
+            // ── Extract the content of attached files ──
             var fileContext = new StringBuilder();
 
             if (dto.Attachments != null)
@@ -165,8 +165,8 @@ public class ChatInboxService : IChatInboxService
                 {
                     if (string.IsNullOrEmpty(att.Url)) continue;
 
-                    // L'URL ressemble à "http://localhost:5000/uploads/chat/fichier.pdf"
-                    // On extrait juste le chemin relatif après le domaine
+                    // The URL looks like "http://localhost:5000/uploads/chat/file.pdf"
+                    // Extract only the relative path after the domain
                     var uri = new Uri(att.Url);
                     var relativePath = uri.AbsolutePath.TrimStart('/');
                     var physicalPath = Path.Combine(
@@ -178,12 +178,12 @@ public class ChatInboxService : IChatInboxService
                     {
                         var pdfText = _chatbotService.ExtractTextFromPdf(physicalPath);
                         if (!string.IsNullOrWhiteSpace(pdfText))
-                            fileContext.AppendLine($"[Contenu du PDF \"{att.Name}\"]:\n{pdfText}");
+                            fileContext.AppendLine($"[PDF content \"{att.Name}\"]:\n{pdfText}");
                     }
                 }
             }
 
-            // Combine transcript de la session + contenu des fichiers
+            // Combine the session transcript with the file content
             var fullContext = fileContext.Length > 0
                 ? $"{transcript}\n\n{fileContext}"
                 : transcript;
@@ -261,7 +261,7 @@ public class ChatInboxService : IChatInboxService
             throw new UnauthorizedAccessException("You don't have permission to delete this message.");
 
         message.IsDeleted = true;
-        message.Content = "Ce message a été supprimé";
+        message.Content = "This message was deleted";
         await _dbContext.SaveChangesAsync();
 
         await _notifier.SendToSessionAsync(sessionId.ToString(), "MessageDeleted", messageId.ToString());

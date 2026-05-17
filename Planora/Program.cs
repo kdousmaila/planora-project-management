@@ -65,7 +65,7 @@ builder.Services.AddSignalR().AddJsonProtocol(options =>
     options.PayloadSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
 });
 
-// ✅ Ensuite IHubClients — après AddSignalR
+// ✅ Then IHubClients - after AddSignalR
 //builder.Services.AddSingleton<IHubClients>(sp =>
 //{
    // var hubContext = sp.GetRequiredService<IHubContext<ChatHub>>();
@@ -128,14 +128,14 @@ app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Planora API
 // ⚠️ StaticFiles avant tout le reste
 app.UseStaticFiles();
 
-// ⚠️ CORS doit être avant Authentication, Authorization et MapControllers
-app.UseCors("AllowFrontend");  // ← nom identique à AddPolicy()
+// ⚠️ CORS must come before Authentication, Authorization, and MapControllers
+app.UseCors("AllowFrontend");  // ← same name as AddPolicy()
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ⚠️ Retirer app.UseHttpsRedirection() en développement
-// (cause des problèmes quand le frontend est en http)
+// ⚠️ Remove app.UseHttpsRedirection() in development
+// (causes issues when the frontend runs over http)
 // app.UseHttpsRedirection();
 
 app.MapControllers();

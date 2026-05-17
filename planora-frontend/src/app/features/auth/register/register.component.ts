@@ -10,11 +10,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
 
-// ✅ Validator personnalisé — exige format xxx@xxx.xxx
+// ✅ Custom validator - requires xxx@xxx.xxx format
 function strictEmailValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
   if (!value) return null;
-  // Regex stricte : doit avoir @ + domaine + . + extension (min 2 chars)
+  // Strict regex: requires @ + domain + . + extension (min 2 chars)
   const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
   return emailRegex.test(value) ? null : { invalidEmail: true };
 }
@@ -33,9 +33,9 @@ function strictEmailValidator(control: AbstractControl): ValidationErrors | null
           <div class="modal-icon-wrap">
             <mat-icon class="modal-icon">error_outline</mat-icon>
           </div>
-          <h3 class="modal-title">Erreur d'inscription</h3>
+          <h3 class="modal-title">Registration error</h3>
           <p class="modal-msg">{{ errorMessage() }}</p>
-          <button class="modal-close-icon" (click)="errorMessage.set('')" aria-label="Fermer">
+          <button class="modal-close-icon" (click)="errorMessage.set('')" aria-label="Close">
             <mat-icon>close</mat-icon>
           </button>
         </div>
@@ -177,7 +177,7 @@ export class RegisterComponent {
   registerForm = this.fb.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
-    // ✅ strictEmailValidator remplace Validators.email
+    // ✅ strictEmailValidator replaces Validators.email
     email: ['', [Validators.required, strictEmailValidator]],
     userName: ['', Validators.required],
     password: ['', [Validators.required, Validators.minLength(8)]]
@@ -225,9 +225,9 @@ export class RegisterComponent {
     }
     if (err?.error?.title) return err.error.title;
     const status = err?.status;
-    if (status === 400) return 'Données invalides. Vérifie les champs.';
-    if (status === 409) return 'Un compte avec cet email existe déjà.';
-    if (status === 0) return 'Impossible de contacter le serveur.';
-    return 'Inscription échouée. Réessaie.';
+    if (status === 400) return 'Invalid data. Check the fields.';
+    if (status === 409) return 'An account with this email already exists.';
+    if (status === 0) return 'Unable to contact the server.';
+    return 'Registration failed. Try again.';
   }
 }

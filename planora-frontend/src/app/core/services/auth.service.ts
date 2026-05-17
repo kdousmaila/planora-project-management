@@ -39,7 +39,7 @@ export class AuthService {
     return localStorage.getItem('refresh_token');
   }
 
-  // ✅ AJOUT — retourne l'ID de l'utilisateur connecté
+  // ✅ ADDITION - returns the connected user's ID
   getCurrentUserId(): string | null {
     return this.currentUser?.userId ?? null;
   }

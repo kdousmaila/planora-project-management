@@ -13,7 +13,7 @@ public class ChatMessageDto
     public string Content { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
 
-    // ── Nouvelles propriétés ──────────────────────────────────────
+    // ── New properties ──────────────────────────────────────
     public bool IsDeleted { get; set; }
     public bool IsEdited { get; set; }
     public DateTime? EditedAt { get; set; }

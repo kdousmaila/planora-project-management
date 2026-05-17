@@ -78,7 +78,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/meetings/meeting-calendar.component').then(m => m.MeetingCalendarComponent)
       },
 
-      // ✅ NOUVEAU — Page santé de l'équipe par projet
+      // ✅ NEW - Project team health page
       {
         path: 'projects/:projectId/team-health',
         loadComponent: () => import('./features/projects/team-health/team-health-page.component').then(m => m.TeamHealthPageComponent)

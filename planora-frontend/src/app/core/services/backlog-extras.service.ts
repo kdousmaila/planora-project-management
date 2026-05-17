@@ -22,7 +22,7 @@ export interface BacklogBranchDto {
 export interface BacklogCommitDto {
   id: string;
   backlogItemId: string;
-  branchId: string;        // ← important pour le filtrage côté client
+  branchId: string;        // ← important for client-side filtering
   branchName: string;
   hash: string;
   message: string;
@@ -143,7 +143,7 @@ export class BacklogExtrasService {
     request: CreateBacklogCommitRequest
   ): Observable<ApiResponse<BacklogCommitDto>> {
     // BacklogDevController : POST /api/backlog-items/{id}/dev/commits
-    // branchId est envoyé dans le body, pas dans l'URL
+    // branchId is sent in the body, not the URL
     return this.http.post<ApiResponse<BacklogCommitDto>>(
       `${this.devBase(backlogItemId)}/commits`,
       { ...request, branchId }   // ← on fusionne branchId dans le body

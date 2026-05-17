@@ -129,7 +129,7 @@ public class BacklogController : ControllerBase
         return Ok(ApiResponseDto<BacklogItemDto>.SuccessResult(result, "Backlog item removed from sprint successfully."));
     }
     /// <summary>Get all backlog items for a project (including those in sprints)</summary>
-    // BacklogController.cs - méthode GetAllBacklogItemsForProject
+    // BacklogController.cs - GetAllBacklogItemsForProject method
     [HttpGet("project/{projectId:guid}/all-items")]
     public async Task<IActionResult> GetAllBacklogItemsForProject(Guid projectId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
@@ -185,7 +185,7 @@ public class BacklogController : ControllerBase
         await _backlogService.DeleteBacklogItemAsync(id, userId);
         return Ok(ApiResponseDto<object>.SuccessResult(null!, "Backlog item deleted successfully."));
     }
-    // BacklogController.cs - Ajouter cette méthode
+    // BacklogController.cs - Add this method
     /// <summary>Get backlog items for a specific sprint</summary>
     [HttpGet("sprint/{sprintId:guid}")]
     public async Task<IActionResult> GetSprintBacklogItems(Guid sprintId)
@@ -256,7 +256,7 @@ public class BacklogController : ControllerBase
         _context.Comments.Add(comment);
         await _context.SaveChangesAsync();
 
-        // Recharger avec l'auteur pour retourner le nom
+        // Reload with the author so the name can be returned
         var author = await _context.Users.FindAsync(userId);
         var result = new
         {
@@ -269,7 +269,7 @@ public class BacklogController : ControllerBase
             createdAt = comment.CreatedAt
         };
 
-        return Ok(ApiResponseDto<object>.SuccessResult(result, "Commentaire ajouté."));
+        return Ok(ApiResponseDto<object>.SuccessResult(result, "Comment added."));
     }
 
     /// <summary>Delete a comment on a backlog item</summary>
@@ -284,9 +284,9 @@ public class BacklogController : ControllerBase
             .FirstOrDefaultAsync(c => c.Id == commentId && c.BacklogItemId == backlogItemId);
 
         if (comment == null)
-            return NotFound(ApiResponseDto<object>.ErrorResult("Commentaire introuvable."));
+            return NotFound(ApiResponseDto<object>.ErrorResult("Comment not found."));
 
-        // Seul l'auteur ou un admin peut supprimer
+        // Only the author or an admin can delete
         var isAdmin = User.IsInRole("Admin");
         if (comment.AuthorId != userId && !isAdmin)
             return Forbid();
@@ -294,9 +294,9 @@ public class BacklogController : ControllerBase
         _context.Comments.Remove(comment);
         await _context.SaveChangesAsync();
 
-        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Commentaire supprimé."));
+        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Comment deleted."));
     }
-    // ===== SOUS-TÂCHES =====
+    // ===== SUBTASKS =====
 
     /// <summary>Get subtasks for a backlog item</summary>
     [HttpGet("{backlogItemId:guid}/subtasks")]
@@ -351,7 +351,7 @@ public class BacklogController : ControllerBase
             CreatedAt = subTask.CreatedAt
         };
 
-        return Ok(ApiResponseDto<object>.SuccessResult(result, "Sous-tâche créée."));
+        return Ok(ApiResponseDto<object>.SuccessResult(result, "Subtask created."));
     }
 
     /// <summary>Update a subtask (title or completion)</summary>
@@ -366,7 +366,7 @@ public class BacklogController : ControllerBase
             .FirstOrDefaultAsync(s => s.Id == subTaskId && s.BacklogItemId == backlogItemId && !s.IsDeleted);
 
         if (subTask == null)
-            return NotFound(ApiResponseDto<object>.ErrorResult("Sous-tâche introuvable."));
+            return NotFound(ApiResponseDto<object>.ErrorResult("Subtask not found."));
 
         if (!string.IsNullOrWhiteSpace(dto.Title))
             subTask.Title = dto.Title.Trim();
@@ -386,7 +386,7 @@ public class BacklogController : ControllerBase
             CreatedAt = subTask.CreatedAt
         };
 
-        return Ok(ApiResponseDto<object>.SuccessResult(result, "Sous-tâche mise à jour."));
+        return Ok(ApiResponseDto<object>.SuccessResult(result, "Subtask updated."));
     }
 
     /// <summary>Delete a subtask</summary>
@@ -401,13 +401,13 @@ public class BacklogController : ControllerBase
             .FirstOrDefaultAsync(s => s.Id == subTaskId && s.BacklogItemId == backlogItemId && !s.IsDeleted);
 
         if (subTask == null)
-            return NotFound(ApiResponseDto<object>.ErrorResult("Sous-tâche introuvable."));
+            return NotFound(ApiResponseDto<object>.ErrorResult("Subtask not found."));
 
         subTask.IsDeleted = true;
         subTask.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
-        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Sous-tâche supprimée."));
+        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Subtask deleted."));
     }
 
 }

@@ -240,7 +240,7 @@ export class InviteWorkspaceDialogComponent implements OnInit {
   onSubmit(): void {
     if (this.inviteForm.invalid) return;
 
-    // Double vérification côté logique
+    // Double-check in the logic layer
     if (this.inviteForm.value.role === 'ProjectManager' && this.isPMDisabled) {
       this.snackBar.open(
         'This workspace already has a Project Manager.',

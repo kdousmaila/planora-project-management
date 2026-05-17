@@ -23,13 +23,13 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
-        // ✅ Vérifie les DataAnnotations ([EmailAddress], [Required], etc.)
+        // ✅ Validate DataAnnotations ([EmailAddress], [Required], etc.)
         if (!ModelState.IsValid)
         {
             var firstError = ModelState.Values
                 .SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage)
-                .FirstOrDefault() ?? "Données invalides.";
+                .FirstOrDefault() ?? "Invalid data.";
 
             return BadRequest(ApiResponseDto<object>.ErrorResult(firstError));
         }

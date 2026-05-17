@@ -1,5 +1,5 @@
 // Planora.Application/DTOs/Sprints/SprintDto.cs
-// ASSUREZ-VOUS QUE LE FICHIER CONTIENT EXACTEMENT CECI :
+// MAKE SURE THE FILE CONTAINS EXACTLY THIS:
 
 using System;
 

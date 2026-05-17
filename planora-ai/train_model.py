@@ -1,55 +1,177 @@
-import pandas as pd
-from sklearn.pipeline import Pipeline
+from pathlib import Path
+
+import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-import joblib
+from sklearn.pipeline import FeatureUnion, Pipeline
 
-data = [
-    ('Great work everyone', 'Positive'), ('Excellent job on the feature', 'Positive'),
-    ('We finished the sprint successfully', 'Positive'), ('The demo went really well', 'Positive'),
-    ('Good progress on the project', 'Positive'), ('We delivered on time', 'Positive'),
-    ('Super travail toute l equipe', 'Positive'), ('On a termine le sprint avec succes', 'Positive'),
-    ('Bravo a toute l equipe', 'Positive'), ('Le client est tres satisfait', 'Positive'),
-    ('Tout fonctionne comme prevu', 'Positive'), ('Bonne ambiance dans l equipe', 'Positive'),
 
-    ('The meeting is at 2pm', 'Neutral'), ('I updated the task in the backlog', 'Neutral'),
-    ('Deployment is scheduled for Friday', 'Neutral'), ('The server was restarted', 'Neutral'),
-    ('I created a new git branch', 'Neutral'), ('Build is complete', 'Neutral'),
-    ('La reunion est a 14h', 'Neutral'), ('Le deploiement est prevu pour vendredi', 'Neutral'),
-    ('Le serveur a ete redemarre', 'Neutral'), ('Les tests unitaires sont en cours', 'Neutral'),
-    ('Je travaille sur le module de connexion', 'Neutral'), ('J ai assigne la tache', 'Neutral'),
+def expand(templates, contexts):
+    examples = []
+    for template in templates:
+        for context in contexts:
+            examples.append(template.format(**context))
+    return examples
 
-    ('I have been stuck since yesterday', 'Stressed'), ('I have too many tasks this week', 'Stressed'),
-    ('The deadline is tight I won t make it', 'Stressed'), ('I cannot solve this problem', 'Stressed'),
-    ('The pressure is too high right now', 'Stressed'), ('I need help I am lost', 'Stressed'),
-    ('I am exhausted from this sprint', 'Stressed'), ('Too many meetings impossible to code', 'Stressed'),
-    ('Je suis bloque depuis hier', 'Stressed'), ('J ai trop de taches pour cette semaine', 'Stressed'),
-    ('Le delai est tres serre je vais pas y arriver', 'Stressed'), ('La pression est trop forte', 'Stressed'),
-    ('J ai peur de ne pas finir a temps', 'Stressed'), ('Je suis epuise par ce sprint', 'Stressed'),
-    ('J ai besoin d aide je suis perdu', 'Stressed'), ('Je suis deborde aidez moi', 'Stressed'),
 
-    ('This bug blocks since 3 days nobody responds', 'Frustrated'), ('We always make the same mistakes', 'Frustrated'),
-    ('Requirements keep changing it is impossible', 'Frustrated'), ('I am the only one working here', 'Frustrated'),
-    ('Another useless meeting', 'Frustrated'), ('Nobody reads my messages', 'Frustrated'),
-    ('Nobody respects deadlines in this team', 'Frustrated'), ('I am tired of fixing other people bugs', 'Frustrated'),
-    ('Ce bug est bloquant depuis 3 jours personne ne repond', 'Frustrated'),
-    ('Personne ne respecte les delais dans cette equipe', 'Frustrated'),
-    ('Encore une reunion inutile', 'Frustrated'), ('Personne ne lit mes messages', 'Frustrated'),
-    ('Je suis le seul a travailler ici', 'Frustrated'), ('J en ai marre de corriger les bugs des autres', 'Frustrated'),
-    ('Les requirements changent tout le temps', 'Frustrated'), ('On refait toujours les memes erreurs', 'Frustrated'),
+POSITIVE_TEMPLATES = [
+    'Great work on the {item}',
+    'Nice job everyone, the {item} is moving fast',
+    'We finished the {item} ahead of schedule',
+    'The {item} went really well',
+    'I love the progress on {item}',
+    'Thanks for the fast turnaround on {item}',
+    'This release is looking solid',
+    'The team nailed the {item}',
+    'The demo was a success',
+    'We are in a really good place with {item}',
+    'Excellent collaboration on the {item}',
+    'The customer is happy with the result',
+    'Our plan is working perfectly',
+    'Good momentum on the project',
+    'The build looks clean and stable',
+    'Everything is on track for the delivery',
 ]
 
-df = pd.DataFrame(data, columns=['text', 'label'])
+NEUTRAL_TEMPLATES = [
+    'I updated the {item}',
+    'The meeting is at {time}',
+    'Deployment is scheduled for {day}',
+    'I pushed the latest changes',
+    'The task is in review',
+    'I added a comment to the ticket',
+    'The server was restarted',
+    'We are waiting for feedback',
+    'The backlog item is assigned',
+    'I synced the branch with main',
+    'The document is ready for review',
+    'Status is unchanged for now',
+    'I am checking the logs',
+    'The next step is already planned',
+    'No blockers right now',
+    'The dashboard was updated',
+]
+
+STRESSED_TEMPLATES = [
+    'I am stuck on {item}',
+    'The deadline for {item} is too tight',
+    'I need help with {item}',
+    'I cannot get {item} to work',
+    'I am overloaded with too many tasks',
+    'The pressure is high right now',
+    'I am behind on {item}',
+    'I am exhausted and need a break',
+    'The blocker is still open and slowing me down',
+    'I am worried we will miss the deadline',
+    'This sprint feels impossible to finish on time',
+    'I keep hitting the same problem with {item}',
+    'I am lost and need support',
+    'Too many things are happening at once',
+    'I am running out of time',
+    'The workload is becoming overwhelming',
+]
+
+FRUSTRATED_TEMPLATES = [
+    'This bug is still broken after {count} tries',
+    'Nobody is responding to my messages',
+    'We keep making the same mistakes',
+    'I am tired of redoing {item}',
+    'This is wasting time and energy',
+    'The requirements keep changing again',
+    'Another useless meeting',
+    'I am fed up with this process',
+    'The same issue keeps coming back',
+    'No one reads the updates I send',
+    'This release keeps failing for no good reason',
+    'I am sick of fixing the same problem',
+    'The team is ignoring the real blocker',
+    'It feels pointless to keep trying',
+    'This workflow is broken and frustrating',
+    'I am annoyed by the repeated delays',
+]
+
+CONTEXTS = {
+    'positive': [
+        {'item': 'feature'},
+        {'item': 'release'},
+        {'item': 'sprint'},
+        {'item': 'demo'},
+        {'item': 'build'},
+        {'item': 'deployment'},
+        {'item': 'plan'},
+    ],
+    'neutral': [
+        {'item': 'task', 'time': '2pm', 'day': 'Friday'},
+        {'item': 'ticket', 'time': 'tomorrow morning', 'day': 'Monday'},
+        {'item': 'branch', 'time': 'this afternoon', 'day': 'Wednesday'},
+        {'item': 'document', 'time': '3pm', 'day': 'next week'},
+        {'item': 'dashboard', 'time': '11am', 'day': 'Thursday'},
+    ],
+    'stressed': [
+        {'item': 'this bug'},
+        {'item': 'the rollout'},
+        {'item': 'the backlog item'},
+        {'item': 'the migration'},
+        {'item': 'the support issue'},
+        {'item': 'the integration'},
+    ],
+    'frustrated': [
+        {'item': 'the same bug', 'count': '3'},
+        {'item': 'the rollout', 'count': '4'},
+        {'item': 'the task', 'count': '2'},
+        {'item': 'the review cycle', 'count': '5'},
+        {'item': 'the backlog', 'count': '6'},
+    ],
+}
+
+data = []
+data.extend((text, 'Positive') for text in expand(POSITIVE_TEMPLATES, CONTEXTS['positive']))
+data.extend((text, 'Neutral') for text in expand(NEUTRAL_TEMPLATES, CONTEXTS['neutral']))
+data.extend((text, 'Stressed') for text in expand(STRESSED_TEMPLATES, CONTEXTS['stressed']))
+data.extend((text, 'Frustrated') for text in expand(FRUSTRATED_TEMPLATES, CONTEXTS['frustrated']))
 
 model = Pipeline([
-    ('tfidf', TfidfVectorizer(ngram_range=(1, 2), max_features=5000, strip_accents='unicode')),
-    ('clf', LogisticRegression(max_iter=1000, C=1.0, class_weight='balanced'))
+    ('features', FeatureUnion([
+        ('word', TfidfVectorizer(
+            analyzer='word',
+            ngram_range=(1, 2),
+            stop_words='english',
+            strip_accents='unicode',
+            sublinear_tf=True,
+            min_df=1,
+        )),
+        ('char', TfidfVectorizer(
+            analyzer='char_wb',
+            ngram_range=(3, 5),
+            strip_accents='unicode',
+            sublinear_tf=True,
+            min_df=1,
+        )),
+    ])),
+    ('clf', LogisticRegression(
+        max_iter=2500,
+        class_weight='balanced',
+        C=2.0,
+        random_state=42,
+    )),
 ])
 
-model.fit(df['text'], df['label'])
-joblib.dump(model, 'planora_sentiment_model.pkl')
-print('✅ planora_sentiment_model.pkl créé avec succès !')
+texts = [text for text, _ in data]
+labels = [label for _, label in data]
 
-tests = ['Great sprint this week!', 'Je suis bloque sur ce bug', 'Encore une reunion inutile', 'La reunion est a 14h']
-for t in tests:
-    print(f'  {t!r:45} → {model.predict([t])[0]}')
+model.fit(texts, labels)
+
+output_path = Path(__file__).with_name('planora_sentiment_model.pkl')
+joblib.dump(model, output_path)
+print(f'✅ {output_path.name} created successfully with {len(texts)} English-only samples')
+
+tests = [
+    'Great sprint this week!',
+    'I am stuck on this blocker',
+    'Another useless meeting',
+    'The task is in review',
+    'Je suis bloque sur ce bug',
+]
+
+for text in tests:
+    print(f'  {text!r:45} → {model.predict([text])[0]}')

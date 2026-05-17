@@ -10,15 +10,15 @@ public class RegisterDto
     [Required]
     public string LastName { get; set; } = string.Empty;
 
-    // ✅ Valide que c'est un vrai format email avant même d'entrer dans le service
+    // ✅ Validate the email format before the service layer runs
     [Required]
-    [EmailAddress(ErrorMessage = "L'adresse email n'est pas valide.")]
+    [EmailAddress(ErrorMessage = "The email address is not valid.")]
     public string Email { get; set; } = string.Empty;
 
     [Required]
     public string UserName { get; set; } = string.Empty;
 
     [Required]
-    [MinLength(8, ErrorMessage = "Le mot de passe doit contenir au moins 8 caractères.")]
+    [MinLength(8, ErrorMessage = "The password must contain at least 8 characters.")]
     public string Password { get; set; } = string.Empty;
 }

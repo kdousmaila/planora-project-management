@@ -24,7 +24,7 @@ public class WorkspaceInvitationConfiguration : IEntityTypeConfiguration<Workspa
             .HasForeignKey(i => i.InvitedByUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // ✅ Filtre correspondant à celui de Workspace
+        // ✅ Filter matching the one used by Workspace
         builder.HasQueryFilter(i => !i.Workspace!.IsDeleted);
     }
 }

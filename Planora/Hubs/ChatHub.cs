@@ -17,14 +17,14 @@ public class ChatHub : Hub
     public async Task LeaveProject(string projectId)
         => await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"project_{projectId}");
 
-    // ✅ Avec vérification du rôle
+    // ✅ With role verification
     public async Task JoinProjectManagers(string projectId)
     {
         var isAdmin = Context.User?.IsInRole("Admin") == true;
         var isPM = Context.User?.IsInRole("ProjectManager") == true;
 
         if (!isAdmin && !isPM)
-            throw new HubException("Accès refusé.");
+            throw new HubException("Access denied.");
 
         await Groups.AddToGroupAsync(Context.ConnectionId, $"managers_{projectId}");
     }

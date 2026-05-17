@@ -86,7 +86,7 @@ public class BacklogExtrasController : ControllerBase
         _db.BacklogLinks.Add(link);
         await _db.SaveChangesAsync();
 
-        return Ok(ApiResponseDto<object>.SuccessResult(new { link.Id }, "Lien créé."));
+        return Ok(ApiResponseDto<object>.SuccessResult(new { link.Id }, "Link created."));
     }
 
     [HttpDelete("links/{linkId:guid}")]
@@ -100,7 +100,7 @@ public class BacklogExtrasController : ControllerBase
         link.IsDeleted = true;
         link.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
-        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Lien supprimé."));
+        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Link deleted."));
     }
 
     // ════════════════════════════════════════════════════
@@ -136,7 +136,7 @@ public class BacklogExtrasController : ControllerBase
     public async Task<IActionResult> UploadAttachment(Guid backlogItemId, IFormFile file)
     {
         if (file == null || file.Length == 0)
-            return BadRequest(ApiResponseDto<object>.ErrorResult("Fichier manquant."));
+            return BadRequest(ApiResponseDto<object>.ErrorResult("Missing file."));
 
         var uploadsDir = Path.Combine(_env.ContentRootPath, "uploads", "backlog", backlogItemId.ToString());
         Directory.CreateDirectory(uploadsDir);
@@ -172,7 +172,7 @@ public class BacklogExtrasController : ControllerBase
             FileSizeBytes = attachment.FileSizeBytes,
             UploadedByName = user != null ? $"{user.FirstName} {user.LastName}".Trim() : string.Empty,
             CreatedAt = attachment.CreatedAt
-        }, "Pièce jointe ajoutée."));
+        }, "Attachment added."));
     }
 
     [HttpGet("attachments/{attachmentId:guid}/download")]
@@ -202,7 +202,7 @@ public class BacklogExtrasController : ControllerBase
         attachment.IsDeleted = true;
         attachment.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
-        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Supprimé."));
+        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Deleted."));
     }
 
     // ════════════════════════════════════════════════════
@@ -238,7 +238,7 @@ public class BacklogExtrasController : ControllerBase
     public async Task<IActionResult> AddWebLink(Guid backlogItemId, [FromBody] CreateBacklogWebLinkDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Url))
-            return BadRequest(ApiResponseDto<object>.ErrorResult("URL requise."));
+            return BadRequest(ApiResponseDto<object>.ErrorResult("URL is required."));
 
         var webLink = new BacklogWebLink
         {
@@ -265,7 +265,7 @@ public class BacklogExtrasController : ControllerBase
             LinkTypeLabel = WebLinkTypeLabel(webLink.LinkType),
             AddedByName = user != null ? $"{user.FirstName} {user.LastName}".Trim() : string.Empty,
             CreatedAt = webLink.CreatedAt
-        }, "Lien ajouté."));
+        }, "Link added."));
     }
 
     [HttpDelete("weblinks/{webLinkId:guid}")]
@@ -278,7 +278,7 @@ public class BacklogExtrasController : ControllerBase
         link.IsDeleted = true;
         link.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
-        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Supprimé."));
+        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Deleted."));
     }
 
     // ════════════════════════════════════════════════════
@@ -315,31 +315,31 @@ public class BacklogExtrasController : ControllerBase
 
     private static string LinkTypeLabel(int t) => t switch
     {
-        0 => "est lié à",
-        1 => "bloque",
-        2 => "est bloqué par",
-        3 => "duplique",
-        4 => "est dupliqué par",
-        _ => "est lié à"
+        0 => "is related to",
+        1 => "blocks",
+        2 => "is blocked by",
+        3 => "duplicates",
+        4 => "is duplicated by",
+        _ => "is related to"
     };
 
     private static string WebLinkTypeLabel(int t) => t switch
     {
-        0 => "Lien web",
-        1 => "Vidéo",
+        0 => "Web link",
+        1 => "Video",
         2 => "Document",
-        3 => "Livre",
-        _ => "Lien web"
+        3 => "Book",
+        _ => "Web link"
     };
 
     private static string StatusLabel(int s) => s switch
     {
-        0 => "À FAIRE",
-        1 => "EN COURS",
-        2 => "TERMINÉ",
-        _ => "À FAIRE"
+        0 => "TO DO",
+        1 => "IN PROGRESS",
+        2 => "DONE",
+        _ => "TO DO"
     };
-    // Ajoutez cette méthode dans BacklogExtrasController.cs, après la section COMMITS :
+    // Add this method in BacklogExtrasController.cs after the COMMITS section:
 
     [HttpGet("commits")]
     public async Task<IActionResult> GetCommits(Guid backlogItemId)

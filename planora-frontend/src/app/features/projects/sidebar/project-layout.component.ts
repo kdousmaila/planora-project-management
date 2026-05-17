@@ -49,7 +49,7 @@ export class ProjectSidebarComponent implements OnInit, OnDestroy {
       }
     } catch { }
 
-    // ✅ S'abonner à user$ pour les mises à jour en temps réel
+    // ✅ Subscribe to user$ for real-time updates
     this.userSub = this.authService.user$.subscribe(user => {
       if (user) {
         const roles: string[] = Array.isArray(user.roles) ? user.roles : [];
@@ -62,13 +62,13 @@ export class ProjectSidebarComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Charge le projet dès le démarrage
+    // Load the project on startup
     const projectId = this.extractProjectId(this.router.url);
     if (projectId) {
       this.loadProject(projectId);
     }
 
-    // Écoute les navigations
+    // Listen to navigations
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {

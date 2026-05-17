@@ -63,13 +63,13 @@ public class AuthService : IAuthService
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
-        // ✅ Fix 1 : vérification null propre
+        // ✅ Fix 1: clean null check
         if (user == null || !user.IsActive)
             throw new UnauthorizedAccessException("Invalid credentials or account is inactive.");
 
         var isValid = await _userManager.CheckPasswordAsync(user, dto.Password);
 
-        // ✅ Fix 2 : typo corrigée ("" devant throw supprimé)
+        // ✅ Fix 2: typo fixed (removed stray text before throw)
         if (!isValid)
             throw new UnauthorizedAccessException("Invalid credentials.");
 
@@ -82,7 +82,7 @@ public class AuthService : IAuthService
         if (principal == null)
             throw new UnauthorizedAccessException("Invalid token.");
 
-        // ✅ Fix 3 : userId ne peut pas être null ici
+        // ✅ Fix 3: userId cannot be null here
         var userId = principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
                      ?? string.Empty;
 
@@ -128,7 +128,7 @@ public class AuthService : IAuthService
             RefreshToken = refreshToken,
             Expiry = DateTime.UtcNow.AddMinutes(expiryMinutes),
             UserId = user.Id,
-            // ✅ Fix 4 : Email ne peut jamais être null dans AuthResponseDto
+            // ✅ Fix 4: Email can never be null in AuthResponseDto
             Email = user.Email ?? string.Empty,
             FullName = $"{user.FirstName} {user.LastName}",
             Roles = roles

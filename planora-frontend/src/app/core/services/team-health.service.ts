@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// ── Modèle de résultat ──
+// ── Result model ──
 export interface TeamHealthAlert {
   type: string;
   icon: string;
@@ -28,8 +28,8 @@ export interface TeamHealthResult {
   globalMood: string;
   globalMoodIcon: string;
   globalMoodColor: string;
-  distribution: { Positif: number; Neutre: number; Stresse: number; Frustre: number };
-  percentages: { Positif: number; Neutre: number; Stresse: number; Frustre: number };
+  distribution: { Positive: number; Neutral: number; Stressed: number; Frustrated: number };
+  percentages: { Positive: number; Neutral: number; Stressed: number; Frustrated: number };
   alerts: TeamHealthAlert[];
   membersSummary: TeamHealthMember[];
   messageResults: any[];
@@ -49,8 +49,8 @@ export class TeamHealthService {
   // URL de ton serveur Flask
   private flaskUrl = 'http://localhost:8000';
 
-  // ✅ NOUVEAU — Analyse depuis la vraie base de données
-  // Envoie juste le projectId, Flask se connecte lui-même à la base
+  // ✅ NEW - Analysis from the real database
+  // Sends only the projectId; Flask connects to the database itself
   analyzeTeamHealthLive(projectId: string): Observable<TeamHealthResult> {
     return this.http.post<TeamHealthResult>(
       `${this.flaskUrl}/api/sentiment/team-health-live`,

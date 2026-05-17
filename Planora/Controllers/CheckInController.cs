@@ -30,7 +30,7 @@ public class CheckInController : ControllerBase
     private string? GetUserId() =>
         User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-    /// <summary>Soumettre le check-in du jour</summary>
+    /// <summary>Submit today's check-in</summary>
     [HttpPost]
     public async Task<IActionResult> SubmitCheckIn(
         Guid projectId, [FromBody] CreateCheckInDto dto)
@@ -70,15 +70,15 @@ public class CheckInController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        // ✅ Notifier uniquement admins/PMs via SignalR
+        // ✅ Notify only admins/PMs via SignalR
         await _hub.Clients
             .Group($"managers_{projectId}")
             .SendAsync("CheckInUpdated", projectId.ToString());
 
-        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Check-in enregistré."));
+        return Ok(ApiResponseDto<object>.SuccessResult(null!, "Check-in saved."));
     }
 
-    /// <summary>Est-ce que l'utilisateur a déjà fait son check-in aujourd'hui ?</summary>
+    /// <summary>Has the user already submitted today's check-in?</summary>
     [HttpGet("today")]
     public async Task<IActionResult> GetTodayCheckIn(Guid projectId)
     {
@@ -101,7 +101,7 @@ public class CheckInController : ControllerBase
         }));
     }
 
-    /// <summary>PM/Admin — voir l'énergie de toute l'équipe aujourd'hui</summary>
+    /// <summary>PM/Admin - view today's team energy</summary>
     [HttpGet("team")]
     public async Task<IActionResult> GetTeamEnergy(Guid projectId)
     {

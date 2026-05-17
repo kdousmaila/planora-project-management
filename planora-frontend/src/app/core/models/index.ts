@@ -439,7 +439,7 @@ export interface BacklogCommit {
   id: string;
   backlogItemId: string;
   hash: string;
-  branchId?: string; 
+  branchId?: string;
   message: string;
   createdById: string;
   createdByName: string;
@@ -448,17 +448,17 @@ export interface BacklogCommit {
 
 export const WEB_LINK_TYPES = [
   { value: 0, label: 'Lien web', icon: 'language' },
-  { value: 1, label: 'Vidéo', icon: 'play_circle' },
+  { value: 1, label: 'Video', icon: 'play_circle' },
   { value: 2, label: 'Document', icon: 'description' },
   { value: 3, label: 'Livre', icon: 'menu_book' },
 ];
 
 export const TICKET_LINK_TYPES = [
-  { value: 0, label: 'est lié à' },
+  { value: 0, label: 'is related to' },
   { value: 1, label: 'bloque' },
-  { value: 2, label: 'est bloqué par' },
+  { value: 2, label: 'is blocked by' },
   { value: 3, label: 'duplique' },
-  { value: 4, label: 'est dupliqué par' },
+  { value: 4, label: 'is duplicated by' },
 ];
 export interface PinnedMessage {
   id: string;

@@ -53,7 +53,7 @@ public class MeetingService : IMeetingService
     public async Task UnpinMessageAsync(Guid projectId, Guid pinnedMessageId, string userId)
     {
         var pinned = await _db.PinnedMessages.FindAsync(pinnedMessageId)
-            ?? throw new Exception("Message épinglé introuvable");
+            ?? throw new Exception("Pinned message not found");
         _db.PinnedMessages.Remove(pinned);
         await _db.SaveChangesAsync();
     }
@@ -112,7 +112,7 @@ public class MeetingService : IMeetingService
 
     public async Task<List<MeetingEventDto>> GetMeetingsAsync(Guid projectId, string userId)
     {
-        // ✅ Recherche insensible à la casse
+        // ✅ Case-insensitive search
         var user = await _db.Users
             .FirstOrDefaultAsync(u => u.Id == userId);
 
@@ -148,7 +148,7 @@ public class MeetingService : IMeetingService
                 if (string.IsNullOrWhiteSpace(m.VisibleMemberIds))
                     return true;
 
-                // ✅ Comparaison insensible à la casse
+                // ✅ Case-insensitive comparison
                 var ids = m.VisibleMemberIds
                     .Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(id => id.Trim().ToLowerInvariant());
@@ -158,7 +158,7 @@ public class MeetingService : IMeetingService
                 return match;
             }).ToList();
 
-        Console.WriteLine($"[GetMeetings] {filtered.Count}/{meetings.Count} réunions retournées");
+        Console.WriteLine($"[GetMeetings] {filtered.Count}/{meetings.Count} meetings returned");
 
         return filtered.Select(m => new MeetingEventDto
         {

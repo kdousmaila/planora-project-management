@@ -62,7 +62,7 @@ export class WorkspaceDetailComponent implements OnInit {
     if (!this.authService.currentUser || !this.workspace) return false;
     const user = this.authService.currentUser;
     const isWorkspacePM = this.workspace.projectManagerId === user.userId;
-    // Seuls Owner, Admin, et PM du workspace peuvent créer des projets
+    // Only the workspace Owner, Admin, and PM can create projects
     return this.isOwner
       || user.roles.includes('Admin')
       || isWorkspacePM;
@@ -145,7 +145,7 @@ export class WorkspaceDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadMembers(this.workspace!.id);
-        this.loadWorkspace(this.workspace!.id); // ← ajouter cette ligne
+        this.loadWorkspace(this.workspace!.id); // ← add this line
       }
     });
   }
@@ -166,7 +166,7 @@ export class WorkspaceDetailComponent implements OnInit {
       width: '600px',
       data: {
         workspaceId: this.workspace!.id,
-        projectManagerId: this.workspace!.projectManagerId  // ← c'était manquant
+        projectManagerId: this.workspace!.projectManagerId  // ← this was missing
       }
     });
 
@@ -176,7 +176,7 @@ export class WorkspaceDetailComponent implements OnInit {
         this.snackBar.open('Project created successfully!', 'Close', { duration: 3000 });
       }
     });
-  }  editProject(project: Project): void {
+  } editProject(project: Project): void {
     const dialogRef = this.dialog.open(ProjectFormDialogComponent, {
       width: '600px',
       data: project
@@ -335,7 +335,7 @@ export class WorkspaceDetailComponent implements OnInit {
         {{ inviting ? 'Sending...' : 'Send invitation' }}
       </button>
     </mat-dialog-actions>
-  `,  styles: [`
+  `, styles: [`
     .full-width { width: 100%; }
 .invite-btn {
   background: linear-gradient(135deg, #4f46e5, #4338ca) !important;

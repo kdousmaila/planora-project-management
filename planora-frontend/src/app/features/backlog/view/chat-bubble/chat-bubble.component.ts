@@ -68,7 +68,7 @@ export interface UploadProgress {
 
 export const STICKER_PACKS = [
   {
-    name: 'Réactions',
+    name: 'Reactions',
     stickers: [
       { id: 's1', url: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f44d/512.gif', label: '👍' },
       { id: 's2', url: 'https://fonts.gstatic.com/s/e/notoemoji/latest/2764_fe0f/512.gif', label: '❤️' },
@@ -190,7 +190,7 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
     return this.authService.hasRole(['Admin', 'ProjectManager']);
   }
 
-  // 3. Dans canSend, utilise getRawValue() car le control peut être disabled
+  // 3. In canSend, use getRawValue() because the control may be disabled
   get canSend(): boolean {
     const txt = (this.messageForm.getRawValue().content || '').trim();
     return (txt.length > 0 || this.pendingAttachments.length > 0) && !this.sendingMessage;
@@ -284,7 +284,7 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
       const msg = this.messages.find(m => m.id === messageId);
       if (msg) {
         msg.isDeleted = true;
-        msg.content = 'Ce message a été supprimé';
+        msg.content = 'This message was deleted';
         this.cdr.markForCheck();
       }
     });
@@ -354,7 +354,7 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
       id: message.id.toString(),
       senderName: message.isAssistant ? '🤖 Planora AI' : (message.senderName || 'Membre'),
       content: message.messageType === 'image' ? '📷 Image' :
-        message.messageType === 'file' ? '📎 Fichier' :
+        message.messageType === 'file' ? '📎 File' :
           message.messageType === 'sticker' ? '🎭 Sticker' :
             message.content.length > 60 ? message.content.slice(0, 60) + '…' : message.content,
       sessionTitle: session?.title || 'Conversation',
@@ -564,7 +564,7 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
       .subscribe({
         next: () => {
           msg.isDeleted = true;
-          msg.content = 'Ce message a été supprimé';
+          msg.content = 'This message was deleted';
         }
       });
   }
@@ -703,7 +703,7 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
           clearInterval(progressInterval);
           this.uploadingFiles = this.uploadingFiles.filter(u => u !== progress);
           this.cdr.markForCheck();
-          alert(`Échec de l'upload de ${file.name}`);
+          alert(`Failed to upload ${file.name}`);
         }
       });
   }
@@ -732,7 +732,7 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
       this.mediaRecorder.onstop = () => {
         const blob = new Blob(this.audioChunks, { type: 'audio/webm' });
         const file = new File([blob], `audio-${Date.now()}.webm`, { type: 'audio/webm' });
-        this.uploadAudioAndSend(file);  // ← était this.uploadFile(file, 'file')
+        this.uploadAudioAndSend(file);  // ← was this.uploadFile(file, 'file')
         stream.getTracks().forEach(t => t.stop());
       };
 
@@ -866,7 +866,7 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   closeAllPickers(event?: MouseEvent): void {
-    // Ne ferme que si le clic vient du wrapper lui-même, pas d'un enfant
+    // Close only if the click comes from the wrapper itself, not a child
     if (event && event.target !== event.currentTarget) return;
     this.showEmojiPicker = false;
     this.showStickerPicker = false;
@@ -924,8 +924,8 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
-    if (d.toDateString() === today.toDateString()) return "Aujourd'hui";
-    if (d.toDateString() === yesterday.toDateString()) return 'Hier';
+    if (d.toDateString() === today.toDateString()) return 'Today';
+    if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
     return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
   }
 
@@ -991,7 +991,7 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
           this.closeSchedulePopup();
           this.router.navigate(['/projects', this.projectId, 'calendar']);
         },
-        error: (err) => console.error('Erreur création', err)
+        error: (err) => console.error('Create error', err)
       });
     };
 
@@ -1063,7 +1063,7 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
           clearInterval(progressInterval);
           this.uploadingFiles = this.uploadingFiles.filter(u => u !== progress);
           this.cdr.markForCheck();
-          alert('Échec de l\'envoi du message vocal');
+          alert('Failed to send the voice message');
         }
       });
   }
@@ -1081,14 +1081,14 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
 
     fetch(downloadUrl, { credentials: 'include' })
       .then(res => {
-        if (!res.ok) throw new Error('Erreur réseau');
+        if (!res.ok) throw new Error('Network error');
         return res.blob();
       })
       .then(blob => {
         const objectUrl = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = objectUrl;
-        a.download = fileName || 'fichier';
+        a.download = fileName || 'file';
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
@@ -1097,6 +1097,6 @@ export class ChatBubbleComponent implements OnInit, OnDestroy, AfterViewChecked 
           URL.revokeObjectURL(objectUrl);
         });
       })
-      .catch(() => alert('Échec du téléchargement'));
+      .catch(() => alert('Download failed'));
   }
 }

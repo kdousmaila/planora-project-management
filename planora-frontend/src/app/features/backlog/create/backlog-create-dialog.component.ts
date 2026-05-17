@@ -75,12 +75,12 @@ export class BacklogCreateDialogComponent {
             }
           },
           error: () => {
-            this.snackBar.open('Erreur chargement des membres workspace', 'Fermer', { duration: 3000 });
+            this.snackBar.open('Failed to load workspace members', 'Close', { duration: 3000 });
           }
         });
       },
       error: () => {
-        this.snackBar.open('Erreur chargement du projet', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Failed to load project', 'Close', { duration: 3000 });
       }
     });
   }
@@ -91,10 +91,10 @@ export class BacklogCreateDialogComponent {
     const value = this.form.value;
 
     if (this.isEditMode && this.data.item) {
-      // Edit mode: update existing item
+      // Edit mode: update the existing item
       this.updateBacklogItem(value);
     } else {
-      // Create mode: create new item
+      // Create mode: create a new item
       this.createBacklogItem(value);
     }
   }
@@ -107,7 +107,7 @@ export class BacklogCreateDialogComponent {
       projectId: this.data.projectId
     };
 
-    // Ajouter assignedToId seulement si renseigné
+    // Add assignedToId only when provided
     if (value.assignedToId) {
       request.assignedToId = value.assignedToId;
     }
@@ -125,7 +125,7 @@ export class BacklogCreateDialogComponent {
       next: (response: any) => {
         if (!response.success) {
           this.saving = false;
-          this.snackBar.open(response.message || 'Erreur', 'Fermer', { duration: 4000 });
+          this.snackBar.open(response.message || 'Error', 'Close', { duration: 4000 });
           return;
         }
 
@@ -137,12 +137,12 @@ export class BacklogCreateDialogComponent {
           this.backlogService.moveToSprint(createdItemId, targetSprintId).subscribe({
             next: () => {
               this.saving = false;
-              this.snackBar.open('✅ Élément ajouté au sprint !', 'Fermer', { duration: 2000 });
+              this.snackBar.open('✅ Item added to sprint!', 'Close', { duration: 2000 });
               this.dialogRef.close(true);
             },
             error: () => {
               this.saving = false;
-              this.snackBar.open('Créé, mais impossible de l\'ajouter au sprint', 'Fermer', { duration: 4000 });
+              this.snackBar.open('Created, but could not add it to the sprint', 'Close', { duration: 4000 });
               this.dialogRef.close(true);
             }
           });
@@ -150,12 +150,12 @@ export class BacklogCreateDialogComponent {
         }
 
         this.saving = false;
-        this.snackBar.open('✅ Élément ajouté !', 'Fermer', { duration: 2000 });
+        this.snackBar.open('✅ Item added!', 'Close', { duration: 2000 });
         this.dialogRef.close(true);
       },
       error: (err: any) => {
         this.saving = false;
-        this.snackBar.open(err?.error?.message || 'Erreur', 'Fermer', { duration: 4000 });
+        this.snackBar.open(err?.error?.message || 'Error', 'Close', { duration: 4000 });
       }
     });
   }
@@ -174,15 +174,15 @@ export class BacklogCreateDialogComponent {
       next: (response: any) => {
         this.saving = false;
         if (response?.success === false) {
-          this.snackBar.open(response.message || 'Erreur lors de la modification', 'Fermer', { duration: 4000 });
+          this.snackBar.open(response.message || 'Error updating the item', 'Close', { duration: 4000 });
           return;
         }
-        this.snackBar.open('✅ Élément modifié !', 'Fermer', { duration: 2000 });
+        this.snackBar.open('✅ Item updated!', 'Close', { duration: 2000 });
         this.dialogRef.close(true);
       },
       error: (err: any) => {
         this.saving = false;
-        this.snackBar.open(err?.error?.message || 'Erreur lors de la modification', 'Fermer', { duration: 4000 });
+        this.snackBar.open(err?.error?.message || 'Error updating the item', 'Close', { duration: 4000 });
       }
     });
   }

@@ -60,7 +60,7 @@ public class SprintService : ISprintService
         var sprint = _mapper.Map<Sprint>(dto);
         sprint.Id = Guid.NewGuid();
         sprint.CreatedAt = DateTime.UtcNow;
-        sprint.Status = Domain.Enums.SprintStatus.Planning; // ✅ Spécifier explicitement
+        sprint.Status = Domain.Enums.SprintStatus.Planning; // ✅ Set explicitly
 
         await _unitOfWork.Sprints.AddAsync(sprint);
         await _unitOfWork.SaveChangesAsync();
@@ -91,7 +91,7 @@ public class SprintService : ISprintService
 
         if (dto.Status.HasValue)
         {
-            sprint.Status = (Domain.Enums.SprintStatus)dto.Status.Value; // ✅ Spécifier explicitement
+            sprint.Status = (Domain.Enums.SprintStatus)dto.Status.Value; // ✅ Set explicitly
         }
 
         sprint.UpdatedAt = DateTime.UtcNow;
@@ -113,7 +113,7 @@ public class SprintService : ISprintService
         var sprint = await _unitOfWork.Sprints.GetByIdAsync(id) ?? throw new KeyNotFoundException("Sprint not found.");
         await EnsureProjectMemberAccessAsync(sprint.ProjectId, currentUserId);
 
-        sprint.Status = Domain.Enums.SprintStatus.Closed; // ✅ Spécifier explicitement
+        sprint.Status = Domain.Enums.SprintStatus.Closed; // ✅ Set explicitly
         sprint.UpdatedAt = DateTime.UtcNow;
         _unitOfWork.Sprints.Update(sprint);
         await _unitOfWork.SaveChangesAsync();
@@ -164,7 +164,7 @@ public class SprintService : ISprintService
         var allSprints = await _unitOfWork.Sprints.FindAsync(s => s.ProjectId == projectId);
 
         var completedSprints = allSprints
-            .Where(s => s.Status == Domain.Enums.SprintStatus.Closed) // ✅ Spécifier explicitement
+            .Where(s => s.Status == Domain.Enums.SprintStatus.Closed) // ✅ Set explicitly
             .OrderByDescending(s => s.EndDate)
             .ToList();
 

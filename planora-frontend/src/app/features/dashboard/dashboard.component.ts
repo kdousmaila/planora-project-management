@@ -12,7 +12,7 @@ import { DashboardData } from '../../core/models';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
 import { AuthService } from '../../core/services/auth.service';
 
-// ✅ Import supprimé — TeamHealthWidgetComponent n'est plus dans le dashboard
+// ✅ Import removed - TeamHealthWidgetComponent is no longer in the dashboard
 
 @Component({
   selector: 'app-dashboard',
@@ -27,7 +27,7 @@ import { AuthService } from '../../core/services/auth.service';
     MatButtonModule,
     MatSnackBarModule,
     LoadingComponent,
-    // ✅ TeamHealthWidgetComponent retiré ici aussi
+    // ✅ TeamHealthWidgetComponent removed here too
   ],
   templateUrl: './dashboard.component.html',
   styles: [`
