@@ -1,0 +1,585 @@
+\chapter{Réalisation}
+
+\section*{Introduction}
+Dans ce chapitre, nous présenterons les outils de développement utilisés, ainsi que l'architecture technique adoptée pour le processus de développement. Ensuite, nous détaillerons les incréments réalisés à chaque sprint, illustrant les différentes fonctionnalités du projet.
+
+\section{Environnement de développement}
+\subsection{SQL Server Management Studio}
+SQL Server Management Studio (\ac{SSMS}), développé par Microsoft en 2005, est un environnement de gestion intégré pour les bases de données SQL Server. Il offre une interface graphique complète pour la gestion, le développement et l'administration des bases de données SQL Server, facilitant ainsi les tâches telles que la création de requêtes, la gestion des objets de base de données et la surveillance des performances. \cite{SSMS}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.14\columnwidth]{SSMS_Logo.jpg}
+  \caption{Logo de SQL Server Management Studio}
+  \label{fig:SSMS}
+\end{figure}
+
+\subsection{Visual Studio}
+Visual Studio (\ac{VS}), développé par Microsoft en 2005, est un environnement de développement intégré (IDE) puissant. Il propose une suite complète de fonctionnalités concentrées pour faciliter la création, la modification et le débogage des applications .NET. \cite{VisualStudio}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.14\columnwidth]{Visual_Studio_Icon_2026.svg.png}
+  \caption{Logo de Visual Studio}
+  \label{fig:VisualStudio}
+\end{figure}
+
+\subsection{Visual Studio Code}
+Visual Studio Code (\ac{VSCode}), développé par Microsoft en 2015, est un éditeur de code qui peut être étendu avec des extensions pour le transformer en un environnement de développement intégré (IDE) complet. \cite{VsCode}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.14\columnwidth]{Visual_Studio_Code_1.35_icon.svg.png}
+  \caption{Logo de Visual Studio Code}
+  \label{fig:VsCode}
+\end{figure}
+
+\subsection{Postman}
+Postman, développé par Postdot Technologies en 2012, est une plateforme de développement et de test d'API. Cet outil offre une interface intuitive et un ensemble de fonctionnalités pour simplifier la création, le test et le débogage des API. \cite{Postman}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.15\columnwidth]{postman-icon.png}
+  \caption{Logo de Postman}
+  \label{fig:Postman}
+\end{figure}
+
+\section{Environnement logiciel}
+\subsection{Microsoft SQL Server}
+SQL Server, initialement lancé en 1989, est un système de gestion de bases de données relationnelles développé par Microsoft. Il offre une plateforme complète pour la gestion et l'analyse des données, avec des fonctionnalités avancées de sécurité, de performance et de disponibilité. \cite{SQLServer}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.2\columnwidth]{Microsoft_SQL_Server_2025_icon.svg.png}
+  \caption{Logo de Microsoft SQL Server}
+  \label{fig:SQLServer}
+\end{figure}
+
+\subsection{Dotnet}
+Dotnet (\ac{DOTNET}), développé par Microsoft et lancé en 2002, est une plateforme de développement logiciel qui permet de créer et d'exécuter des applications sur plusieurs systèmes d'exploitation. Elle offre une grande variété de langages de programmation et d'outils pour faciliter le développement d'applications modernes.\cite{Dotnet}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.14\columnwidth]{dotnet-logo.png}
+  \caption{Logo de Dotnet}
+  \label{fig:Dotnet}
+\end{figure}
+
+\subsection{LaTeX}
+LaTeX, développé par Leslie Lamport en 1985, est un système de composition de documents qui permet de créer des documents de haute qualité typographique. Il est largement utilisé dans les domaines académiques et scientifiques pour la rédaction d'articles, de rapports et de thèses.\cite{Latex}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.18\columnwidth]{latex-logo.png}
+  \caption{Logo de LaTeX}
+  \label{fig:Latex}
+\end{figure}
+
+\section{Pilotage du cycle de vie de développement avec Scrum}
+Dans cette section, nous mettrons en lumière l'application de la méthode Scrum pour piloter le projet. Nous présenterons les membres de l'équipe ainsi que leurs rôles respectifs, puis nous examinerons le backlog du produit.
+\subsection{Équipe Scrum et rôles}
+La création d'une équipe Scrum solide est une étape essentielle pour la réussite d'un projet.\\
+Les membres de l'équipe Scrum ainsi que leurs rôles sont illustrés dans la figure \ref{fig:scrum_team} ci-dessous :
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\columnwidth]{equipeScrum.png}
+  \caption{Équipe Scrum et rôles}
+  \label{fig:scrum_team}
+\end{figure}
+
+\section{Architecture technique}
+\subsection{Architecture générale}
+L'application web conçue sera déployée selon une architecture à 3 niveaux (3-Tiers). \\
+Cette architecture est représentée par la figure \ref{fig:ArchitectureGenerale} :
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\linewidth]{ArchitectureGenerale.png}
+  \caption{Architecture générale}
+  \label{fig:ArchitectureGenerale}
+\end{figure}
+
+\subsection{Architecture de l'environnement}
+Dans cette section, nous explorerons l'architecture technique de l'application, en décrivant ses différentes composantes techniques, à savoir, le Back End et le Front End.
+\subsubsection{Architecture du Back End}
+Le Back End de l'application Planora est développé avec ASP.NET Core et repose sur une architecture basé sur la "Clean Architecture". Cette organisation permet de séparer les responsabilités entre la présentation des services API, la logique applicative, la logique métier et l'accès aux données. Elle facilite également la maintenance, l'évolution et le test de l'application.
+
+L'architecture Back End est composée principalement des couches suivantes :
+\begin{itemize}
+  \item[$\bullet$] \textbf{Couche \ac{API} "Planora"} : Cette couche représente le point d'entrée de l'application côté serveur. Elle contient les contrôleurs \ac{API} REST qui reçoivent les requêtes HTTP provenant du Front End, valident l'accès de l'utilisateur, appellent les services nécessaires et retournent les réponses sous forme d'objets \ac{JSON}. Elle contient également la configuration générale de l'application, le middleware de gestion des erreurs et le hub \ac{SignalR} utilisé pour la communication en temps réel.
+
+  \item[$\bullet$] \textbf{Couche Application "Planora.Application"} : Cette couche regroupe les contrats et les objets de transfert de données utilisés par l'application. Elle contient les interfaces des services, les DTOs, les validateurs et les profils de mapping. Son rôle est de définir les opérations disponibles sans dépendre directement de leur implémentation technique.
+
+  \item[$\bullet$] \textbf{Couche Domaine "Planora.Domain"} : Cette couche contient les entités principales du système, telles que ApplicationUser, Workspace, Project, BacklogItem, Sprint, TaskItem, Comment et ChatMessage. Elle représente le cœur métier de l'application et définit la structure des données manipulées par Planora.
+
+  \item[$\bullet$] \textbf{Couche Infrastructure "Planora.Infrastructure"} : Cette couche contient les implémentations concrètes des services, les repositories, le contexte de base de données, les configurations Entity Framework Core, les migrations et les services techniques comme l'authentification par \ac{JWT}, l'envoi d'emails et l'intégration avec la base de données. Elle assure la communication avec SQL Server et réalise les traitements nécessaires à la persistance des données.
+
+  \item[$\bullet$] \textbf{Module IA "planora-ai"} : Ce module est développé en Python avec Flask. Il expose une API dédiée à l'analyse des messages échangés entre les membres d'un projet. Le modèle d'intelligence artificielle classe les messages selon leur sentiment et renvoie les résultats au Back End ou au Front End afin d'afficher les indicateurs de santé de l'équipe.
+\end{itemize}
+
+Ainsi, cette architecture permet de garantir une séparation claire entre les différentes responsabilités du système.
+
+\subsubsection{Architecture du Front End}
+L'architecture utilisée dans la partie Front End est une architecture basée sur les composants, comprenant les différentes parties suivantes :
+\begin{itemize}
+  \item[$\bullet$] \textbf{Composants}: Ce sont les blocs de construction de l'interface utilisateur (UI). Chaque composant représente une partie de l'UI et est responsable de sa propre logique afin de réaliser une fonction spécifique.
+  \item[$\bullet$] \textbf{Services}: Ils sont utilisés pour encapsuler la logique métier qui n'appartient pas spécifiquement à un composant particulier, telle que gérer les appels \ac{API} REST, et les fonctionnalités transversales à plusieurs composants.
+  \item[$\bullet$] \textbf{Modules}: Ce sont des regroupements logiques de composants, de services et d'autres fonctionnalités de l'application afin de permettre une organisation du code de manière modulaire.
+\end{itemize}
+Il convient de noter que cette architecture favorise la création d'applications modulaires grâce à des composants interchangeables et réutilisables.
+
+\subsection{Tests et validation}
+Afin de tester efficacement les fonctionnalités de l'application et assurer son bon fonctionnement, nous avons adopté l'utilisation de Postman.\\
+La figure \ref{fig:PostManTestKeycloak} illustre le processus d'envoi d'une requête depuis Postman vers l'application pour tester ses points d'accès.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\linewidth]{PostManTestKeycloak.png}
+  \caption{Processus de test des points d'accès sécurisés par Keycloak}
+  \label{fig:PostManTestKeycloak}
+\end{figure}
+
+\subsection{Backlog du produit}
+Dans cette section, nous présenterons les différentes fonctionnalités du produit et décrirons les scénarios d'utilisation associés à travers des stories utilisateur. Cette approche permettra de formaliser efficacement les besoins des utilisateurs et de prioriser le travail de développement.\\
+Ci-dessous, nous détaillons la signification des différents termes utilisés dans le backlog produit :
+\begin{itemize}
+  \item \textbf{ID} : Identifiant unique de chaque fonctionnalité.
+  \item \textbf{Fonctionnalité} : Une caractéristique particulière proposée par l'application.
+  \item \textbf{User Story} : Une fonctionnalité que l'utilisateur final souhaite accomplir avec le système applicatif.
+  \item \textbf{Priorité} : Niveau d'importance ou d'urgence attribué à une User Story.
+\end{itemize}
+Le tableau \ref{tab:backlog-produit} présente le backlog du produit ainsi que la priorisation des fonctionnalités.
+
+\subsubsection{Légende des priorités}
+\begin{table}[H]
+  \centering
+  \caption{Légende des priorités du backlog}
+  \label{tab:legende-priorites-backlog}
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{|p{3cm}|p{10cm}|}
+    \hline
+    \textbf{Priorité}                           & \textbf{Signification}                                                          \\
+    \hline
+    \cellcolor{niveauCritique}\textbf{Critique} & À réaliser en premier car l'élément conditionne plusieurs autres tâches.        \\
+    \hline
+    \cellcolor{niveauEleve}\textbf{Élevé}       & À traiter rapidement car l'impact fonctionnel ou technique est important.       \\
+    \hline
+    \cellcolor{niveauMoyen}\textbf{Moyen}       & À planifier après les fondations principales, avec une dépendance plus limitée. \\
+    \hline
+    \cellcolor{niveauFaible}\textbf{Faible}     & À intégrer en dernier, une fois le socle applicatif stabilisé.                  \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsubsection{Backlog du produit}
+\small
+\renewcommand{\arraystretch}{1.25}
+\enlargethispage{3\baselineskip}
+\begin{longtable}{|p{0.8cm}|p{3.7cm}|p{5.3cm}|p{1.8cm}|p{3.8cm}|}
+  \caption{Backlog du produit et priorisation des tâches}\label{tab:backlog-produit}                                                                                                                                                                                                                                                                                \\
+  \hline
+  \textbf{ID} & \textbf{Fonctionnalité}                   & \textbf{User Story}                                                                                                                                          & \textbf{Priorité}                           & \textbf{Remarques}                                                                         \\
+  \hline
+  \endfirsthead
+
+  \hline
+  \textbf{ID} & \textbf{Fonctionnalité}                   & \textbf{User Story}                                                                                                                                          & \textbf{Priorité}                           & \textbf{Remarques}                                                                         \\
+  \hline
+  \endhead
+
+  \hline
+  \endfoot
+
+  \hline
+  \endlastfoot
+
+  1           & Authentification et inscription           & En tant qu'utilisateur, je veux créer un compte et m'authentifier afin d'accéder à l'application Planora de manière sécurisée.                               & \cellcolor{niveauCritique}\textbf{Critique} & Fonction de base nécessaire pour accéder aux autres modules.                               \\
+  \hline
+
+  2           & Gestion des rôles et des utilisateurs     & En tant qu'administrateur, je veux gérer les comptes utilisateurs, leurs rôles et leur état d'activation afin de contrôler les accès à la plateforme.        & \cellcolor{niveauCritique}\textbf{Critique} & Conditionne la sécurité et la séparation des droits entre Admin, ProjectManager et Member. \\
+  \hline
+
+  3           & Gestion des espaces de travail            & En tant qu'administrateur, je veux créer des espaces de travail et inviter des membres afin d'organiser les équipes dans des environnements séparés.         & \cellcolor{niveauCritique}\textbf{Critique} & Structure principale de l'organisation des projets.                                        \\
+  \hline
+
+  4           & Gestion des projets                       & En tant que ProjectManager, je veux créer et gérer des projets afin de planifier le travail et suivre l'avancement de l'équipe.                              & \cellcolor{niveauCritique}\textbf{Critique} & Dépend de la gestion des espaces de travail et des membres.                                \\
+  \hline
+
+  5           & Gestion du backlog                        & En tant que ProjectManager, je veux créer, modifier, prioriser et assigner les éléments du backlog afin d'organiser les besoins du projet.                   & \cellcolor{niveauEleve}\textbf{Élevé}       & Module central pour la gestion agile du projet.                                            \\
+  \hline
+
+  6           & Gestion des tâches et sous-tâches         & En tant que membre de projet, je veux consulter, mettre à jour et suivre mes tâches afin de contribuer efficacement à l'avancement du projet.                & \cellcolor{niveauEleve}\textbf{Élevé}       & Complète la gestion du backlog et permet le suivi opérationnel.                            \\
+  \hline
+
+  7           & Gestion des sprints                       & En tant que ProjectManager, je veux créer des sprints et y associer des éléments du backlog afin de planifier le travail par itérations.                     & \cellcolor{niveauEleve}\textbf{Élevé}       & Nécessaire pour organiser le projet selon une approche agile.                              \\
+  \hline
+
+  8           & Tableau de bord                           & En tant qu'utilisateur autorisé, je veux consulter des statistiques et indicateurs afin de suivre l'avancement des projets et des espaces de travail.        & \cellcolor{niveauEleve}\textbf{Élevé}       & Permet une vision synthétique de l'état des projets.                                       \\
+  \hline
+
+  9           & Messagerie de projet                      & En tant que membre de projet, je veux échanger des messages avec les autres membres afin de faciliter la collaboration.                                      & \cellcolor{niveauMoyen}\textbf{Moyen}       & Supporte la communication interne et alimente le module d'analyse de santé.                \\
+  \hline
+
+  10          & Gestion des réunions et calendrier        & En tant que membre de projet, je veux planifier et consulter les réunions afin de mieux organiser les échanges de l'équipe.                                  & \cellcolor{niveauMoyen}\textbf{Moyen}       & Complète les fonctionnalités collaboratives du projet.                                     \\
+  \hline
+
+  11          & Commentaires et pièces jointes du backlog & En tant que membre de projet, je veux ajouter des commentaires, liens et pièces jointes aux éléments du backlog afin de centraliser les informations utiles. & \cellcolor{niveauMoyen}\textbf{Moyen}       & Enrichit le suivi détaillé des éléments du backlog.                                        \\
+  \hline
+
+  12          & Suivi de la santé de l'équipe par IA      & En tant que ProjectManager, je veux analyser les messages de l'équipe afin de détecter le stress, la frustration et l'ambiance générale du projet.           & \cellcolor{niveauMoyen}\textbf{Moyen}       & Dépend de la messagerie et du module IA Python Flask.                                      \\
+  \hline
+
+  13          & Notifications par email                   & En tant qu'utilisateur, je veux recevoir des notifications importantes afin d'être informé des invitations et des affectations de tâches.                    & \cellcolor{niveauFaible}\textbf{Faible}     & Améliore l'expérience utilisateur sans bloquer les modules principaux.                     \\
+  \hline
+
+  14          & Check-in quotidien                        & En tant que membre de projet, je veux renseigner mon niveau d'énergie, mes disponibilités et mes blocages afin d'aider au suivi de l'équipe.                 & \cellcolor{niveauFaible}\textbf{Faible}     & Fonction complémentaire au suivi de la santé de l'équipe.                                  \\
+  \hline
+\end{longtable}
+
+\normalsize
+
+\section{Sprints de réalisation}
+
+Dans cette section, nous présentons les incréments réalisés sprint par sprint, en détaillant le backlog associé à chaque itération ainsi que les interfaces livrées. Le découpage respecte les dépendances fonctionnelles du projet : d'abord l'authentification et la gestion des utilisateurs, ensuite les espaces de travail et les projets, puis la gestion agile, la collaboration, et enfin le module d'intelligence artificielle dédié au suivi de la santé de l'équipe.
+
+\subsection{Sprint 1 - Authentification et gestion des utilisateurs}
+\subsubsection{Backlog du sprint}
+Le tableau \ref{tab:backlog-sprint1} illustre le backlog du Sprint 1.
+
+\enlargethispage{2\baselineskip}
+\begin{longtable}{|p{5.8cm}|p{1.3cm}|p{7.2cm}|}
+  \caption{Backlog du Sprint 1 : Authentification et gestion des utilisateurs}\label{tab:backlog-sprint1}              \\
+  \hline
+  \textbf{User Story} & \textbf{ID} & \textbf{Tâches}                                                                  \\
+  \hline
+  \endfirsthead
+  \hline
+  \textbf{User Story} & \textbf{ID} & \textbf{Tâches}                                                                  \\
+  \hline
+  \endhead
+
+  \hline
+  \endfoot
+
+  \hline
+  \endlastfoot
+
+  En tant qu'utilisateur, je veux créer un compte afin d'accéder à l'application Planora.
+                      & 1.1         & \textbullet~Créer l'interface d'inscription.                                     \\
+  \cline{2-3}
+                      & 1.2         & \textbullet~Implémenter l'\ac{API} d'inscription côté Back End.                  \\
+  \cline{2-3}
+                      & 1.3         & \textbullet~Valider les informations saisies par l'utilisateur.                  \\
+  \hline
+
+  En tant qu'utilisateur, je veux m'authentifier afin d'accéder aux fonctionnalités selon mon rôle.
+                      & 1.4         & \textbullet~Créer l'interface de connexion.                                      \\
+  \cline{2-3}
+                      & 1.5         & \textbullet~Mettre en place l'authentification par \ac{JWT}.                     \\
+  \cline{2-3}
+                      & 1.6         & \textbullet~Protéger les routes du Front End avec un guard d'authentification.   \\
+  \hline
+
+  En tant qu'administrateur, je veux gérer les utilisateurs et leurs rôles afin de contrôler les accès à la plateforme.
+                      & 1.7         & \textbullet~Créer les rôles Admin, ProjectManager et Member.                     \\
+  \cline{2-3}
+                      & 1.8         & \textbullet~Développer la gestion des utilisateurs côté Back End.                \\
+  \cline{2-3}
+                      & 1.9         & \textbullet~Permettre l'activation, la désactivation et l'attribution des rôles. \\
+  \hline
+\end{longtable}
+
+\subsubsection{Interfaces livrables}
+
+La figure \ref{fig:sprint1-login} illustre l'interface de connexion permettant à l'utilisateur de s'authentifier avec son adresse email et son mot de passe.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint1-login.png}
+  \caption{Sprint 1 - Interface de connexion}
+  \label{fig:sprint1-login}
+\end{figure}
+
+La figure \ref{fig:sprint1-register} présente l'interface d'inscription permettant à un nouvel utilisateur de créer son compte.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint1-register.png}
+  \caption{Sprint 1 - Interface d'inscription}
+  \label{fig:sprint1-register}
+\end{figure}
+
+La figure \ref{fig:sprint1-users} illustre l'interface de gestion des utilisateurs réservée à l'administrateur.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint1-users.png}
+  \caption{Sprint 1 - Interface de gestion des utilisateurs}
+  \label{fig:sprint1-users}
+\end{figure}
+
+\subsection{Sprint 2 - Gestion des espaces de travail et des projets}
+\subsubsection{Backlog du sprint}
+Le tableau \ref{tab:backlog-sprint2} illustre le backlog du Sprint 2.
+
+\begin{longtable}{|p{5.8cm}|p{1.3cm}|p{7.2cm}|}
+  \caption{Backlog du Sprint 2 : Gestion des espaces de travail et des projets}\label{tab:backlog-sprint2}                            \\
+  \hline
+  \textbf{User Story} & \textbf{ID} & \textbf{Tâches}                                                                                 \\
+  \hline
+  \endfirsthead
+  \hline
+  \textbf{User Story} & \textbf{ID} & \textbf{Tâches}                                                                                 \\
+  \hline
+  \endhead
+
+  \hline
+  \endfoot
+
+  \hline
+  \endlastfoot
+
+  \multirow{3}{*}{\begin{minipage}[t]{5.8cm}En tant qu'administrateur, je veux créer des espaces de travail afin d'organiser les équipes et les projets.\end{minipage}}
+                      & 2.1         & \textbullet~Créer l'entité Workspace et ses relations.                                          \\
+  \cline{2-3}
+                      & 2.2         & \textbullet~Développer les API de création, consultation et suppression des espaces de travail. \\
+  \cline{2-3}
+                      & 2.3         & \textbullet~Créer les interfaces de gestion des espaces de travail.                             \\
+  \hline
+
+  \multirow{3}{*}{\begin{minipage}[t]{5.8cm}En tant qu'administrateur ou ProjectManager, je veux inviter des membres afin de constituer une équipe de travail.\end{minipage}}
+                      & 2.4         & \textbullet~Mettre en place le système d'invitations aux espaces de travail.                    \\
+  \cline{2-3}
+                      & 2.5         & \textbullet~Permettre l'acceptation et le refus des invitations.                                \\
+  \cline{2-3}
+                      & 2.6         & \textbullet~Afficher la liste des membres d'un espace de travail.                               \\
+  \hline
+
+  \multirow{3}{*}{\begin{minipage}[t]{5.8cm}En tant que ProjectManager, je veux créer et gérer des projets afin de suivre leur avancement.\end{minipage}}
+                      & 2.7         & \textbullet~Créer l'entité Project et ses relations avec Workspace et ApplicationUser.          \\
+  \cline{2-3}
+                      & 2.8         & \textbullet~Développer les API de création, modification et consultation des projets.           \\
+  \cline{2-3}
+                      & 2.9         & \textbullet~Créer les interfaces de liste et de détail des projets.                             \\
+  \hline
+\end{longtable}
+
+\subsubsection{Interfaces livrables}
+
+La figure \ref{fig:sprint2-workspaces} illustre l'interface de consultation des espaces de travail accessibles à l'utilisateur.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint2-workspaces.png}
+  \caption{Sprint 2 - Interface des espaces de travail}
+  \label{fig:sprint2-workspaces}
+\end{figure}
+
+La figure \ref{fig:sprint2-projects} présente l'interface de gestion des projets.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint2-projects.png}
+  \caption{Sprint 2 - Interface de gestion des projets}
+  \label{fig:sprint2-projects}
+\end{figure}
+
+\subsection{Sprint 3 - Gestion agile : backlog, tâches et sprints}
+\subsubsection{Backlog du sprint}
+Le tableau \ref{tab:backlog-sprint3} illustre le backlog du Sprint 3.
+
+\begin{longtable}{|p{5.8cm}|p{1.3cm}|p{7.2cm}|}
+  \caption{Backlog du Sprint 3 : Gestion agile}\label{tab:backlog-sprint3}                                                                    \\
+  \hline
+  \textbf{User Story} & \textbf{ID} & \textbf{Tâches}                                                                                         \\
+  \hline
+  \endfirsthead
+  \hline
+  \textbf{User Story} & \textbf{ID} & \textbf{Tâches}                                                                                         \\
+  \hline
+  \endhead
+
+  \hline
+  \endfoot
+
+  \hline
+  \endlastfoot
+
+  \multirow{4}{*}{\begin{minipage}[t]{5.8cm}En tant que ProjectManager, je veux gérer le backlog afin d'organiser les besoins du projet.\end{minipage}}
+                      & 3.1         & \textbullet~Créer l'entité BacklogItem et ses relations.                                                \\
+  \cline{2-3}
+                      & 3.2         & \textbullet~Développer les opérations de création, modification et suppression des éléments du backlog. \\
+  \cline{2-3}
+                      & 3.3         & \textbullet~Ajouter la priorité, la complexité, les story points et la date d'échéance.                 \\
+  \cline{2-3}
+                      & 3.4         & \textbullet~Permettre l'affectation des éléments du backlog aux membres.                                \\
+  \hline
+
+  \multirow{3}{*}{\begin{minipage}[t]{5.8cm}En tant que membre, je veux suivre mes tâches afin de connaître mon travail à réaliser.\end{minipage}}
+                      & 3.5         & \textbullet~Créer la gestion des tâches et des sous-tâches.                                             \\
+  \cline{2-3}
+                      & 3.6         & \textbullet~Permettre la mise à jour de l'état et du pourcentage d'avancement.                          \\
+  \cline{2-3}
+                      & 3.7         & \textbullet~Ajouter les commentaires liés aux tâches et au backlog.                                     \\
+  \hline
+
+  \multirow{3}{*}{\begin{minipage}[t]{5.8cm}En tant que ProjectManager, je veux gérer les sprints afin de planifier le travail par itérations.\end{minipage}}
+                      & 3.8         & \textbullet~Créer l'entité Sprint et ses relations avec Project et TaskItem.                            \\
+  \cline{2-3}
+                      & 3.9         & \textbullet~Développer la création et la consultation des sprints.                                      \\
+  \cline{2-3}
+                      & 3.10        & \textbullet~Créer le tableau de sprint pour suivre l'avancement.                                        \\
+  \hline
+\end{longtable}
+
+\subsubsection{Interfaces livrables}
+
+La figure \ref{fig:sprint3-backlog} illustre l'interface de gestion du backlog.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint3-backlog.png}
+  \caption{Sprint 3 - Interface de gestion du backlog}
+  \label{fig:sprint3-backlog}
+\end{figure}
+
+La figure \ref{fig:sprint3-board} présente le tableau agile permettant de suivre l'avancement des tâches du sprint.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint3-board.png}
+  \caption{Sprint 3 - Tableau de sprint}
+  \label{fig:sprint3-board}
+\end{figure}
+\subsection{Sprint 4 - Collaboration, réunions et tableau de bord}
+\subsubsection{Backlog du sprint}
+Le tableau \ref{tab:backlog-sprint4} illustre le backlog du Sprint 4.
+
+\begin{longtable}{|p{5.8cm}|p{1.3cm}|p{7.2cm}|}
+  \caption{Backlog du Sprint 4 : Collaboration et suivi}\label{tab:backlog-sprint4}                                \\
+  \hline
+  \textbf{User Story} & \textbf{ID} & \textbf{Tâches}                                                              \\
+  \hline
+  \endfirsthead
+  \hline
+  \textbf{User Story} & \textbf{ID} & \textbf{Tâches}                                                              \\
+  \hline
+  \endhead
+
+  \hline
+  \endfoot
+
+  \hline
+  \endlastfoot
+
+  \multirow{3}{*}{\begin{minipage}[t]{5.8cm}En tant que membre de projet, je veux échanger avec mon équipe afin de faciliter la collaboration.\end{minipage}}
+                      & 4.1         & \textbullet~Créer les entités ChatSession et ChatMessage.                    \\
+  \cline{2-3}
+                      & 4.2         & \textbullet~Développer l'espace de messagerie par projet.                    \\
+  \cline{2-3}
+                      & 4.3         & \textbullet~Ajouter les réactions, réponses et pièces jointes aux messages.  \\
+  \hline
+
+  \multirow{3}{*}{\begin{minipage}[t]{5.8cm}En tant que membre de projet, je veux planifier des réunions afin d'organiser les échanges de l'équipe.\end{minipage}}
+                      & 4.4         & \textbullet~Créer la gestion des événements de réunion.                      \\
+  \cline{2-3}
+                      & 4.5         & \textbullet~Afficher les réunions dans un calendrier.                        \\
+  \cline{2-3}
+                      & 4.6         & \textbullet~Permettre la sélection des membres concernés par une réunion.    \\
+  \hline
+
+  \multirow{2}{*}{\begin{minipage}[t]{5.8cm}En tant qu'utilisateur, je veux consulter un tableau de bord afin de suivre l'avancement global.\end{minipage}}
+                      & 4.7         & \textbullet~Calculer les indicateurs d'avancement des projets et workspaces. \\
+  \cline{2-3}
+                      & 4.8         & \textbullet~Créer l'interface du tableau de bord.                            \\
+  \hline
+\end{longtable}
+
+\subsubsection{Interfaces livrables}
+
+La figure \ref{fig:sprint4-chat} illustre l'interface de messagerie du projet.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint4-chat.png}
+  \caption{Sprint 4 - Interface de messagerie}
+  \label{fig:sprint4-chat}
+\end{figure}
+
+La figure \ref{fig:sprint4-calendar} présente le calendrier des réunions du projet.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint4-calendar.png}
+  \caption{Sprint 4 - Calendrier des réunions}
+  \label{fig:sprint4-calendar}
+\end{figure}
+
+\subsection{Sprint 5 - Suivi de la santé de l'équipe par IA}
+\subsubsection{Backlog du sprint}
+Le tableau \ref{tab:backlog-sprint5} illustre le backlog du Sprint 5.
+
+\begin{longtable}{|p{5.8cm}|p{1.3cm}|p{7.2cm}|}
+  \caption{Backlog du Sprint 5 : Suivi de la santé de l'équipe par IA}\label{tab:backlog-sprint5}                               \\
+  \hline
+  \textbf{User Story} & \textbf{ID} & \textbf{Tâches}                                                                           \\
+  \hline
+  \endfirsthead
+  \hline
+  \textbf{User Story} & \textbf{ID} & \textbf{Tâches}                                                                           \\
+  \hline
+  \endhead
+
+  \hline
+  \endfoot
+
+  \hline
+  \endlastfoot
+
+  \multirow{3}{*}{\begin{minipage}[t]{5.8cm}En tant que ProjectManager, je veux analyser les messages de l'équipe afin de détecter l'ambiance générale du projet.\end{minipage}}
+                      & 5.1         & \textbullet~Préparer le modèle d'analyse des sentiments.                                  \\
+  \cline{2-3}
+                      & 5.2         & \textbullet~Développer l'\ac{API} Flask d'analyse des messages.                           \\
+  \cline{2-3}
+                      & 5.3         & \textbullet~Connecter le module IA à la base de données et aux messages du projet.        \\
+  \hline
+
+  \multirow{3}{*}{\begin{minipage}[t]{5.8cm}En tant que membre ou ProjectManager, je veux consulter les indicateurs de santé de l'équipe afin d'identifier les situations à risque.\end{minipage}}
+                      & 5.4         & \textbullet~Classifier les messages en positif, neutre, stressé ou frustré.               \\
+  \cline{2-3}
+                      & 5.5         & \textbullet~Calculer un score global de santé de l'équipe.                                \\
+  \cline{2-3}
+                      & 5.6         & \textbullet~Afficher la distribution des sentiments, les alertes et le résumé par membre. \\
+  \hline
+\end{longtable}
+
+\subsubsection{Interfaces livrables}
+
+La figure \ref{fig:sprint5-dashboard} illustre l'interface de Dashboard
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint5-dashboard.png}
+  \caption{Sprint 5 - Interface de tableau de bord}
+  \label{fig:sprint5-dashboard}
+\end{figure}
+
+La figure \ref{fig:sprint5-teamhealth} illustre l'interface de suivi de la santé de l'équipe.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint5-teamhealth.png}
+  \caption{Sprint 5 - Interface de suivi de la santé de l'équipe}
+  \label{fig:sprint5-teamhealth}
+\end{figure}
+
+La figure \ref{fig:sprint5-ai-health} présente le résultat de test de l'API Flask dédiée à l'analyse des sentiments.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.9\columnwidth]{img/sprint5-ai-health.png}
+  \caption{Sprint 5 - Test du service IA d'analyse des sentiments}
+  \label{fig:sprint5-ai-health}
+\end{figure}
+
+\section*{Conclusion}
+Dans ce chapitre, nous avons présenté l'environnement logiciel, suivi de la mise en évidence de l'architecture technique des différentes couches de l'application. Enfin, nous avons détaillé les interfaces réalisées, accompagnés des captures d'écran et des test des services implémenté.

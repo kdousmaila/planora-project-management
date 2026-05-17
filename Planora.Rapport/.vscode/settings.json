@@ -1,0 +1,6 @@
+{
+  "cSpell.language": "fr,en",
+  "latex-workshop.latex.outDir": "%WORKSPACE_FOLDER%/out",
+  "latex-workshop.formatting.latex": "latexindent",
+  "latex-workshop.latex.recipe.default": "lastUsed",
+}

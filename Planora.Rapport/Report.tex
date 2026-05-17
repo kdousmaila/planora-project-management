@@ -1,0 +1,118 @@
+\documentclass[pfe ,titlesmallcaps]{isipfe}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\graphicspath{{./Figures/}}
+
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{acronym}
+\usepackage{textcomp}
+% \usepackage[french]{babel}
+\usepackage{enumitem}
+\usepackage{longtable}
+\setlength{\LTpre}{0pt}
+\setlength{\LTpost}{0pt}
+\usepackage{multirow}
+
+\usepackage[table]{xcolor}
+\usepackage{tcolorbox}
+\usepackage{geometry}
+\geometry{
+  a4paper,
+  left=25mm,
+  right=25mm,
+  top=25mm,
+  bottom=25mm
+}
+
+
+\usepackage{array}
+\definecolor{codebg}{HTML}{F7F9FC}
+\definecolor{codetitle}{HTML}{1F4E79}
+\definecolor{codekeyword}{HTML}{005A9E}
+\definecolor{codestring}{HTML}{A31515}
+\definecolor{codecomment}{HTML}{008000}
+\definecolor{codeframe}{HTML}{D0D7DE}
+\lstdefinelanguage{YAML}{
+  sensitive=false,
+  morecomment=[l]{\#},
+  morestring=[b]",
+  morestring=[b]'
+}
+\lstset{
+  language=Java,
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  frame=single,
+  captionpos=b,
+  rulecolor=\color{codeframe},
+  backgroundcolor=\color{codebg},
+  keywordstyle=\color{codekeyword}\bfseries,
+  commentstyle=\color{codecomment}\itshape,
+  stringstyle=\color{codestring},
+  numbers=left,
+  numberstyle=\tiny\color{black!55},
+  numbersep=6pt,
+  xleftmargin=1.8em,
+  framexleftmargin=1.2em
+}
+\definecolor{niveauCritique}{HTML}{F8CBAD}
+\definecolor{niveauEleve}{HTML}{B7DEE8}
+\definecolor{niveauMoyen}{HTML}{FFF2CC}
+\definecolor{niveauFaible}{HTML}{E2F0D9}
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{french}
+\setotherlanguages{english,arabic}
+\newfontfamily\arabicfont[Script=Arabic]{Arial}
+
+\begin{document}
+
+\frontmatter
+
+\input{page_garde}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\listoffigures
+\listoftables
+\cleardoublepage
+\markboth{}{}
+\input{acronymes}
+
+\mainmatter
+\input{chap_intro}
+
+%%%%% Chapter one
+\input{chap_01}
+
+%%%%% Chapter two
+\input{chap_02}
+
+%%%%% Chapter three
+\input{chap_03}
+
+%%%%% Conclusion
+\input{chap_04}
+
+%\appendix
+\input{chap_concl.tex}
+
+\backmatter
+%%%%% Bibliography, in BibTeX format (the references.bib file)
+\bibliography{references}
+
+% \input{resume.tex}
+
+\end{document}

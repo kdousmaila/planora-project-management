@@ -1,0 +1,150 @@
+\chapter{Conception}
+
+\section*{Introduction}
+Dans ce chapitre, nous explorons les différentes fonctionnalités de l'application à travers des diagrammes de classe et de séquences, décrivant ainsi la structure et les interactions entre les différents acteurs de l'application.
+
+\section{Outil de conception}
+\subsection{StarUML}
+StarUML, développé par MKLab, est un outil de modélisation UML puissant et convivial. Il offre une interface intuitive pour créer des diagrammes de classe, de séquence et d'autres types de diagrammes UML. StarUML prend en charge la génération de code à partir des diagrammes, facilitant ainsi la transition entre la conception et le développement. \cite{StarUML}
+La figure \ref{StarUML} ci-dessous illustre la méthodologie hybride adoptée :
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.12\columnwidth]{Staruml_logo.png}
+  \caption{Logo de StarUML}
+  \label{StarUML}
+\end{figure}
+\section{Conception détaillée}
+
+\subsection{Diagramme de classes général}
+
+Le diagramme de classes général de l'application Planora est élaboré à partir des entités du domaine définies dans le backend. Il permet de représenter la structure principale du système ainsi que les relations entre les utilisateurs, les espaces de travail, les projets, les tâches, le backlog, les sprints, la messagerie et les réunions.
+
+Le diagramme de classes général comprend principalement :
+\begin{itemize}
+  \item[$\bullet$] \textbf{Classe "ApplicationUser"} : Représente l'utilisateur de l'application. Elle hérite de la classe IdentityUser et contient les informations personnelles de l'utilisateur, son état d'activation, son jeton de rafraîchissement ainsi que ses relations avec les projets, les espaces de travail, les tâches, les commentaires, les messages et les sessions de discussion.
+
+  \item[$\bullet$] \textbf{Classe "Workspace"} : Représente un espace de travail. Elle contient le nom, la description, le propriétaire, le ProjectManager, les membres, les projets associés et les invitations envoyées.
+
+  \item[$\bullet$] \textbf{Classe "WorkspaceUser"} : Représente l'association entre un utilisateur et un espace de travail. Elle contient l'identifiant de l'utilisateur, l'identifiant de l'espace de travail et la date d'adhésion.
+
+  \item[$\bullet$] \textbf{Classe "WorkspaceInvitation"} : Représente une invitation envoyée à un utilisateur pour rejoindre un espace de travail. Elle contient l'email de l'invité, le token, la date d'expiration, l'état d'acceptation et le rôle proposé.
+
+  \item[$\bullet$] \textbf{Classe "Project"} : Représente un projet appartenant à un espace de travail. Elle contient le nom, la description, les dates de début et de fin, le ProjectManager, les membres du projet, les sprints, les éléments du backlog et les sessions de discussion.
+
+  \item[$\bullet$] \textbf{Classe "ProjectUser"} : Représente l'association entre un utilisateur et un projet. Elle contient l'identifiant du projet, l'identifiant de l'utilisateur et la date d'affectation.
+
+  \item[$\bullet$] \textbf{Classe "ProjectInvitation"} : Représente une invitation envoyée à un utilisateur pour rejoindre un projet. Elle contient l'utilisateur invité, l'utilisateur émetteur, la date d'expiration, la date de réponse et l'état d'acceptation.
+
+  \item[$\bullet$] \textbf{Classe "BacklogItem"} : Représente un élément du backlog. Elle contient le titre, la description, la priorité, le statut, la complexité, les story points, la date d'échéance, le sprint associé et l'utilisateur assigné.
+
+  \item[$\bullet$] \textbf{Classe "SubTask"} : Représente une sous-tâche liée à un élément du backlog. Elle contient le titre, l'état d'achèvement et l'identifiant de l'élément du backlog associé.
+
+  \item[$\bullet$] \textbf{Classe "Sprint"} : Représente une itération de travail. Elle contient le nom, l'objectif, les dates de début et de fin, le statut, le projet associé et les tâches incluses dans le sprint.
+
+  \item[$\bullet$] \textbf{Classe "TaskItem"} : Représente une tâche du projet. Elle contient le titre, la description, le statut, la priorité, le pourcentage d'avancement, la date d'échéance, le projet, le sprint et l'utilisateur assigné.
+
+  \item[$\bullet$] \textbf{Classe "Comment"} : Représente un commentaire rédigé par un utilisateur. Il peut être associé soit à une tâche, soit à un élément du backlog.
+
+  \item[$\bullet$] \textbf{Classe "ChatSession"} : Représente une session de discussion liée à un projet. Elle contient le titre, le créateur de la session et la collection des messages associés.
+
+  \item[$\bullet$] \textbf{Classe "ChatMessage"} : Représente un message envoyé dans une session de discussion. Elle contient le contenu, l'expéditeur, le type du message, les informations de modification, les pièces jointes et les réactions.
+
+  \item[$\bullet$] \textbf{Classe "ChatMessageReaction"} : Représente une réaction à un message. Elle contient l'utilisateur, le message concerné et l'emoji utilisé.
+
+  \item[$\bullet$] \textbf{Classe "MeetingEvent"} : Représente une réunion planifiée. Elle contient le projet concerné, le titre, la date de planification, le créateur, l'option de réunion en ligne et les membres visibles.
+
+  \item[$\bullet$] \textbf{Classe "PinnedMessage"} : Représente un message épinglé dans un projet. Elle contient le contenu du message, une note éventuelle, l'utilisateur qui l'a épinglé et la date d'épinglage.
+
+  \item[$\bullet$] \textbf{Classe "DailyCheckIn"} : Représente le suivi quotidien d'un membre. Elle contient le niveau d'énergie, les heures disponibles, l'existence d'un blocage, une note éventuelle, l'utilisateur et le projet concernés.
+
+  \item[$\bullet$] \textbf{Classes "BacklogAttachment", "BacklogBranch", "BacklogCommit", "BacklogLink" et "BacklogWebLink"} : Représentent les éléments complémentaires liés au backlog, tels que les pièces jointes, les branches, les commits, les liens entre éléments du backlog et les liens web externes.
+\end{itemize}
+
+La figure \ref{fig:DiagrammeClasseGeneral} illustre le diagramme de classes général de l'application Planora.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=1\linewidth]{img/DiagrammeClasseGeneral.png}
+  \caption{Diagramme de classes général de l'application Planora}
+  \label{fig:DiagrammeClasseGeneral}
+\end{figure}
+
+\subsection{Gestion de l'authentification et des utilisateurs}
+
+\subsubsection{Diagramme de séquence}
+
+Au niveau de la page de connexion, l'utilisateur saisit son adresse email et son mot de passe afin d'accéder à l'application Planora. Le système vérifie les informations d'identification, puis génère un jeton d'authentification si les données saisies sont correctes.\\
+Après authentification, l'utilisateur est redirigé vers le tableau de bord et accède aux fonctionnalités autorisées selon son rôle : Administrateur, ProjectManager ou Member.\\
+L'administrateur peut également gérer les comptes utilisateurs, modifier leurs informations, attribuer des rôles, activer ou désactiver un compte.\\
+La figure \ref{fig:GestionAuthentificationSequence} illustre le diagramme de séquence de la gestion de l'authentification et des utilisateurs.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=1\linewidth]{img/GestionAuthentificationSequence.png}
+  \caption{Diagramme de séquence de la gestion de l'authentification et des utilisateurs}
+  \label{fig:GestionAuthentificationSequence}
+\end{figure}
+
+\subsection{Gestion des espaces de travail et des projets}
+
+\subsubsection{Diagramme de séquence}
+
+L'administrateur crée un espace de travail en renseignant les informations nécessaires, telles que le nom et la description. Une fois l'espace créé, il peut inviter des membres à le rejoindre. Les utilisateurs invités reçoivent une invitation qu'ils peuvent accepter ou refuser.\\
+Après l'organisation de l'espace de travail, le ProjectManager peut créer un projet, définir ses informations principales, affecter des membres et suivre son avancement. Les membres ajoutés au projet peuvent ensuite accéder aux fonctionnalités qui leur sont autorisées.\\
+La figure \ref{fig:GestionWorkspaceProjetSequence} illustre le diagramme de séquence de la gestion des espaces de travail et des projets.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=1\linewidth]{img/GestionWorkspaceProjetSequence.png}
+  \caption{Diagramme de séquence de la gestion des espaces de travail et des projets}
+  \label{fig:GestionWorkspaceProjetSequence}
+\end{figure}
+
+\subsection{Gestion du backlog, des tâches et des sprints}
+
+\subsubsection{Diagramme de séquence}
+
+Le ProjectManager ou un membre autorisé accède au backlog d'un projet afin de créer de nouveaux éléments. Chaque élément du backlog peut contenir un titre, une description, une priorité, une complexité, des story points, une date d'échéance et un membre assigné.\\
+Les éléments du backlog peuvent être associés à un sprint afin d'organiser le travail selon une approche agile. Les membres peuvent ensuite suivre l'état d'avancement des tâches, ajouter des commentaires et mettre à jour les informations nécessaires.\\
+La figure \ref{fig:GestionBacklogSprintSequence} illustre le diagramme de séquence de la gestion du backlog, des tâches et des sprints.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=1\linewidth]{img/GestionBacklogSprintSequence.png}
+  \caption{Diagramme de séquence de la gestion du backlog, des tâches et des sprints}
+  \label{fig:GestionBacklogSprintSequence}
+\end{figure}
+
+\subsection{Gestion de la collaboration et des réunions}
+
+\subsubsection{Diagramme de séquence}
+
+Les membres d'un projet peuvent communiquer à travers un espace de messagerie intégré. Lorsqu'un utilisateur envoie un message, celui-ci est enregistré et rattaché à une session de discussion liée au projet. Les autres membres concernés peuvent consulter les messages et suivre les échanges.\\
+La plateforme permet également de planifier des réunions à travers un calendrier. L'utilisateur renseigne les informations de la réunion, telles que le titre, la date, l'heure et les membres concernés. Le système enregistre ensuite l'événement et l'affiche dans le calendrier du projet.\\
+La figure \ref{fig:GestionCollaborationSequence} illustre le diagramme de séquence de la gestion de la collaboration et des réunions.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=1\linewidth]{img/GestionCollaborationSequence.png}
+  \caption{Diagramme de séquence de la gestion de la collaboration et des réunions}
+  \label{fig:GestionCollaborationSequence}
+\end{figure}
+
+\subsection{Suivi de la santé de l'équipe par intelligence artificielle}
+
+\subsubsection{Diagramme de séquence}
+
+Le suivi de la santé de l'équipe repose sur un module d'intelligence artificielle permettant d'analyser les messages échangés entre les membres d'un projet. Lorsqu'un utilisateur accède à la page dédiée, le système récupère les messages récents et les transmet au service d'analyse.\\
+Le modèle d'intelligence artificielle classe les messages selon plusieurs sentiments, notamment positif, neutre, stressé ou frustré. À partir de ces résultats, le système calcule un score global, génère une distribution des sentiments et affiche des alertes lorsque des signes de stress ou de frustration sont détectés.\\
+La figure \ref{fig:TeamHealthSequence} illustre le diagramme de séquence du suivi de la santé de l'équipe par intelligence artificielle.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=1\linewidth]{img/TeamHealthSequence.png}
+  \caption{Diagramme de séquence du suivi de la santé de l'équipe par intelligence artificielle}
+  \label{fig:TeamHealthSequence}
+\end{figure}
+
+\section*{Conclusion}
+
+Dans ce chapitre, nous avons présenté la conception détaillée de l'application Planora à travers les principaux diagrammes de séquence décrivant les interactions entre les acteurs et le système. Nous avons également présenté le diagramme de classes général afin de modéliser la structure globale de l'application et les relations entre ses principales entités.
