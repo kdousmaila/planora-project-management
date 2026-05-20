@@ -21,19 +21,11 @@ Le diagramme de classes général de l'application Planora est élaboré à part
 
 Le diagramme de classes général comprend principalement :
 \begin{itemize}
-  \item[$\bullet$] \textbf{Classe "ApplicationUser"} : Représente l'utilisateur de l'application. Elle hérite de la classe IdentityUser et contient les informations personnelles de l'utilisateur, son état d'activation, son jeton de rafraîchissement ainsi que ses relations avec les projets, les espaces de travail, les tâches, les commentaires, les messages et les sessions de discussion.
+  \item[$\bullet$] \textbf{Classe "Users"} : Représente l'utilisateur de l'application. Elle contient les informations personnelles de l'utilisateur, son état d'activation, son jeton de rafraîchissement ainsi que ses relations avec les workspaces, les projets, les espaces de travail, les tâches, les commentaires, les messages et les sessions de discussion.
 
   \item[$\bullet$] \textbf{Classe "Workspace"} : Représente un espace de travail. Elle contient le nom, la description, le propriétaire, le ProjectManager, les membres, les projets associés et les invitations envoyées.
 
-  \item[$\bullet$] \textbf{Classe "WorkspaceUser"} : Représente l'association entre un utilisateur et un espace de travail. Elle contient l'identifiant de l'utilisateur, l'identifiant de l'espace de travail et la date d'adhésion.
-
-  \item[$\bullet$] \textbf{Classe "WorkspaceInvitation"} : Représente une invitation envoyée à un utilisateur pour rejoindre un espace de travail. Elle contient l'email de l'invité, le token, la date d'expiration, l'état d'acceptation et le rôle proposé.
-
   \item[$\bullet$] \textbf{Classe "Project"} : Représente un projet appartenant à un espace de travail. Elle contient le nom, la description, les dates de début et de fin, le ProjectManager, les membres du projet, les sprints, les éléments du backlog et les sessions de discussion.
-
-  \item[$\bullet$] \textbf{Classe "ProjectUser"} : Représente l'association entre un utilisateur et un projet. Elle contient l'identifiant du projet, l'identifiant de l'utilisateur et la date d'affectation.
-
-  \item[$\bullet$] \textbf{Classe "ProjectInvitation"} : Représente une invitation envoyée à un utilisateur pour rejoindre un projet. Elle contient l'utilisateur invité, l'utilisateur émetteur, la date d'expiration, la date de réponse et l'état d'acceptation.
 
   \item[$\bullet$] \textbf{Classe "BacklogItem"} : Représente un élément du backlog. Elle contient le titre, la description, la priorité, le statut, la complexité, les story points, la date d'échéance, le sprint associé et l'utilisateur assigné.
 
@@ -49,22 +41,18 @@ Le diagramme de classes général comprend principalement :
 
   \item[$\bullet$] \textbf{Classe "ChatMessage"} : Représente un message envoyé dans une session de discussion. Elle contient le contenu, l'expéditeur, le type du message, les informations de modification, les pièces jointes et les réactions.
 
-  \item[$\bullet$] \textbf{Classe "ChatMessageReaction"} : Représente une réaction à un message. Elle contient l'utilisateur, le message concerné et l'emoji utilisé.
-
   \item[$\bullet$] \textbf{Classe "MeetingEvent"} : Représente une réunion planifiée. Elle contient le projet concerné, le titre, la date de planification, le créateur, l'option de réunion en ligne et les membres visibles.
-
-  \item[$\bullet$] \textbf{Classe "PinnedMessage"} : Représente un message épinglé dans un projet. Elle contient le contenu du message, une note éventuelle, l'utilisateur qui l'a épinglé et la date d'épinglage.
 
   \item[$\bullet$] \textbf{Classe "DailyCheckIn"} : Représente le suivi quotidien d'un membre. Elle contient le niveau d'énergie, les heures disponibles, l'existence d'un blocage, une note éventuelle, l'utilisateur et le projet concernés.
 
   \item[$\bullet$] \textbf{Classes "BacklogAttachment", "BacklogBranch", "BacklogCommit", "BacklogLink" et "BacklogWebLink"} : Représentent les éléments complémentaires liés au backlog, tels que les pièces jointes, les branches, les commits, les liens entre éléments du backlog et les liens web externes.
 \end{itemize}
-
+\newpage
 La figure \ref{fig:DiagrammeClasseGeneral} illustre le diagramme de classes général de l'application Planora.
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\linewidth]{img/DiagrammeClasseGeneral.png}
+  \includegraphics[width=1\linewidth]{ClassDiagram1.png}
   \caption{Diagramme de classes général de l'application Planora}
   \label{fig:DiagrammeClasseGeneral}
 \end{figure}
@@ -80,7 +68,7 @@ La figure \ref{fig:GestionAuthentificationSequence} illustre le diagramme de sé
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\linewidth]{img/GestionAuthentificationSequence.png}
+   \includegraphics[width=0.7\linewidth]{Authentification.png}
   \caption{Diagramme de séquence de la gestion de l'authentification et des utilisateurs}
   \label{fig:GestionAuthentificationSequence}
 \end{figure}
@@ -95,7 +83,7 @@ La figure \ref{fig:GestionWorkspaceProjetSequence} illustre le diagramme de séq
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\linewidth]{img/GestionWorkspaceProjetSequence.png}
+   \includegraphics[width=0.7\linewidth]{Project Espace Travail.png}
   \caption{Diagramme de séquence de la gestion des espaces de travail et des projets}
   \label{fig:GestionWorkspaceProjetSequence}
 \end{figure}
@@ -110,7 +98,7 @@ La figure \ref{fig:GestionBacklogSprintSequence} illustre le diagramme de séque
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\linewidth]{img/GestionBacklogSprintSequence.png}
+   \includegraphics[width=0.7\linewidth]{Backlog And Stuff.png}
   \caption{Diagramme de séquence de la gestion du backlog, des tâches et des sprints}
   \label{fig:GestionBacklogSprintSequence}
 \end{figure}
@@ -125,7 +113,7 @@ La figure \ref{fig:GestionCollaborationSequence} illustre le diagramme de séque
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\linewidth]{img/GestionCollaborationSequence.png}
+   \includegraphics[width=0.7\linewidth]{Collaboration Reunion.png}
   \caption{Diagramme de séquence de la gestion de la collaboration et des réunions}
   \label{fig:GestionCollaborationSequence}
 \end{figure}
@@ -140,11 +128,24 @@ La figure \ref{fig:TeamHealthSequence} illustre le diagramme de séquence du sui
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\linewidth]{img/TeamHealthSequence.png}
+   \includegraphics[width=1\linewidth]{Sante equipe suivie.png}
   \caption{Diagramme de séquence du suivi de la santé de l'équipe par intelligence artificielle}
   \label{fig:TeamHealthSequence}
 \end{figure}
 
+\subsubsection{Diagramme de séquence du chatbot IA}
+
+Le chatbot intelligent permet aux utilisateurs d’interagir directement avec un assistant intégré dans la plateforme. Lorsqu’un utilisateur ouvre la fenêtre de chat, le système initialise la conversation et permet l’envoi de messages texte, emojis ou fichiers.
+
+Le chatbot analyse les requêtes des utilisateurs et peut répondre à des questions, fournir des explications ou analyser le contenu d’un fichier ou d’une image envoyée. Les messages sont transmis au modèle d’intelligence artificielle, qui génère une réponse adaptée en fonction du contexte de la conversation.\\
+La figure \ref{fig:ChatbotAISequence} illustre le diagramme de séquence du chatbot IA.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\linewidth]{Chat.png}
+  \caption{Diagramme de séquence du chatbot IA}
+  \label{fig:ChatbotAISequence}
+\end{figure}
 \section*{Conclusion}
 
 Dans ce chapitre, nous avons présenté la conception détaillée de l'application Planora à travers les principaux diagrammes de séquence décrivant les interactions entre les acteurs et le système. Nous avons également présenté le diagramme de classes général afin de modéliser la structure globale de l'application et les relations entre ses principales entités.

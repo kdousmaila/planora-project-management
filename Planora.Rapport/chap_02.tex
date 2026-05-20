@@ -150,21 +150,22 @@ Le diagramme de cas d'utilisation global présenté dans la figure \ref{fig:Use 
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\linewidth]{Use Case.png}
+  \includegraphics[width=1\linewidth]{UseCaseDiagram1.png}
   \caption{Diagramme de cas d'utilisation globale}
   \label{fig:Use Case}
 \end{figure}
+
 \section{Raffinement des cas d'utilisation}
-\subsection{Gestion des utilisateurs et authentification}
+\subsection{Gestion des membres et authentification}
 
-La figure \ref{fig:GestionUtilisateurUseCase} ci-dessous illustre le diagramme de raffinement de la gestion des utilisateurs et de l'authentification.
+ %La figure \ref{fig:GestionUtilisateurUseCase} ci-dessous illustre le diagramme de raffinement de la gestion des membres et de l'authentification.
 
-\begin{figure}[H]
-  \centering
-  % \includegraphics[width=1\columnwidth]{img/GestionUtilisateurUseCase.png}
-  \caption{Diagramme de cas d'utilisation « Gestion des utilisateurs et authentification »}
-  \label{fig:GestionUtilisateurUseCase}
-\end{figure}
+ %\begin{figure}[H]
+  % \centering
+   % \includegraphics[width=1\columnwidth]{gererM.png}
+   %\caption{Diagramme de cas d'utilisation « Gestion des utilisateurs et authentification »}
+   % %\label{fig:GestionUtilisateurUseCase}
+ %\end{figure}
 
 Les tableaux ci-dessous présentent une description textuelle des cas d'utilisation liés à la gestion des utilisateurs.
 
@@ -247,7 +248,7 @@ La figure \ref{fig:GestionWorkspaceUseCase} ci-dessous illustre le diagramme de 
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\columnwidth]{img/GestionWorkspaceUseCase.png}
+  \includegraphics[width=1\columnwidth]{gereE.png}
   \caption{Diagramme de cas d'utilisation « Gestion des espaces de travail »}
   \label{fig:GestionWorkspaceUseCase}
 \end{figure}
@@ -293,7 +294,7 @@ La figure \ref{fig:GestionProjetUseCase} ci-dessous illustre le diagramme de raf
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\columnwidth]{img/GestionProjetUseCase.png}
+   \includegraphics[width=1\columnwidth]{gereP.png}
   \caption{Diagramme de cas d'utilisation « Gestion des projets »}
   \label{fig:GestionProjetUseCase}
 \end{figure}
@@ -315,7 +316,7 @@ La figure \ref{fig:GestionProjetUseCase} ci-dessous illustre le diagramme de raf
   \hline
   \endlastfoot
 
-  \textbf{Objectif}      & Permettre la création, la modification et le suivi des projets.                   \\
+  \textbf{Objectif}      & Permettre la création, la modification, la suppression et le suivi des projets.                   \\
   \hline
   \textbf{Acteur(s)}     & Administrateur, ProjectManager, Membre                                            \\
   \hline
@@ -339,7 +340,7 @@ La figure \ref{fig:GestionBacklogSprintUseCase} ci-dessous illustre le diagramme
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\columnwidth]{img/GestionBacklogSprintUseCase.png}
+  \includegraphics[width=1\columnwidth]{gereB.png}
   \caption{Diagramme de cas d'utilisation « Gestion du backlog, des tâches et des sprints »}
   \label{fig:GestionBacklogSprintUseCase}
 \end{figure}
@@ -385,7 +386,7 @@ La figure \ref{fig:GestionCollaborationUseCase} ci-dessous illustre le diagramme
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\columnwidth]{img/GestionCollaborationUseCase.png}
+   \includegraphics[width=1\columnwidth]{gereR.png}
   \caption{Diagramme de cas d'utilisation « Gestion de la collaboration et des réunions »}
   \label{fig:GestionCollaborationUseCase}
 \end{figure}
@@ -431,7 +432,7 @@ La figure \ref{fig:TeamHealthUseCase} ci-dessous illustre le diagramme de raffin
 
 \begin{figure}[H]
   \centering
-  % \includegraphics[width=1\columnwidth]{img/TeamHealthUseCase.png}
+   \includegraphics[width=1\columnwidth]{ConsAi.png}
   \caption{Diagramme de cas d'utilisation « Suivi de la santé de l'équipe »}
   \label{fig:TeamHealthUseCase}
 \end{figure}
@@ -471,7 +472,55 @@ La figure \ref{fig:TeamHealthUseCase} ci-dessous illustre le diagramme de raffin
   \hline
   \caption{\centering Description textuelle du cas d'utilisation « Analyser la santé de l'équipe »}
 \end{longtable}
+\subsection{Communication entre les membres d'un projet}
+
+La figure \ref{fig:TeamHealthUseCase} ci-dessous illustre le diagramme de raffinement du communication entre les memebres d'un projet.
+
+\begin{figure}[H]
+  \centering
+   \includegraphics[width=1\columnwidth]{ComAi.png}
+  \caption{Diagramme de cas d'utilisation « Communication entre les membres d'un projet »}
+  \label{fig:TeamHealthUseCase}
+\end{figure}
+
+\begin{longtable}[c]{|p{0.3\linewidth}|p{0.65\linewidth}|}
+  \hline
+  \multicolumn{2}{|c|}{\textbf{Communication entre les membres d'un projet}}                                                           \\
+  \hline
+  \endfirsthead
+
+  \hline
+  \multicolumn{2}{|c|}{\textbf{Communication entre les membres d'un projet}}                                                           \\
+  \hline
+  \endhead
+
+  \hline
+  \endfoot
+
+  \hline
+  \endlastfoot
+
+  \textbf{Objectif}      & Analyser les messages échangés afin d'évaluer l'ambiance générale de l'équipe.                \\
+  \hline
+  \textbf{Acteur(s)}     & Admin, ProjectManager, Membre                                                                        \\
+  \hline
+  \textbf{Précondition}  & L'utilisateur doit être authentifié et avoir accès au projet concerné.                        \\
+  \hline
+  \textbf{Scénario}      &
+  1. L'utilisateur accède à la page de suivi de la santé de l'équipe.                                                    \\
+                         & 2. Le système récupère les messages récents échangés dans le projet.                          \\
+                         & 3. Le module d'intelligence artificielle analyse les messages.                                \\
+                         & 4. Le système classe les messages selon leur sentiment : positif, neutre, stressé ou frustré. \\
+                         & 5. Le système calcule un score global et affiche les indicateurs de santé de l'équipe.        \\
+                         & 6. En cas de stress ou de frustration élevés, le système affiche des alertes.                 \\
+  \hline
+  \textbf{Postcondition} & Les indicateurs et alertes liés à la santé de l'équipe sont affichés à l'utilisateur.         \\
+  \hline
+  \caption{\centering Description textuelle du cas d'utilisation « Analyser la santé de l'équipe »}
+\end{longtable}
+
 
 \section*{Conclusion}
+
 
 Dans le deuxième chapitre, nous avons nous avons effectué une analyse et une spécification des besoins en identifiant les acteurs clés du projet.Ensuite nous avons défini les exigences fonctionnelles et non fonctionnelles. Enfin, nous avons présenté une illustration du diagramme d'utilisation global ainsi que ses raffinements.
