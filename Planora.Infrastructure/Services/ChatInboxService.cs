@@ -156,7 +156,7 @@ public class ChatInboxService : IChatInboxService
             var transcriptSession = await SessionQuery().FirstAsync(s => s.Id == session.Id);
             var transcript = BuildSessionTranscript(transcriptSession);
 
-            // ── Extract the content of attached files ──
+            // ── Extraction du contenu des fichiers joints ──
             var fileContext = new StringBuilder();
 
             if (dto.Attachments != null)
@@ -165,8 +165,8 @@ public class ChatInboxService : IChatInboxService
                 {
                     if (string.IsNullOrEmpty(att.Url)) continue;
 
-                    // The URL looks like "http://localhost:5000/uploads/chat/file.pdf"
-                    // Extract only the relative path after the domain
+                    // L'URL ressemble à "http://localhost:5000/uploads/chat/fichier.pdf"
+                    // On extrait juste le chemin relatif après le domaine
                     var uri = new Uri(att.Url);
                     var relativePath = uri.AbsolutePath.TrimStart('/');
                     var physicalPath = Path.Combine(
@@ -178,12 +178,12 @@ public class ChatInboxService : IChatInboxService
                     {
                         var pdfText = _chatbotService.ExtractTextFromPdf(physicalPath);
                         if (!string.IsNullOrWhiteSpace(pdfText))
-                            fileContext.AppendLine($"[PDF content \"{att.Name}\"]:\n{pdfText}");
+                            fileContext.AppendLine($"[Contenu du PDF \"{att.Name}\"]:\n{pdfText}");
                     }
                 }
             }
 
-            // Combine the session transcript with the file content
+            // Combine transcript de la session + contenu des fichiers
             var fullContext = fileContext.Length > 0
                 ? $"{transcript}\n\n{fileContext}"
                 : transcript;
@@ -261,7 +261,7 @@ public class ChatInboxService : IChatInboxService
             throw new UnauthorizedAccessException("You don't have permission to delete this message.");
 
         message.IsDeleted = true;
-        message.Content = "This message was deleted";
+        message.Content = "Ce message a été supprimé";
         await _dbContext.SaveChangesAsync();
 
         await _notifier.SendToSessionAsync(sessionId.ToString(), "MessageDeleted", messageId.ToString());
@@ -348,10 +348,20 @@ public class ChatInboxService : IChatInboxService
             .FirstOrDefaultAsync(p => p.Id == projectId)
             ?? throw new KeyNotFoundException("Project not found.");
 
-        if (!project.Users.Any(u => u.UserId == userId) && project.ProjectManagerId != userId)
+        // Vérifie si l'utilisateur est admin (rôle "Admin")
+        var isAdmin = await _dbContext.UserRoles
+            .Join(_dbContext.Roles,
+                  ur => ur.RoleId,
+                  r => r.Id,
+                  (ur, r) => new { ur.UserId, r.Name })
+            .AnyAsync(x => x.UserId == userId && x.Name == "Admin");
+
+        var isMember = project.Users.Any(u => u.UserId == userId);
+        var isPM = project.ProjectManagerId == userId;
+
+        if (!isMember && !isPM && !isAdmin)
             throw new UnauthorizedAccessException("Only project members can access the inbox.");
     }
-
     private static ChatMessageDto MapMessageDto(ChatMessage message)
     {
         List<MessageAttachmentDto>? attachments = null;

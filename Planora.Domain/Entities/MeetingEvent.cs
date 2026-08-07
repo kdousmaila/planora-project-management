@@ -9,8 +9,8 @@ public class MeetingEvent
     public string Title { get; set; } = string.Empty;
     public DateTime ScheduledAt { get; set; }
     public string CreatedByUserId { get; set; } = string.Empty;
-    public bool WithMeet { get; set; }                        // ← NOUVEAU
-    public string VisibleMemberIds { get; set; } = string.Empty; // ← NEW (stored as CSV)
+    public bool WithMeet { get; set; }                       
+    public string VisibleMemberIds { get; set; } = string.Empty; 
     public List<MeetingPinnedMessage> PinnedMessages { get; set; } = [];
 }
 
